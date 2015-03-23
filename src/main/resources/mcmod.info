@@ -1,0 +1,16 @@
+[
+{
+  "modid": "ic",
+  "name": "Integrated Circuits",
+  "description": "Example placeholder mod.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Andrew Querol"],
+  "credits": "Aliases: winsock(2), andrewq2",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
