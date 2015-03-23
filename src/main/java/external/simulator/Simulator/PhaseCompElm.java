@@ -3,7 +3,8 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class PhaseCompElm extends ChipElm {
-    boolean ff1, ff2;
+    private boolean ff1;
+    private boolean ff2;
 
     public PhaseCompElm(int xx, int yy) {
         super(xx, yy);

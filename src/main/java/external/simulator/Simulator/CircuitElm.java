@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
@@ -11,29 +11,34 @@ import org.lwjgl.util.Point;
 import org.lwjgl.util.ReadableColor;
 import org.lwjgl.util.Rectangle;
 
-import java.awt.Polygon;
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public abstract class CircuitElm {
     static final double pi = 3.14159265358979323846;
-    public static NumberFormat showFormat, shortFormat, noCommaFormat;
+    public static NumberFormat showFormat;
     static double voltageRange = 5;
-    static int colorScaleCount = 32;
-    static ReadableColor colorScale[];
     static double currentMult, powerMult;
-    static Point ps1, ps2;
     static CirSim sim;
     static ReadableColor whiteColor, selectColor, lightGrayColor;
-    public boolean selected;
+    private static NumberFormat shortFormat;
+    private static NumberFormat noCommaFormat;
+    private static int colorScaleCount = 32;
+    private static ReadableColor[] colorScale;
+    private static Point ps1;
+    private static Point ps2;
     int x, y, x2, y2, flags, nodes[], voltSource;
     int dx, dy, dsign;
-    double dn, dpx1, dpy1;
+    double dn;
     Point point1, point2, lead1, lead2;
     double volts[];
     double current, curcount;
     Rectangle boundingBox;
     boolean noDiagonal;
+    private boolean selected;
+    private double dpx1;
+    private double dpy1;
 
     CircuitElm(int xx, int yy) {
         x = x2 = xx;
@@ -82,7 +87,7 @@ public abstract class CircuitElm {
         noCommaFormat.setGroupingUsed(false);
     }
 
-    static void drawThickLine(GuiScreen g, int x, int y, int x2, int y2, Color color) {
+    private static void drawThickLine(CircuitGUI g, int x, int y, int x2, int y2, Color color) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.startDrawingQuads();
@@ -94,22 +99,22 @@ public abstract class CircuitElm {
         worldrenderer.finishDrawing();
     }
 
-    static void drawThickLine(GuiScreen g, Point pa, Point pb, Color color) {
+    static void drawThickLine(CircuitGUI g, Point pa, Point pb, Color color) {
         drawThickLine(g, pa.getX(), pa.getY(), pb.getX(), pb.getY(), color);
     }
 
-    static void drawThickPolygon(GuiScreen g, int xs[], int ys[], int c, Color color) {
+    static void drawThickPolygon(CircuitGUI g, int xs[], int ys[], int c, Color color) {
         int i;
         for (i = 0; i != c - 1; i++)
             drawThickLine(g, xs[i], ys[i], xs[i + 1], ys[i + 1], color);
         drawThickLine(g, xs[i], ys[i], xs[0], ys[0], color);
     }
 
-    static void drawThickPolygon(GuiScreen g, Polygon p, Color color) {
+    static void drawThickPolygon(CircuitGUI g, Polygon p, Color color) {
         drawThickPolygon(g, p.xpoints, p.ypoints, p.npoints, color);
     }
 
-    static void drawThickCircle(GuiScreen g, int cx, int cy, int ri, Color color) {
+    static void drawThickCircle(CircuitGUI g, int cx, int cy, int ri, Color color) {
         int a;
         double m = pi / 180;
         double r = ri * .98;
@@ -238,8 +243,7 @@ public abstract class CircuitElm {
         curcount = 0;
     }
 
-    void draw(GuiScreen screen, int mouseX, int mouseY, float partialTicks) {
-    }
+    abstract void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks);
 
     void setCurrent(int x, double c) {
         current = c;
@@ -334,7 +338,7 @@ public abstract class CircuitElm {
         d.setY((int) Math.floor(a.getY() * (1 - f) + b.getY() * f - g * gy + .48));
     }
 
-    void draw2Leads(GuiScreen g, Color color) {
+    void draw2Leads(CircuitGUI g, Color color) {
         // draw first lead
         getVoltageColor(volts[0]);
         drawThickLine(g, point1, lead1, color);
@@ -351,7 +355,11 @@ public abstract class CircuitElm {
         return a;
     }
 
-    void drawDots(GuiScreen g, Point pa, Point pb, double pos, Color color) {
+    void drawDots(CircuitGUI g, Point pa, Point pb, double pos) {
+        drawDots(g, pa, pb, pos, (Color) Color.YELLOW);
+    }
+
+    void drawDots(CircuitGUI g, Point pa, Point pb, double pos, Color color) {
         if (sim.stopped || pos == 0 || !sim.dots)
             return;
 
@@ -467,7 +475,7 @@ public abstract class CircuitElm {
         setPoints();
     }
 
-    void drawPosts(GuiScreen g, Color color) {
+    void drawPosts(CircuitGUI g, Color color) {
         int i;
         for (i = 0; i != getPostCount(); i++) {
             Point p = getPost(i);
@@ -518,7 +526,7 @@ public abstract class CircuitElm {
         return (n == 0) ? point1 : (n == 1) ? point2 : null;
     }
 
-    void drawPost(GuiScreen g, int x0, int y0, int n, Color color) {
+    void drawPost(CircuitGUI g, int x0, int y0, int n, Color color) {
         if (sim.dragElm == null && !needsHighlight() &&
                 sim.getCircuitNode(n).links.size() == 2)
             return;
@@ -528,7 +536,7 @@ public abstract class CircuitElm {
         drawPost(g, x0, y0, color);
     }
 
-    void drawPost(GuiScreen g, int x0, int y0, Color color) {
+    void drawPost(CircuitGUI g, int x0, int y0, Color color) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer renderer = tessellator.getWorldRenderer();
         renderer.startDrawing(GL11.GL_LINE_LOOP);
@@ -596,7 +604,7 @@ public abstract class CircuitElm {
         return false;
     }
 
-    void drawCenteredText(GuiScreen g, String s, int x, int y, boolean cx, Color color) {
+    void drawCenteredText(CircuitGUI g, String s, int x, int y, boolean cx, Color color) {
         FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
         int w = renderer.getStringWidth(s);
         if (cx)
@@ -606,7 +614,7 @@ public abstract class CircuitElm {
         g.drawString(renderer, s, x, y + renderer.FONT_HEIGHT / 2, color.hashCode());
     }
 
-    void drawValues(GuiScreen g, String s, double hs, Color color) {
+    void drawValues(CircuitGUI g, String s, double hs, Color color) {
         if (s == null)
             return;
         FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
@@ -632,7 +640,7 @@ public abstract class CircuitElm {
         }
     }
 
-    void drawCoil(GuiScreen g, int hs, Point p1, Point p2,
+    void drawCoil(CircuitGUI g, int hs, Point p1, Point p2,
                   double v1, double v2, Color color) {
         double len = distance(p1, p2);
         int segments = 30; // 10*(int) (len/10);
@@ -671,10 +679,10 @@ public abstract class CircuitElm {
         return cc + cadd;
     }
 
-    void doDots(GuiScreen g, Color color) {
+    void doDots(CircuitGUI g) {
         updateDotCount();
         if (sim.dragElm != this)
-            drawDots(g, point1, point2, curcount, color);
+            drawDots(g, point1, point2, curcount);
     }
 
     void doAdjust() {
@@ -705,7 +713,7 @@ public abstract class CircuitElm {
         return colorScale[c];
     }
 
-    Color setPowerColor(double w0) {
+    Color getPowerColor(double w0) {
         w0 *= powerMult;
         double w = (w0 < 0) ? -w0 : w0;
         if (w > 1)
@@ -718,7 +726,7 @@ public abstract class CircuitElm {
             return new Color(b, rg, b);
     }
 
-    Color setConductanceColor(GuiScreen g, double w0) {
+    Color setConductanceColor(CircuitGUI g, double w0) {
         w0 *= powerMult;
         double w = (w0 < 0) ? -w0 : w0;
         if (w > 1)
@@ -754,9 +762,7 @@ public abstract class CircuitElm {
         return false;
     }
 
-    boolean isWire() {
-        return false;
-    }
+    abstract boolean isWire();
 
     boolean canViewInScope() {
         return getPostCount() <= 2;

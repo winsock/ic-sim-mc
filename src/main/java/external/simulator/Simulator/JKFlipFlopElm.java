@@ -4,7 +4,7 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class JKFlipFlopElm extends ChipElm {
-    final int FLAG_RESET = 2;
+    private final int FLAG_RESET = 2;
 
     public JKFlipFlopElm(int xx, int yy) {
         super(xx, yy);

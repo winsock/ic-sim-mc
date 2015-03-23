@@ -1,26 +1,27 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class JfetElm extends MosfetElm {
     /*    Polygon gatePoly;
         Polygon arrowPoly;*/
-    Point gatePt;
+    private Point gatePt;
 
     JfetElm(int xx, int yy, boolean pnpflag) {
         super(xx, yy, pnpflag);
         noDiagonal = true;
     }
 
-    public JfetElm(int xa, int ya, int xb, int yb, int f,
-                   StringTokenizer st) {
+    JfetElm(int xa, int ya, int xb, int yb, int f,
+            StringTokenizer st) {
         super(xa, ya, xb, yb, f, st);
         noDiagonal = true;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, hs);
         getVoltageColor(g, volts[1]);
         drawThickLine(g, src[0], src[1]);
@@ -31,7 +32,7 @@ class JfetElm extends MosfetElm {
         getVoltageColor(g, volts[0]);
         drawThickLine(g, point1, gatePt);
         g.fillPolygon(arrowPoly);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         g.fillPolygon(gatePoly);
         curcount = updateDotCount(-ids, curcount);
         if (curcount != 0) {

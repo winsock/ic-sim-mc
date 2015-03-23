@@ -1,15 +1,21 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
 
 class TriStateElm extends CircuitElm {
-    double resistance, r_on, r_off;
-    boolean open;
-    Point ps, point3, point4, lead3;
+    private double resistance;
+    private double r_on;
+    private double r_off;
+    private boolean open;
+    private Point ps;
+    private Point point3;
+    private Point point4;
+    private Point lead3;
     //Polygon gatePoly;
 
     public TriStateElm(int xx, int yy) {
@@ -57,7 +63,7 @@ class TriStateElm extends CircuitElm {
         lead3 = interpPoint(point1, point2, .5, -hs / 2);
     }
 
-/*    void drawPosts(Graphics g) {
+/*    void drawPosts(CircuitGUI g) {
         int i;
         for (i = 0; i != 3; i++) {
             Point p = getPost(i);
@@ -65,7 +71,7 @@ class TriStateElm extends CircuitElm {
         }
     }
 
-    void draw(Graphics g) {
+    void draw(CircuitGUI g) {
         int hs = 16;
         setBbox(point1, point2, hs);
 
@@ -147,8 +153,11 @@ class TriStateElm extends CircuitElm {
 //           2
 
     boolean getConnection(int n1, int n2) {
-        if ((n1 == 1 && n2 == 3) || (n1 == 3 && n2 == 1))
-            return true;
+        return (n1 == 1 && n2 == 3) || (n1 == 3 && n2 == 1);
+    }
+
+    @Override
+    boolean isWire() {
         return false;
     }
 

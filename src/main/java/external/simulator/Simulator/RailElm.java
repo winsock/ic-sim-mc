@@ -32,7 +32,7 @@ class RailElm extends VoltageElm {
         lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, circleSize);
         getVoltageColor(g, volts[0]);
         drawThickLine(g, point1, lead1);
@@ -41,7 +41,7 @@ class RailElm extends VoltageElm {
             Font f = new Font("SansSerif", 0, 12);
             g.setFont(f);
             g.setColor(needsHighlight() ? selectColor : whiteColor);
-            setPowerColor(g, false);
+            getPowerColor(g, false);
             double v = getVoltage();
             String s = getShortUnitText(v, "V");
             if (Math.abs(v) < 1)

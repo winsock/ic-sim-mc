@@ -1,12 +1,17 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class SparkGapElm extends CircuitElm {
-    double resistance, onresistance, offresistance, breakdown, holdcurrent;
-    boolean state;
+    private double resistance;
+    private double onresistance;
+    private double offresistance;
+    private double breakdown;
+    private double holdcurrent;
+    private boolean state;
     //Polygon arrow1, arrow2;
 
     public SparkGapElm(int xx, int yy) {
@@ -51,13 +56,13 @@ class SparkGapElm extends CircuitElm {
         //arrow2 = calcArrow(point2, p1, alen, alen);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int i;
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 8);
         draw2Leads(g);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         getVoltageColor(g, volts[0]);
         g.fillPolygon(arrow1);
         getVoltageColor(g, volts[1]);
@@ -126,6 +131,11 @@ class SparkGapElm extends CircuitElm {
             breakdown = ei.value;
         if (ei.value > 0 && n == 3)
             holdcurrent = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

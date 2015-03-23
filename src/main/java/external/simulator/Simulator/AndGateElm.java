@@ -1,6 +1,7 @@
 package external.simulator.Simulator;
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class AndGateElm extends GateElm {
@@ -33,7 +34,7 @@ class AndGateElm extends GateElm {
             pcircle = interpPoint(point1, point2, .5 + (ww + 4) / dn);
             lead2 = interpPoint(point1, point2, .5 + (ww + 8) / dn);
         }
-        //gatePoly = createPolygon(triPoints);
+        gatePoly = createPolygon(triPoints);
     }
 
     String getGateName() {

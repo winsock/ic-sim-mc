@@ -1,16 +1,29 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class TriodeElm extends CircuitElm {
-    final double gridCurrentR = 6000;
-    double mu, kg1;
-    double curcountp, curcountc, curcountg, currentp, currentg, currentc;
-    Point plate[], grid[], cath[], midgrid, midcath;
-    int circler;
-    double lastv0, lastv1, lastv2;
+    private final double gridCurrentR = 6000;
+    double curcountp;
+    double curcountc;
+    double curcountg;
+    private double mu;
+    private double kg1;
+    private double currentp;
+    private double currentg;
+    private double currentc;
+    private Point[] plate;
+    private Point[] grid;
+    private Point[] cath;
+    private Point midgrid;
+    private Point midcath;
+    private int circler;
+    private double lastv0;
+    private double lastv1;
+    private double lastv2;
 
     public TriodeElm(int xx, int yy) {
         super(xx, yy);
@@ -77,12 +90,12 @@ class TriodeElm extends CircuitElm {
         interpPoint(point2, plate[1], cath[0], -farw / (double) nearw, cathw);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         g.setColor(Color.gray);
         drawThickCircle(g, point2.x, point2.y, circler);
         setBbox(point1, plate[0], 16);
         adjustBbox(cath[0].x, cath[1].y, point2.x + circler, point2.y + circler);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         // draw plate
         getVoltageColor(g, volts[0]);
         drawThickLine(g, plate[0], plate[1]);
@@ -203,6 +216,11 @@ class TriodeElm extends CircuitElm {
     // grid not connected to other terminals
     boolean getConnection(int n1, int n2) {
         return !(n1 == 1 || n2 == 1);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

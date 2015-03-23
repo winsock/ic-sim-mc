@@ -4,11 +4,11 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class LogicOutputElm extends CircuitElm {
-    final int FLAG_TERNARY = 1;
-    final int FLAG_NUMERIC = 2;
-    final int FLAG_PULLDOWN = 4;
-    double threshold;
-    String value;
+    private final int FLAG_TERNARY = 1;
+    private final int FLAG_NUMERIC = 2;
+    private final int FLAG_PULLDOWN = 4;
+    private double threshold;
+    private String value;
 
     public LogicOutputElm(int xx, int yy) {
         super(xx, yy);
@@ -54,7 +54,7 @@ class LogicOutputElm extends CircuitElm {
         lead1 = interpPoint(point1, point2, 1 - 12 / dn);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         Font f = new Font("SansSerif", Font.BOLD, 20);
         g.setFont(f);
         //g.setColor(needsHighlight() ? selectColor : lightGrayColor);
@@ -114,6 +114,11 @@ class LogicOutputElm extends CircuitElm {
             else
                 flags &= ~FLAG_PULLDOWN;
         }
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getShortcut() {

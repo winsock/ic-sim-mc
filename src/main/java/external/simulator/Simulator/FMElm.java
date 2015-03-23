@@ -6,11 +6,15 @@ import java.util.StringTokenizer;
 // contributed by Edward Calver
 
 class FMElm extends CircuitElm {
-    static final int FLAG_COS = 2;
-    final int circleSize = 17;
-    double carrierfreq, signalfreq, maxVoltage, freqTimeZero, deviation;
-    double lasttime = 0;
-    double funcx = 0;
+    private static final int FLAG_COS = 2;
+    private final int circleSize = 17;
+    private double carrierfreq;
+    private double signalfreq;
+    private double maxVoltage;
+    private double freqTimeZero;
+    private double deviation;
+    private double lasttime = 0;
+    private double funcx = 0;
 
     public FMElm(int xx, int yy) {
         super(xx, yy);
@@ -72,7 +76,7 @@ class FMElm extends CircuitElm {
         return Math.sin(w) * maxVoltage;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, circleSize);
         getVoltageColor(g, volts[0]);
         drawThickLine(g, point1, lead1);
@@ -80,7 +84,7 @@ class FMElm extends CircuitElm {
         Font f = new Font("SansSerif", 0, 12);
         g.setFont(f);
         g.setColor(needsHighlight() ? selectColor : whiteColor);
-        setPowerColor(g, false);
+        getPowerColor(g, false);
         double v = getVoltage();
         String s = "FM";
         drawCenteredText(g, s, x2, y2, true);
@@ -91,9 +95,9 @@ class FMElm extends CircuitElm {
             drawDots(g, point1, lead1, curcount);
     }
 
-    void drawWaveform(Graphics g, Point center) {
+    void drawWaveform(CircuitGUI g, Point center) {
         g.setColor(needsHighlight() ? selectColor : Color.gray);
-        setPowerColor(g, false);
+        getPowerColor(g, false);
         int xc = center.x;
         int yc = center.y;
         drawThickCircle(g, xc, yc, circleSize);
@@ -114,6 +118,11 @@ class FMElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return true;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getVoltageSourceCount() {

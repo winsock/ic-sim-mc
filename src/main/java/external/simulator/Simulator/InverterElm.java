@@ -1,13 +1,14 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class InverterElm extends CircuitElm {
-    double slewRate; // V/ns
+    private double slewRate; // V/ns
     //    Polygon gatePoly;
-    Point pcircle;
+    private Point pcircle;
 
     public InverterElm(int xx, int yy) {
         super(xx, yy);
@@ -34,7 +35,7 @@ class InverterElm extends CircuitElm {
         return 'I';
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         drawPosts(g);
         draw2Leads(g);
         g.setColor(needsHighlight() ? selectColor : lightGrayColor);
@@ -104,6 +105,11 @@ class InverterElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return (n1 == 1);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getShortcut() {

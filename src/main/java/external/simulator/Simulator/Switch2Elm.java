@@ -1,14 +1,16 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class Switch2Elm extends SwitchElm {
-    static final int FLAG_CENTER_OFF = 1;
-    final int openhs = 16;
-    int link;
-    Point swposts[], swpoles[];
+    private static final int FLAG_CENTER_OFF = 1;
+    private final int openhs = 16;
+    private int link;
+    private Point[] swposts;
+    private Point[] swpoles;
 
     public Switch2Elm(int xx, int yy) {
         super(xx, yy, false);
@@ -46,7 +48,7 @@ class Switch2Elm extends SwitchElm {
         posCount = hasCenterOff() ? 3 : 2;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, openhs);
 
         // draw first lead

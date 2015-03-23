@@ -1,12 +1,19 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class MemristorElm extends CircuitElm {
-    double r_on, r_off, dopeWidth, totalWidth, mobility, resistance;
-    Point ps3, ps4;
+    private double r_on;
+    private double r_off;
+    private double dopeWidth;
+    private double totalWidth;
+    private double mobility;
+    private double resistance;
+    private Point ps3;
+    private Point ps4;
 
     public MemristorElm(int xx, int yy) {
         super(xx, yy);
@@ -45,7 +52,7 @@ class MemristorElm extends CircuitElm {
         ps4 = new Point();
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int segments = 6;
         int i;
         int ox = 0;
@@ -54,7 +61,7 @@ class MemristorElm extends CircuitElm {
         int hs = 2 + (int) (8 * (1 - dopeWidth / totalWidth));
         setBbox(point1, point2, hs);
         draw2Leads(g);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         double segf = 1. / segments;
 
         // draw zigzag
@@ -149,6 +156,11 @@ class MemristorElm extends CircuitElm {
             totalWidth = ei.value * 1e-9;
         if (n == 4)
             mobility = ei.value * 1e-12;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

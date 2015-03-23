@@ -3,15 +3,18 @@ package external.simulator.Simulator;// stub ThermistorElm based on SparkGapElm
 // FIXME need to add ThermistorElm.java to srclist
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class ThermistorElm extends CircuitElm {
-    double minresistance, maxresistance;
-    double resistance;
+    private double minresistance;
+    private double maxresistance;
+    private double resistance;
     /*    Scrollbar slider;
         Label label;*/
-    Point ps3, ps4;
+    private Point ps3;
+    private Point ps4;
 
     public ThermistorElm(int xx, int yy) {
         super(xx, yy);
@@ -59,14 +62,14 @@ class ThermistorElm extends CircuitElm {
         sim.main.remove(slider);
     }
 
-    void draw(Graphics g) {
+    void draw(CircuitGUI g) {
         int i;
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 6);
         draw2Leads(g);
         // FIXME need to draw properly, see ResistorElm.java
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         doDots(g);
         drawPosts(g);
     }*/
@@ -115,6 +118,11 @@ class ThermistorElm extends CircuitElm {
             minresistance = ei.value;
         if (ei.value > 0 && n == 1)
             maxresistance = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

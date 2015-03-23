@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class CC2Elm extends ChipElm {
-    double gain;
+    private double gain;
 
     public CC2Elm(int xx, int yy) {
         super(xx, yy);
@@ -55,7 +55,7 @@ class CC2Elm extends ChipElm {
         sim.stampCCCS(0, nodes[2], pins[0].voltSource, gain);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         pins[2].current = pins[0].current * gain;
         drawChip(g);
     }*/

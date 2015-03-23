@@ -4,18 +4,22 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class VoltageElm extends CircuitElm {
-    static final int FLAG_COS = 2;
     static final int WF_DC = 0;
     static final int WF_AC = 1;
     static final int WF_SQUARE = 2;
-    static final int WF_TRIANGLE = 3;
-    static final int WF_SAWTOOTH = 4;
-    static final int WF_PULSE = 5;
     static final int WF_VAR = 6;
+    private static final int FLAG_COS = 2;
+    private static final int WF_TRIANGLE = 3;
+    private static final int WF_SAWTOOTH = 4;
+    private static final int WF_PULSE = 5;
     final int circleSize = 17;
     int waveform;
-    double frequency, maxVoltage, freqTimeZero, bias,
-            phaseShift, dutyCycle;
+    double frequency;
+    double maxVoltage;
+    double bias;
+    private double freqTimeZero;
+    private double phaseShift;
+    private double dutyCycle;
 
     VoltageElm(int xx, int yy, int wf) {
         super(xx, yy);
@@ -26,8 +30,8 @@ class VoltageElm extends CircuitElm {
         reset();
     }
 
-    public VoltageElm(int xa, int ya, int xb, int yb, int f,
-                      StringTokenizer st) {
+    VoltageElm(int xa, int ya, int xb, int yb, int f,
+               StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         maxVoltage = 5;
         frequency = 40;
@@ -114,11 +118,11 @@ class VoltageElm extends CircuitElm {
         calcLeads((waveform == WF_DC || waveform == WF_VAR) ? 8 : circleSize * 2);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(x, y, x2, y2);
         draw2Leads(g);
         if (waveform == WF_DC) {
-            setPowerColor(g, false);
+            getPowerColor(g, false);
             getVoltageColor(g, volts[0]);
             interpPoint2(lead1, lead2, ps1, ps2, 0, 10);
             drawThickLine(g, ps1, ps2);
@@ -144,9 +148,9 @@ class VoltageElm extends CircuitElm {
         drawPosts(g);
     }
 
-    void drawWaveform(Graphics g, Point center) {
+    void drawWaveform(CircuitGUI g, Point center) {
         g.setColor(needsHighlight() ? selectColor : Color.gray);
-        setPowerColor(g, false);
+        getPowerColor(g, false);
         int xc = center.x;
         int yc = center.y;
         drawThickCircle(g, xc, yc, circleSize);
@@ -323,5 +327,10 @@ class VoltageElm extends CircuitElm {
             phaseShift = ei.value * pi / 180;
         if (n == 5)
             dutyCycle = ei.value * .01;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }

@@ -3,8 +3,8 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class LatchElm extends ChipElm {
-    int loadPin;
-    boolean lastLoad = false;
+    private int loadPin;
+    private boolean lastLoad = false;
 
     public LatchElm(int xx, int yy) {
         super(xx, yy);

@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class AntennaElm extends RailElm {
-    double fmphase;
+    private double fmphase;
 
     public AntennaElm(int xx, int yy) {
         super(xx, yy, WF_DC);

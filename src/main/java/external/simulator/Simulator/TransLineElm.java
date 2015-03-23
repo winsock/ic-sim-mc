@@ -1,16 +1,26 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class TransLineElm extends CircuitElm {
-    double delay, imped;
-    double voltageL[], voltageR[];
-    int lenSteps, ptr, width;
-    Point posts[], inner[];
-    int voltSource1, voltSource2;
-    double current1, current2, curCount1, curCount2;
+    double curCount1;
+    double curCount2;
+    private double delay;
+    private double imped;
+    private double[] voltageL;
+    private double[] voltageR;
+    private int lenSteps;
+    private int ptr;
+    private int width;
+    private Point[] posts;
+    private Point[] inner;
+    private int voltSource1;
+    private int voltSource2;
+    private double current1;
+    private double current2;
 
     public TransLineElm(int xx, int yy) {
         super(xx, yy);
@@ -99,7 +109,7 @@ class TransLineElm extends CircuitElm {
         inner = new Point[]{p7, p8, p5, p6};
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(posts[0], posts[3], 0);
         int segments = (int) (dn / 2);
         int ix0 = ptr - 1 + lenSteps;
@@ -184,7 +194,6 @@ class TransLineElm extends CircuitElm {
         sim.updateVoltageSource(nodes[5], nodes[1], voltSource2, -voltageL[ptr]);
         if (Math.abs(volts[0]) > 1e-5 || Math.abs(volts[1]) > 1e-5) {
             sim.stop("Need to ground transmission line!", this);
-            return;
         }
     }
 
@@ -234,6 +243,11 @@ class TransLineElm extends CircuitElm {
             imped = ei.value;
             reset();
         }
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

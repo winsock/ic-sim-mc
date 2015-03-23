@@ -1,11 +1,14 @@
 package external.simulator.Simulator;
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class AnalogSwitch2Elm extends AnalogSwitchElm {
-    final int openhs = 16;
-    Point swposts[], swpoles[], ctlPoint;
+    private final int openhs = 16;
+    private Point[] swposts;
+    private Point[] swpoles;
+    private Point ctlPoint;
 
     public AnalogSwitch2Elm(int xx, int yy) {
         super(xx, yy);
@@ -30,7 +33,7 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
         return 4;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, openhs);
 
         // draw first lead
@@ -91,9 +94,7 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
     }
 
     boolean getConnection(int n1, int n2) {
-        if (n1 == 3 || n2 == 3)
-            return false;
-        return true;
+        return !(n1 == 3 || n2 == 3);
     }
 
     public void getInfo(String arr[]) {

@@ -4,8 +4,8 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class InductorElm extends CircuitElm {
-    Inductor ind;
     double inductance;
+    private Inductor ind;
 
     public InductorElm(int xx, int yy) {
         super(xx, yy);
@@ -36,14 +36,14 @@ class InductorElm extends CircuitElm {
         calcLeads(32);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         double v1 = volts[0];
         double v2 = volts[1];
         int i;
         int hs = 8;
         setBbox(point1, point2, hs);
         draw2Leads(g);
-        setPowerColor(g, false);
+        getPowerColor(g, false);
         drawCoil(g, 8, lead1, lead2, v1, v2);
         if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(inductance, "H");
@@ -109,5 +109,10 @@ class InductorElm extends CircuitElm {
                 flags |= Inductor.FLAG_BACK_EULER;
         }
         ind.setup(inductance, current, flags);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }

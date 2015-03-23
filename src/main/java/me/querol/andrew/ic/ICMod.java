@@ -8,7 +8,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -19,13 +18,10 @@ public class ICMod {
     public static final String MODID = "ic";
     public static final String VERSION = "DEV";
     private CirSim simulator;
-    private BufferedImage interfaceBuffer;
 
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        interfaceBuffer = new BufferedImage(480, 320, BufferedImage.TYPE_INT_ARGB);
-
-        simulator = new CirSim(interfaceBuffer.createGraphics());
+        simulator = new CirSim();
         simulator.init();
 
         try {

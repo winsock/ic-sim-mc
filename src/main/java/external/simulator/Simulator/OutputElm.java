@@ -1,11 +1,12 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class OutputElm extends CircuitElm {
-    final int FLAG_VALUE = 1;
+    private final int FLAG_VALUE = 1;
 
     public OutputElm(int xx, int yy) {
         super(xx, yy);
@@ -29,7 +30,7 @@ class OutputElm extends CircuitElm {
         lead1 = new Point();
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         boolean selected = (needsHighlight() || sim.plotYElm == this);
         Font f = new Font("SansSerif", selected ? Font.BOLD : 0, 14);
         g.setFont(f);
@@ -74,5 +75,10 @@ class OutputElm extends CircuitElm {
             flags = (ei.checkbox.getState()) ?
                     (flags | FLAG_VALUE) :
                     (flags & ~FLAG_VALUE);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }

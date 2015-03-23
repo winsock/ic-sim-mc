@@ -1,7 +1,8 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -13,9 +14,9 @@ class InvertingSchmittElm extends CircuitElm {
     boolean state;
     /*    Polygon gatePoly;
         Polygon symbolPoly;*/
-    Point pcircle;
-    double dlt;
-    double dut;
+    private Point pcircle;
+    private double dlt;
+    private double dut;
 
     public InvertingSchmittElm(int xx, int yy) {
         super(xx, yy);
@@ -50,7 +51,7 @@ class InvertingSchmittElm extends CircuitElm {
         return 183;
     }//Trying to find unused type
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         drawPosts(g);
         draw2Leads(g);
         g.setColor(needsHighlight() ? selectColor : lightGrayColor);
@@ -170,5 +171,10 @@ class InvertingSchmittElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return (n1 == 1);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }

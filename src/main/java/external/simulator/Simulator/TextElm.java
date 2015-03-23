@@ -1,15 +1,29 @@
 package external.simulator.Simulator;
 
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 import java.util.Vector;
 
 class TextElm extends GraphicElm {
-    final int FLAG_CENTER = 1;
-    final int FLAG_BAR = 2;
-    String text;
-    Vector<String> lines;
-    int size;
+    private final int FLAG_CENTER = 1;
+    private final int FLAG_BAR = 2;
+    private String text;
+    private Vector<String> lines;
+
+    @Override
+    boolean isWire() {
+        return false;
+    }
+
+    private int size;
 
     public TextElm(int xx, int yy) {
         super(xx, yy);
@@ -42,7 +56,6 @@ class TextElm extends GraphicElm {
                     lines.add(sb.substring(0, i));
                     sb.delete(0, i + 1);
                     i = -1;
-                    continue;
                 }
             }
         }
@@ -64,39 +77,41 @@ class TextElm extends GraphicElm {
         y2 = yy;
     }
 
-/*    void draw(Graphics g) {
+    void draw(CircuitGUI g) {
         //Graphics2D g2 = (Graphics2D)g;
         //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         //	RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        Font f = new Font("SansSerif", 0, size);
-        g.setFont(f);
-        FontMetrics fm = g.getFontMetrics();
+        Color color = (Color) (needsHighlight() ? selectColor : lightGrayColor);
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
         int i;
-        int maxw = -1;
+        int maxW = -1;
         for (i = 0; i != lines.size(); i++) {
-            int w = fm.stringWidth(lines.elementAt(i));
-            if (w > maxw)
-                maxw = w;
+            int w = fontRenderer.getStringWidth(lines.elementAt(i));
+            if (w > maxW)
+                maxW = w;
         }
-        int cury = y;
+        int curY = y;
         setBbox(x, y, x, y);
         for (i = 0; i != lines.size(); i++) {
             String s = lines.elementAt(i);
-            if ((flags & FLAG_CENTER) != 0)
-                x = (sim.winSize.width - fm.stringWidth(s)) / 2;
-            g.drawString(s, x, cury);
+            g.drawString(fontRenderer, s, x, curY, color.hashCode());
             if ((flags & FLAG_BAR) != 0) {
-                int by = cury - fm.getAscent();
-                g.drawLine(x, by, x + fm.stringWidth(s) - 1, by);
+                int by = curY - fontRenderer.FONT_HEIGHT;
+                Tessellator tessellator = Tessellator.getInstance();
+                WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+                worldRenderer.startDrawing(GL11.GL_LINE);
+                worldRenderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+                worldRenderer.addVertex(x, by, 0);
+                worldRenderer.addVertex(x + fontRenderer.getStringWidth(s) - 1, by, 0);
+                worldRenderer.finishDrawing();
             }
-            adjustBbox(x, cury - fm.getAscent(),
-                    x + fm.stringWidth(s), cury + fm.getDescent());
-            cury += fm.getHeight();
+            adjustBbox(x, curY - fontRenderer.FONT_HEIGHT / 2,
+                    x + fontRenderer.getStringWidth(s), curY + fontRenderer.FONT_HEIGHT / 2);
+            curY += fontRenderer.FONT_HEIGHT;
         }
-        x2 = boundingBox.x + boundingBox.width;
-        y2 = boundingBox.y + boundingBox.height;
-    }*/
+        x2 = boundingBox.getX() + boundingBox.getWidth();
+        y2 = boundingBox.getY() + boundingBox.getHeight();
+    }
 
     public EditInfo getEditInfo(int n) {
         if (n == 0) {

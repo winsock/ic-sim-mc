@@ -50,7 +50,7 @@ class MonostableElm extends ChipElm {
 
     void execute() {
 
-        if (pins[0].value && prevInputValue != pins[0].value && (retriggerable || !triggered)) {
+        if (prevInputValue != pins[0].value && (retriggerable || !triggered)) {
             lastRisingEdge = sim.t;
             pins[1].value = true;
             pins[2].value = false;
@@ -80,8 +80,7 @@ class MonostableElm extends ChipElm {
             return ei;
         }
         if (n == 3) {
-            EditInfo ei = new EditInfo("Period (s)", delay, 0.001, 0.1);
-            return ei;
+            return new EditInfo("Period (s)", delay, 0.001, 0.1);
         }
         return super.getEditInfo(n);
     }

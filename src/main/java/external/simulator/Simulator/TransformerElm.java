@@ -1,17 +1,27 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class TransformerElm extends CircuitElm {
-    public static final int FLAG_BACK_EULER = 2;
-    double inductance, ratio, couplingCoef;
-    Point ptEnds[], ptCoil[], ptCore[];
-    double current[], curcount[];
-    int width;
-    double a1, a2, a3, a4;
-    double curSourceValue1, curSourceValue2;
+    private static final int FLAG_BACK_EULER = 2;
+    private double inductance;
+    private double ratio;
+    private double couplingCoef;
+    private Point[] ptEnds;
+    private Point[] ptCoil;
+    private Point[] ptCore;
+    private double[] current;
+    private double[] curcount;
+    private int width;
+    private double a1;
+    private double a2;
+    private double a3;
+    private double a4;
+    private double curSourceValue1;
+    private double curSourceValue2;
 
     public TransformerElm(int xx, int yy) {
         super(xx, yy);
@@ -66,14 +76,14 @@ class TransformerElm extends CircuitElm {
         return (flags & FLAG_BACK_EULER) == 0;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int i;
         for (i = 0; i != 4; i++) {
             getVoltageColor(g, volts[i]);
             drawThickLine(g, ptEnds[i], ptCoil[i]);
         }
         for (i = 0; i != 2; i++) {
-            setPowerColor(g, current[i] * (volts[i] - volts[i + 2]));
+            getPowerColor(g, current[i] * (volts[i] - volts[i + 2]));
             drawCoil(g, dsign * (i == 1 ? -6 : 6),
                     ptCoil[i], ptCoil[i + 2], volts[i], volts[i + 2]);
         }
@@ -94,7 +104,7 @@ class TransformerElm extends CircuitElm {
 
     void setPoints() {
         super.setPoints();
-        point2.y = point1.y;
+        point2.setY(point1.getY());
         ptEnds = newPointArray(4);
         ptCoil = newPointArray(4);
         ptCore = newPointArray(4);
@@ -211,8 +221,11 @@ class TransformerElm extends CircuitElm {
     boolean getConnection(int n1, int n2) {
         if (comparePair(n1, n2, 0, 2))
             return true;
-        if (comparePair(n1, n2, 1, 3))
-            return true;
+        return comparePair(n1, n2, 1, 3);
+    }
+
+    @Override
+    boolean isWire() {
         return false;
     }
 

@@ -5,8 +5,8 @@ import java.util.StringTokenizer;
 // contributed by Edward Calver
 
 class SipoShiftElm extends ChipElm {
-    short data = 0;//This has to be a short because there's no unsigned byte and it's screwing with my code
-    boolean clockstate = false;
+    private short data = 0;//This has to be a short because there's no unsigned byte and it's screwing with my code
+    private boolean clockstate = false;
 
     public SipoShiftElm(int xx, int yy) {
         super(xx, yy);
@@ -68,22 +68,14 @@ class SipoShiftElm extends ChipElm {
             data = (short) (data >>> 1);
             if (pins[0].value) data += 128;
 
-            if ((data & 128) > 0) pins[2].value = true;
-            else pins[2].value = false;
-            if ((data & 64) > 0) pins[3].value = true;
-            else pins[3].value = false;
-            if ((data & 32) > 0) pins[4].value = true;
-            else pins[4].value = false;
-            if ((data & 16) > 0) pins[5].value = true;
-            else pins[5].value = false;
-            if ((data & 8) > 0) pins[6].value = true;
-            else pins[6].value = false;
-            if ((data & 4) > 0) pins[7].value = true;
-            else pins[7].value = false;
-            if ((data & 2) > 0) pins[8].value = true;
-            else pins[8].value = false;
-            if ((data & 1) > 0) pins[9].value = true;
-            else pins[9].value = false;
+            pins[2].value = (data & 128) > 0;
+            pins[3].value = (data & 64) > 0;
+            pins[4].value = (data & 32) > 0;
+            pins[5].value = (data & 16) > 0;
+            pins[6].value = (data & 8) > 0;
+            pins[7].value = (data & 4) > 0;
+            pins[8].value = (data & 2) > 0;
+            pins[9].value = (data & 1) > 0;
         }
         if (!pins[1].value) clockstate = false;
     }

@@ -1,19 +1,31 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
-    double position, maxResistance, resistance1, resistance2;
-    double current1, current2, current3;
     double curcount1, curcount2, curcount3;
+    int bodyLen;
+    private double position;
+    private double maxResistance;
+    private double resistance1;
+    private double resistance2;
+    private double current1;
+    private double current2;
+    private double current3;
     //Scrollbar slider;
     //Label label;
-    String sliderText;
-    Point post3, corner2, arrowPoint, midpoint, arrow1, arrow2;
-    Point ps3, ps4;
-    int bodyLen;
+    private String sliderText;
+    private Point post3;
+    private Point corner2;
+    private Point arrowPoint;
+    private Point midpoint;
+    private Point arrow1;
+    private Point arrow2;
+    private Point ps3;
+    private Point ps4;
 
     public PotElm(int xx, int yy) {
         super(xx, yy);
@@ -78,14 +90,14 @@ class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
         int offset = 0;
         if (abs(dx) > abs(dy)) {
             dx = sim.snapGrid(dx / 2) * 2;
-            point2.x = x2 = point1.x + dx;
+            point2.setX(x2 = point1.getX() + dx);
             offset = (dx < 0) ? dy : -dy;
-            point2.y = point1.y;
+            point2.setY(point1.getY());
         } else {
             dy = sim.snapGrid(dy / 2) * 2;
-            point2.y = y2 = point1.y + dy;
+            point2.setY(y2 = point1.getY() + dy);
             offset = (dy > 0) ? dx : -dx;
-            point2.x = point1.x;
+            point2.setX(point1.getX());
         }
         if (offset == 0)
             offset = sim.gridSize;
@@ -108,7 +120,7 @@ class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
         ps4 = new Point();
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int segments = 16;
         int i;
         int ox = 0;
@@ -118,7 +130,7 @@ class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
         double v3 = volts[2];
         setBbox(point1, point2, hs);
         draw2Leads(g);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         double segf = 1. / segments;
         int divide = (int) (segments * position);
         if (!sim.euroResistorCheckItem.getState()) {
@@ -222,6 +234,11 @@ class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
             sliderText = ei.textf.getText();
             label.setText(sliderText);
         }*/
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

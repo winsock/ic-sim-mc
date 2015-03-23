@@ -1,6 +1,20 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.Rectangle;
+
+import java.nio.IntBuffer;
+import java.util.StringTokenizer;
+
+
 class Scope {
     static final int VAL_POWER = 1;
     static final int VAL_IB = 1;
@@ -17,15 +31,16 @@ class Scope {
     int ptr, ctr, speed, position;
     int value, ivalue;
     String text;
-    //Rectangle rect;
+    Rectangle rect;
     boolean showI, showV, showMax, showMin, showFreq, lockScale, plot2d, plotXY;
     CircuitElm elm, xElm, yElm;
-    //MemoryImageSource imageSource;
-    //Image image;
     int pixels[];
     int draw_ox, draw_oy;
     float dpixels[];
-    CirSim sim;
+    private CirSim sim;
+    /** Dynamic scope texture id */
+    protected int scopeTextureId = -1;
+
 
     Scope(CirSim s) {
         //rect = new Rectangle();
@@ -33,7 +48,7 @@ class Scope {
         sim = s;
     }
 
-    /*void showCurrent(boolean b) {
+    void showCurrent(boolean b) {
         showI = b;
         value = ivalue = 0;
     }
@@ -61,7 +76,7 @@ class Scope {
 
     void resetGraph() {
         scopePointCount = 1;
-        while (scopePointCount <= rect.width)
+        while (scopePointCount <= rect.getWidth())
             scopePointCount *= 2;
         minV = new double[scopePointCount];
         maxV = new double[scopePointCount];
@@ -99,11 +114,11 @@ class Scope {
     }
 
     int getWidth() {
-        return rect.width;
+        return rect.getWidth();
     }
 
     int rightEdge() {
-        return rect.x + rect.width;
+        return rect.getX() + rect.getWidth();
     }
 
     void setElm(CircuitElm ce) {
@@ -145,8 +160,8 @@ class Scope {
                 clear2dView();
             double xa = v / minMaxV;
             double ya = yval / minMaxI;
-            int x = (int) (rect.width * (1 + xa) * .499);
-            int y = (int) (rect.height * (1 - ya) * .499);
+            int x = (int) (rect.getWidth() * (1 + xa) * .499);
+            int y = (int) (rect.getHeight() * (1 - ya) * .499);
             drawTo(x, y);
         } else {
             ctr++;
@@ -166,7 +181,7 @@ class Scope {
         }
         // need to draw a line from x1,y1 to x2,y2
         if (draw_ox == x2 && draw_oy == y2) {
-            dpixels[x2 + rect.width * y2] = 1;
+            dpixels[x2 + rect.getWidth() * y2] = 1;
         } else if (CircuitElm.abs(y2 - draw_oy) > CircuitElm.abs(x2 - draw_ox)) {
             // y difference is greater, so we step along y's
             // from min to max y and calculate x for each step
@@ -174,7 +189,7 @@ class Scope {
             int x, y;
             for (y = draw_oy; y != y2 + sgn; y += sgn) {
                 x = draw_ox + (x2 - draw_ox) * (y - draw_oy) / (y2 - draw_oy);
-                dpixels[x + rect.width * y] = 1;
+                dpixels[x + rect.getWidth() * y] = 1;
             }
         } else {
             // x difference is greater, so we step along x's
@@ -183,7 +198,7 @@ class Scope {
             int x, y;
             for (x = draw_ox; x != x2 + sgn; x += sgn) {
                 y = draw_oy + (y2 - draw_oy) * (x - draw_ox) / (x2 - draw_ox);
-                dpixels[x + rect.width * y] = 1;
+                dpixels[x + rect.getWidth() * y] = 1;
             }
         }
         draw_ox = x2;
@@ -202,36 +217,63 @@ class Scope {
         minMaxI *= x;
     }
 
-    void draw2d(Graphics g) {
+    public void drawScopeTexture(int x, int y, int x2, int y2, int[] pixels) {
+        if (GL11.glIsTexture(scopeTextureId)) {
+            scopeTextureId = GL11.glGenTextures();
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, scopeTextureId);
+            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, rect.getWidth(), rect.getHeight(), 0, GL11.GL_RGB, GL11.GL_INT, IntBuffer.wrap(pixels));
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        } else {
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, scopeTextureId);
+            GL11.glTexSubImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, rect.getWidth(), rect.getHeight(), 0, GL11.GL_RGB, GL11.GL_INT, IntBuffer.wrap(pixels));
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        }
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        worldRenderer.startDrawingQuads();
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, scopeTextureId);
+        worldRenderer.addVertexWithUV(x, y, 0, 1, 0);
+        worldRenderer.addVertexWithUV(x, y2, 0, 0, 0);
+        worldRenderer.addVertexWithUV(x2, y2, 0, 0, 1);
+        worldRenderer.addVertexWithUV(x2, y, 0, 1, 1);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+        worldRenderer.finishDrawing();
+    }
+
+    void draw2d(CircuitGUI g) {
         int i;
         if (pixels == null || dpixels == null)
             return;
-        int col = (sim.printableCheckItem.getState()) ? 0xFFFFFFFF : 0;
         for (i = 0; i != pixels.length; i++)
-            pixels[i] = col;
-        for (i = 0; i != rect.width; i++)
-            pixels[i + rect.width * (rect.height / 2)] = 0xFF00FF00;
+            pixels[i] = 0;
+        for (i = 0; i != rect.getWidth(); i++)
+            pixels[i + rect.getWidth() * (rect.getHeight() / 2)] = 0xFF00FF00;
         int ycol = (plotXY) ? 0xFF00FF00 : 0xFFFFFF00;
-        for (i = 0; i != rect.height; i++)
-            pixels[rect.width / 2 + rect.width * i] = ycol;
+        for (i = 0; i != rect.getHeight(); i++)
+            pixels[rect.getWidth() / 2 + rect.getWidth() * i] = ycol;
         for (i = 0; i != pixels.length; i++) {
             int q = (int) (255 * dpixels[i]);
             if (q > 0)
                 pixels[i] = 0xFF000000 | (0x10101 * q);
             dpixels[i] *= .997;
         }
-        g.drawImage(image, rect.x, rect.y, null);
-        g.setColor(CircuitElm.whiteColor);
-        g.fillOval(rect.x + draw_ox - 2, rect.y + draw_oy - 2, 5, 5);
-        int yt = rect.y + 10;
-        int x = rect.x;
-        if (text != null && rect.y + rect.height > yt + 5) {
-            g.drawString(text, x, yt);
-            yt += 15;
+        int x2 = g.getGuiLeft() + g.getXSize() - 20;
+        int y2 = g.getGuiTop() + g.getYSize() - 20;
+        int x = x2 - rect.getWidth();
+        int y = y2 - rect.getHeight();
+
+        drawScopeTexture(x, y, x2, y2, pixels);
+
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+        int yt = rect.getY() + 10;
+        if (text != null && rect.getY() + rect.getHeight() > yt + 5) {
+            g.drawString(fontRenderer, text, x, yt, Color.WHITE.hashCode());
         }
     }
 
-    void draw(Graphics g) {
+    void draw(CircuitGUI g) {
         if (elm == null)
             return;
         if (plot2d) {
@@ -241,12 +283,11 @@ class Scope {
         if (pixels == null)
             return;
         int i;
-        int col = (sim.printableCheckItem.getState()) ? 0xFFFFFFFF : 0;
+        int col = 0;
         for (i = 0; i != pixels.length; i++)
             pixels[i] = col;
         int x = 0;
-        int maxy = (rect.height - 1) / 2;
-        int y = maxy;
+        int maxy = (rect.getHeight() - 1) / 2;
 
         boolean gotI = false;
         boolean gotV = false;
@@ -259,8 +300,8 @@ class Scope {
         int voltColor = (value > 0) ? 0xFFFFFFFF : 0xFF00FF00;
         if (sim.scopeSelected == -1 && elm == sim.mouseElm)
             curColor = voltColor = 0xFF00FFFF;
-        int ipa = ptr + scopePointCount - rect.width;
-        for (i = 0; i != rect.width; i++) {
+        int ipa = ptr + scopePointCount - rect.getWidth();
+        for (i = 0; i != rect.getWidth(); i++) {
             int ip = (i + ipa) & (scopePointCount - 1);
             while (maxV[ip] > minMaxV)
                 minMaxV *= 2;
@@ -287,7 +328,7 @@ class Scope {
             if (ll != 0 && ((showI && showV) || gridStep == 0))
                 continue;
             int yl = maxy - (int) (maxy * ll * gridStep / gridMax);
-            if (yl < 0 || yl >= rect.height - 1)
+            if (yl < 0 || yl >= rect.getHeight() - 1)
                 continue;
             col = ll == 0 ? 0xFF909090 : 0xFF404040;
             if (ll % 10 != 0) {
@@ -295,15 +336,15 @@ class Scope {
                 if (!sublines)
                     continue;
             }
-            for (i = 0; i != rect.width; i++)
-                pixels[i + yl * rect.width] = col;
+            for (i = 0; i != rect.getWidth(); i++)
+                pixels[i + yl * rect.getWidth()] = col;
         }
 
         gridStep = 1e-15;
         double ts = sim.timeStep * speed;
         while (gridStep < ts * 5)
             gridStep *= 10;
-        double tstart = sim.t - sim.timeStep * speed * rect.width;
+        double tstart = sim.t - sim.timeStep * speed * rect.getWidth();
         double tx = sim.t - (sim.t % gridStep);
         int first = 1;
         for (ll = 0; ; ll++) {
@@ -311,7 +352,7 @@ class Scope {
             int gx = (int) ((tl - tstart) / ts);
             if (gx < 0)
                 break;
-            if (gx >= rect.width)
+            if (gx >= rect.getWidth())
                 continue;
             if (tl < 0)
                 continue;
@@ -322,7 +363,7 @@ class Scope {
                 if (((tl + gridStep / 4) % (gridStep * 100)) < gridStep)
                     col = 0xFF4040D0;
             }
-            for (i = 0; i < pixels.length; i += rect.width)
+            for (i = 0; i < pixels.length; i += rect.getWidth())
                 pixels[i + gx] = col;
         }
 
@@ -331,7 +372,7 @@ class Scope {
         if (value == 0 && showI) {
             int ox = -1, oy = -1;
             int j;
-            for (i = 0; i != rect.width; i++) {
+            for (i = 0; i != rect.getWidth(); i++) {
                 int ip = (i + ipa) & (scopePointCount - 1);
                 int miniy = (int) ((maxy / minMaxI) * minI[ip]);
                 int maxiy = (int) ((maxy / minMaxI) * maxI[ip]);
@@ -346,7 +387,7 @@ class Scope {
                         if (miniy == oy && maxiy == oy)
                             continue;
                         for (j = ox; j != x + i; j++)
-                            pixels[j + rect.width * (y - oy)] = curColor;
+                            pixels[j + rect.getWidth() * (maxy - oy)] = curColor;
                         ox = oy = -1;
                     }
                     if (miniy == maxiy) {
@@ -355,16 +396,16 @@ class Scope {
                         continue;
                     }
                     for (j = miniy; j <= maxiy; j++)
-                        pixels[x + i + rect.width * (y - j)] = curColor;
+                        pixels[x + i + rect.getWidth() * (maxy - j)] = curColor;
                 }
             }
             if (ox != -1)
                 for (j = ox; j != x + i; j++)
-                    pixels[j + rect.width * (y - oy)] = curColor;
+                    pixels[j + rect.getWidth() * (maxy - oy)] = curColor;
         }
         if (value != 0 || showV) {
             int ox = -1, oy = -1, j;
-            for (i = 0; i != rect.width; i++) {
+            for (i = 0; i != rect.getWidth(); i++) {
                 int ip = (i + ipa) & (scopePointCount - 1);
                 int minvy = (int) ((maxy / minMaxV) * minV[ip]);
                 int maxvy = (int) ((maxy / minMaxV) * maxV[ip]);
@@ -379,7 +420,7 @@ class Scope {
                         if (minvy == oy && maxvy == oy)
                             continue;
                         for (j = ox; j != x + i; j++)
-                            pixels[j + rect.width * (y - oy)] = voltColor;
+                            pixels[j + rect.getWidth() * (maxy - oy)] = voltColor;
                         ox = oy = -1;
                     }
                     if (minvy == maxvy) {
@@ -388,19 +429,19 @@ class Scope {
                         continue;
                     }
                     for (j = minvy; j <= maxvy; j++)
-                        pixels[x + i + rect.width * (y - j)] = voltColor;
+                        pixels[x + i + rect.getWidth() * (maxy - j)] = voltColor;
                 }
             }
             if (ox != -1)
                 for (j = ox; j != x + i; j++)
-                    pixels[j + rect.width * (y - oy)] = voltColor;
+                    pixels[j + rect.getWidth() * (maxy - oy)] = voltColor;
         }
         double freq = 0;
         if (showFreq) {
             // try to get frequency
             // get average
             double avg = 0;
-            for (i = 0; i != rect.width; i++) {
+            for (i = 0; i != rect.getWidth(); i++) {
                 int ip = (i + ipa) & (scopePointCount - 1);
                 avg += minV[ip] + maxV[ip];
             }
@@ -412,7 +453,7 @@ class Scope {
             int periodct = -1;
             double avperiod2 = 0;
             // count period lengths
-            for (i = 0; i != rect.width; i++) {
+            for (i = 0; i != rect.getWidth(); i++) {
                 int ip = (i + ipa) & (scopePointCount - 1);
                 double q = maxV[ip] - avg;
                 int os = state;
@@ -443,38 +484,41 @@ class Scope {
                 freq = 0;
             // System.out.println(freq + " " + periodstd + " " + periodct);
         }
-        g.drawImage(image, rect.x, rect.y, null);
-        g.setColor(CircuitElm.whiteColor);
-        int yt = rect.y + 10;
-        x += rect.x;
+        int x2 = g.getGuiLeft() + g.getXSize() - 20;
+        int y2 = g.getGuiTop() + g.getYSize() - 20;
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
+
+        drawScopeTexture(x2 - rect.getWidth(), y2 - rect.getHeight(), x2, y2, pixels);
+        int yt = rect.getY() + 10;
+        x += rect.getX();
         if (showMax) {
             if (value != 0)
-                g.drawString(CircuitElm.getUnitText(realMaxV,
+                g.drawString(fontRenderer, CircuitElm.getUnitText(realMaxV,
                                 elm.getScopeUnits(value)),
-                        x, yt);
+                        x, yt, Color.WHITE.hashCode());
             else if (showV)
-                g.drawString(CircuitElm.getVoltageText(realMaxV), x, yt);
+                g.drawString(fontRenderer, CircuitElm.getVoltageText(realMaxV), x, yt, Color.WHITE.hashCode());
             else if (showI)
-                g.drawString(CircuitElm.getCurrentText(realMaxI), x, yt);
+                g.drawString(fontRenderer, CircuitElm.getCurrentText(realMaxI), x, yt, Color.WHITE.hashCode());
             yt += 15;
         }
         if (showMin) {
-            int ym = rect.y + rect.height - 5;
+            int ym = rect.getY() + rect.getHeight() - 5;
             if (value != 0)
-                g.drawString(CircuitElm.getUnitText(realMinV,
+                g.drawString(fontRenderer, CircuitElm.getUnitText(realMinV,
                                 elm.getScopeUnits(value)),
-                        x, ym);
+                        x, ym, Color.WHITE.hashCode());
             else if (showV)
-                g.drawString(CircuitElm.getVoltageText(realMinV), x, ym);
+                g.drawString(fontRenderer, CircuitElm.getVoltageText(realMinV), x, ym, Color.WHITE.hashCode());
             else if (showI)
-                g.drawString(CircuitElm.getCurrentText(realMinI), x, ym);
+                g.drawString(fontRenderer, CircuitElm.getCurrentText(realMinI), x, ym, Color.WHITE.hashCode());
         }
-        if (text != null && rect.y + rect.height > yt + 5) {
-            g.drawString(text, x, yt);
+        if (text != null && rect.getY() + rect.getHeight() > yt + 5) {
+            g.drawString(fontRenderer, text, x, yt, Color.WHITE.hashCode());
             yt += 15;
         }
-        if (showFreq && freq != 0 && rect.y + rect.height > yt + 5)
-            g.drawString(CircuitElm.getUnitText(freq, "Hz"), x, yt);
+        if (showFreq && freq != 0 && rect.getY() + rect.getHeight() > yt + 5)
+            g.drawString(fontRenderer, CircuitElm.getUnitText(freq, "Hz"), x, yt, Color.WHITE.hashCode());
         if (ptr > 5 && !lockScale) {
             if (!gotI && minMaxI > 1e-4)
                 minMaxI /= 2;
@@ -495,7 +539,7 @@ class Scope {
         resetGraph();
     }
 
-    PopupMenu getMenu() {
+/*    PopupMenu getMenu() {
         if (elm == null)
             return null;
         if (elm instanceof TransistorElm) {
@@ -521,7 +565,7 @@ class Scope {
             sim.scopeResistMenuItem.setEnabled(elm instanceof MemristorElm);
             return sim.scopeMenu;
         }
-    }
+    }*/
 
     void setValue(int x) {
         reset();
@@ -551,15 +595,15 @@ class Scope {
 
     void undump(StringTokenizer st) {
         reset();
-        int e = new Integer(st.nextToken()).intValue();
+        int e = Integer.parseInt(st.nextToken());
         if (e == -1)
             return;
         elm = sim.getElm(e);
-        speed = new Integer(st.nextToken()).intValue();
-        value = new Integer(st.nextToken()).intValue();
-        int flags = new Integer(st.nextToken()).intValue();
-        minMaxV = new Double(st.nextToken()).doubleValue();
-        minMaxI = new Double(st.nextToken()).doubleValue();
+        speed = Integer.parseInt(st.nextToken());
+        value = Integer.parseInt(st.nextToken());
+        int flags = Integer.parseInt(st.nextToken());
+        minMaxV = Double.parseDouble(st.nextToken());
+        minMaxI = Double.parseDouble(st.nextToken());
         if (minMaxV == 0)
             minMaxV = .5;
         if (minMaxI == 0)
@@ -567,10 +611,10 @@ class Scope {
         text = null;
         yElm = null;
         try {
-            position = new Integer(st.nextToken()).intValue();
+            position = Integer.parseInt(st.nextToken());
             int ye = -1;
             if ((flags & FLAG_YELM) != 0) {
-                ye = new Integer(st.nextToken()).intValue();
+                ye = Integer.parseInt(st.nextToken());
                 if (ye != -1)
                     yElm = sim.getElm(ye);
             }
@@ -580,7 +624,7 @@ class Scope {
                 else
                     text += " " + st.nextToken();
             }
-        } catch (Exception ee) {
+        } catch (Exception ignored) {
         }
         showI = (flags & 1) != 0;
         showV = (flags & 2) != 0;
@@ -594,52 +638,19 @@ class Scope {
 
     void allocImage() {
         pixels = null;
-        int w = rect.width;
-        int h = rect.height;
+        int w = rect.getWidth();
+        int h = rect.getHeight();
         if (w == 0 || h == 0)
             return;
-        if (sim.useBufferedImage) {
-            try {
-        *//* simulate the following code using reflection:
-           dbimage = new BufferedImage(d.width, d.height,
-		   BufferedImage.TYPE_INT_RGB);
-		   DataBuffer db = (DataBuffer)(((BufferedImage)dbimage).
-		   getRaster().getDataBuffer());
-		   DataBufferInt dbi = (DataBufferInt) db;
-		   pixels = dbi.getData();
-		*//*
-                Class biclass = Class.forName("java.awt.image.BufferedImage");
-                Class dbiclass = Class.forName("java.awt.image.DataBufferInt");
-                Class rasclass = Class.forName("java.awt.image.Raster");
-                Constructor cstr = biclass.getConstructor(
-                        int.class, int.class, int.class);
-                image = (Image) cstr.newInstance(new Integer(w), new Integer(h),
-                        new Integer(BufferedImage.TYPE_INT_RGB));
-                Method m = biclass.getMethod("getRaster");
-                Object ras = m.invoke(image);
-                Object db = rasclass.getMethod("getDataBuffer").invoke(ras);
-                pixels = (int[])
-                        dbiclass.getMethod("getData").invoke(db);
-            } catch (Exception ee) {
-                // ee.printStackTrace();
-                System.out.println("BufferedImage failed");
-            }
-        }
-        if (pixels == null) {
-            pixels = new int[w * h];
-            int i;
-            for (i = 0; i != w * h; i++)
-                pixels[i] = 0xFF000000;
-            imageSource = new MemoryImageSource(w, h, pixels, 0, w);
-            imageSource.setAnimated(true);
-            imageSource.setFullBufferUpdates(true);
-            image = sim.cv.createImage(imageSource);
-        }
+        pixels = new int[w * h];
+        int i;
+        for (i = 0; i != w * h; i++)
+            pixels[i] = 0xFF000000;
         dpixels = new float[w * h];
         draw_ox = draw_oy = -1;
     }
 
-    void handleMenu(ItemEvent e, Object mi) {
+/*    void handleMenu(ItemEvent e, Object mi) {
         if (mi == sim.scopeVMenuItem)
             showVoltage(sim.scopeVMenuItem.getState());
         if (mi == sim.scopeIMenuItem)
@@ -685,7 +696,7 @@ class Scope {
         }
         if (mi == sim.scopeResistMenuItem)
             setValue(VAL_R);
-    }
+    }*/
 
     void select() {
         sim.mouseElm = elm;
@@ -711,5 +722,5 @@ class Scope {
                 return;
             e = firstE = -1;
         }
-    }*/
+    }
 }

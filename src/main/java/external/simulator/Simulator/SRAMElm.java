@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 // contributed by Edward Calver
 
 class SRAMElm extends ChipElm {
-    short data[] = new short[256];//Fuck this lack of unsigned types. That's twice as much data as I'd need in C
+    private short[] data = new short[256];//Fuck this lack of unsigned types. That's twice as much data as I'd need in C
 
     public SRAMElm(int xx, int yy) {
         super(xx, yy);
@@ -77,22 +77,14 @@ class SRAMElm extends ChipElm {
             if (pins[6].value) index += 2;
             if (pins[7].value) index += 1;
             if (pins[8].value) {
-                if ((data[index] & 128) > 0) pins[10].value = true;
-                else pins[10].value = false;
-                if ((data[index] & 64) > 0) pins[11].value = true;
-                else pins[11].value = false;
-                if ((data[index] & 32) > 0) pins[12].value = true;
-                else pins[12].value = false;
-                if ((data[index] & 16) > 0) pins[13].value = true;
-                else pins[13].value = false;
-                if ((data[index] & 8) > 0) pins[14].value = true;
-                else pins[14].value = false;
-                if ((data[index] & 4) > 0) pins[15].value = true;
-                else pins[15].value = false;
-                if ((data[index] & 2) > 0) pins[16].value = true;
-                else pins[16].value = false;
-                if ((data[index] & 1) > 0) pins[17].value = true;
-                else pins[17].value = false;
+                pins[10].value = (data[index] & 128) > 0;
+                pins[11].value = (data[index] & 64) > 0;
+                pins[12].value = (data[index] & 32) > 0;
+                pins[13].value = (data[index] & 16) > 0;
+                pins[14].value = (data[index] & 8) > 0;
+                pins[15].value = (data[index] & 4) > 0;
+                pins[16].value = (data[index] & 2) > 0;
+                pins[17].value = (data[index] & 1) > 0;
             } else {
                 data[index] = 0;
                 if (pins[10].value) data[index] += 128;

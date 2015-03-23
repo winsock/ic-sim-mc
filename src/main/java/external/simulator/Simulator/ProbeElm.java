@@ -1,12 +1,13 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class ProbeElm extends CircuitElm {
-    static final int FLAG_SHOWVOLTAGE = 1;
-    Point center;
+    private static final int FLAG_SHOWVOLTAGE = 1;
+    private Point center;
 
     public ProbeElm(int xx, int yy) {
         super(xx, yy);
@@ -24,7 +25,7 @@ class ProbeElm extends CircuitElm {
     void setPoints() {
         super.setPoints();
         // swap points so that we subtract higher from lower
-        if (point2.y < point1.y) {
+        if (point2.getY() < point1.getY()) {
             Point x = point1;
             point1 = point2;
             point2 = x;
@@ -32,7 +33,7 @@ class ProbeElm extends CircuitElm {
         center = interpPoint(point1, point2, .5);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int hs = 8;
         setBbox(point1, point2, hs);
         boolean selected = (needsHighlight() || sim.plotYElm == this);
@@ -69,6 +70,11 @@ class ProbeElm extends CircuitElm {
     }
 
     boolean getConnection(int n1, int n2) {
+        return false;
+    }
+
+    @Override
+    boolean isWire() {
         return false;
     }
 

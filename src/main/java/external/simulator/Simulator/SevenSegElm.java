@@ -1,11 +1,12 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 
 class SevenSegElm extends ChipElm {
-    Color darkred;
+    private Color darkred;
 
     public SevenSegElm(int xx, int yy) {
         super(xx, yy);
@@ -34,7 +35,7 @@ class SevenSegElm extends ChipElm {
         pins[6] = new Pin(3, SIDE_S, "g");
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         drawChip(g);
         g.setColor(Color.red);
         int xl = x + cspc * 5;
@@ -55,7 +56,7 @@ class SevenSegElm extends ChipElm {
         drawThickLine(g, xl, yl + cspc, xl + cspc, yl + cspc);
     }
 
-    void setColor(Graphics g, int p) {
+    void setColor(CircuitGUI g, int p) {
         g.setColor(pins[p].value ? Color.red :
                 sim.printableCheckItem.getState() ? Color.white : darkred);
     }*/

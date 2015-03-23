@@ -3,15 +3,16 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class TimerElm extends ChipElm {
-    final int FLAG_RESET = 2;
-    final int N_DIS = 0;
-    final int N_TRIG = 1;
-    final int N_THRES = 2;
-    final int N_VIN = 3;
-    final int N_CTL = 4;
-    final int N_OUT = 5;
-    final int N_RST = 6;
-    boolean setOut, out;
+    private final int FLAG_RESET = 2;
+    private final int N_DIS = 0;
+    private final int N_TRIG = 1;
+    private final int N_THRES = 2;
+    private final int N_VIN = 3;
+    private final int N_CTL = 4;
+    private final int N_OUT = 5;
+    private final int N_RST = 6;
+    private boolean setOut;
+    private boolean out;
 
     public TimerElm(int xx, int yy) {
         super(xx, yy);

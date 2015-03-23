@@ -1,14 +1,19 @@
 package external.simulator.Simulator;
 
-import java.awt.*;
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 public class CapacitorElm extends CircuitElm {
-    public static final int FLAG_BACK_EULER = 2;
+    private static final int FLAG_BACK_EULER = 2;
     double capacitance;
-    double compResistance, voltdiff;
-    Point plate1[], plate2[];
-    double curSourceValue;
+    private double compResistance;
+    private double voltdiff;
+    private Point[] plate1;
+    private Point[] plate2;
+    private double curSourceValue;
 
     public CapacitorElm(int xx, int yy) {
         super(xx, yy);
@@ -58,35 +63,30 @@ public class CapacitorElm extends CircuitElm {
         interpPoint2(point1, point2, plate2[0], plate2[1], 1 - f, 12);
     }
 
-/*    void draw(Graphics g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int hs = 12;
         setBbox(point1, point2, hs);
 
         // draw first lead and plate
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, lead1);
-        setPowerColor(g, false);
-        drawThickLine(g, plate1[0], plate1[1]);
-        if (sim.powerCheckItem.getState())
-            g.setColor(Color.gray);
+        ;
+        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
+        drawThickLine(g, plate1[0], plate1[1], (Color) Color.YELLOW);
 
         // draw second lead and plate
-        getVoltageColor(g, volts[1]);
-        drawThickLine(g, point2, lead2);
-        setPowerColor(g, false);
-        drawThickLine(g, plate2[0], plate2[1]);
+        drawThickLine(g, point2, lead2, (Color) getVoltageColor(volts[1]));
+        drawThickLine(g, plate2[0], plate2[1], (Color) Color.YELLOW);
 
         updateDotCount();
         if (sim.dragElm != this) {
             drawDots(g, point1, lead1, curcount);
             drawDots(g, point2, lead2, -curcount);
         }
-        drawPosts(g);
-        if (sim.showValuesCheckItem.getState()) {
+        drawPosts(g, (Color) Color.LTGREY);
+/*        if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(capacitance, "F");
-            drawValues(g, s, hs);
-        }
-    }*/
+            drawValues(g, s, hs, (Color) CircuitElm.whiteColor);
+        }*/
+    }
 
     void stamp() {
         // capacitor companion model using trapezoidal approximation
@@ -153,6 +153,11 @@ public class CapacitorElm extends CircuitElm {
             else
                 flags |= FLAG_BACK_EULER;
         }
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getShortcut() {

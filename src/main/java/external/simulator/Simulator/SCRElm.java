@@ -1,7 +1,8 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 // Silicon-Controlled Rectifier
@@ -12,18 +13,27 @@ import java.util.StringTokenizer;
 // 2, 1 = 50 ohm resistor
 
 class SCRElm extends CircuitElm {
-    final int anode = 0;
-    final int cnode = 1;
-    final int gnode = 2;
-    final int inode = 3;
-    final int hs = 8;
-    Diode diode;
-    double ia, ic, ig, curcount_a, curcount_c, curcount_g;
-    double lastvac, lastvag;
-    double cresistance, triggerI, holdingI;
+    private final int anode = 0;
+    private final int cnode = 1;
+    private final int gnode = 2;
+    private final int inode = 3;
+    private final int hs = 8;
+    private Diode diode;
+    private double ia;
+    private double ic;
+    private double ig;
+    private double curcount_a;
+    private double curcount_c;
+    private double curcount_g;
+    private double lastvac;
+    private double lastvag;
+    private double cresistance;
+    private double triggerI;
+    private double holdingI;
     //Polygon poly;
-    Point cathode[], gate[];
-    double aresistance;
+    private Point[] cathode;
+    private Point[] gate;
+    private double aresistance;
 
     public SCRElm(int xx, int yy) {
         super(xx, yy);
@@ -85,10 +95,10 @@ class SCRElm extends CircuitElm {
         int dir = 0;
         if (abs(dx) > abs(dy)) {
             dir = -sign(dx) * sign(dy);
-            point2.y = point1.y;
+            point2.setY(point1.getY());
         } else {
             dir = sign(dy) * sign(dx);
-            point2.x = point1.x;
+            point2.setX(point1.getX());
         }
         if (dir == 0)
             dir = 1;
@@ -112,7 +122,7 @@ class SCRElm extends CircuitElm {
         interpPoint(lead2, point2, gate[1], gatelen / leadlen, sim.gridSize * 2 * dir);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, hs);
         adjustBbox(gate[0], gate[1]);
 
@@ -122,7 +132,7 @@ class SCRElm extends CircuitElm {
         draw2Leads(g);
 
         // draw arrow thingy
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         getVoltageColor(g, v1);
         g.fillPolygon(poly);
 
@@ -223,6 +233,11 @@ class SCRElm extends CircuitElm {
             holdingI = ei.value;
         if (n == 2 && ei.value > 0)
             cresistance = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

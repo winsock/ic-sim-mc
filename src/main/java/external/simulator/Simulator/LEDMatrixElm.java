@@ -54,7 +54,7 @@ class LEDMatrixElm extends ChipElm {
         pins[15] = new Pin(7, SIDE_S, "");
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         drawChip(g);
         Color color = new Color((int) (colorR * 255), (int) (colorG * 255), (int) (colorB * 255));
         for (int col = 0; col < size; col++)

@@ -1,13 +1,20 @@
 package external.simulator.Simulator;
 
-import java.awt.*;
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class AnalogSwitchElm extends CircuitElm {
     final int FLAG_INVERT = 1;
-    double resistance, r_on, r_off;
+    double r_on;
+    double r_off;
     boolean open;
-    Point ps, point3, lead3;
+    private double resistance;
+    private Point ps;
+    private Point point3;
+    private Point lead3;
 
     public AnalogSwitchElm(int xx, int yy) {
         super(xx, yy);
@@ -45,24 +52,22 @@ class AnalogSwitchElm extends CircuitElm {
         lead3 = interpPoint(point1, point2, .5, -openhs / 2);
     }
 
-/*    void draw(Graphics g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int openhs = 16;
         int hs = (open) ? openhs : 0;
         setBbox(point1, point2, openhs);
 
-        draw2Leads(g);
+        draw2Leads(g, (Color) Color.YELLOW);
 
-        g.setColor(lightGrayColor);
         interpPoint(lead1, lead2, ps, 1, hs);
-        drawThickLine(g, lead1, ps);
+        drawThickLine(g, lead1, ps, (Color) lightGrayColor);
 
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, point3, lead3);
+        drawThickLine(g, point3, lead3, (Color) getVoltageColor(volts[2]));
 
         if (!open)
             doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         current = (volts[0] - volts[1]) / resistance;
@@ -121,9 +126,12 @@ class AnalogSwitchElm extends CircuitElm {
     // we have to just assume current will flow either way, even though that
     // might cause singular matrix errors
     boolean getConnection(int n1, int n2) {
-        if (n1 == 2 || n2 == 2)
-            return false;
-        return true;
+        return !(n1 == 2 || n2 == 2);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     public EditInfo getEditInfo(int n) {

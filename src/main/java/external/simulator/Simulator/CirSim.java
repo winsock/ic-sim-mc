@@ -3,10 +3,13 @@ package external.simulator.Simulator;// CirSim.java (c) 2010 by Paul Falstad
 // For information about the theory behind this, see Electronic Circuit & System Simulation Methods by Pillage
 
 
-import net.minecraft.client.gui.GuiScreen;
-
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.Tessellator;
 import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
 
 import java.io.ByteArrayOutputStream;
@@ -21,92 +24,107 @@ import java.util.Vector;
 public class CirSim {
     public static final int sourceRadius = 7;
     public static final double freqMult = 3.14159265 * 2 * 4;
-    static final double pi = 3.14159265358979323846;
     static final int MODE_ADD_ELM = 0;
     static final int MODE_DRAG_ALL = 1;
     static final int MODE_DRAG_ROW = 2;
     static final int MODE_DRAG_COLUMN = 3;
-    static final int MODE_DRAG_SELECTED = 4;
-    static final int MODE_DRAG_POST = 5;
-    static final int MODE_SELECT = 6;
     static final int infoWidth = 120;
-    static final int HINT_LC = 1;
-    static final int HINT_RC = 2;
-    static final int HINT_3DB_C = 3;
-    static final int HINT_TWINT = 4;
-    static final int HINT_3DB_L = 5;
     static final int resct = 6;
+    private static final double pi = 3.14159265358979323846;
+    private static final int MODE_DRAG_SELECTED = 4;
+    private static final int MODE_DRAG_POST = 5;
+    private static final int MODE_SELECT = 6;
+    private static final int HINT_LC = 1;
+    private static final int HINT_RC = 2;
+    private static final int HINT_3DB_C = 3;
+    private static final int HINT_TWINT = 4;
+    private static final int HINT_3DB_L = 5;
     static String muString = "u";
     static String ohmString = "ohm";
-    static Class dumpTypes[] = new Class[300];
-    static Class shortcuts[] = new Class[127];
+    private static Class<?>[] dumpTypes = new Class[300];
+    private static Class<?>[] shortcuts = new Class[127];
     public boolean useFrame;
     public Vector<CircuitElm> elmList;
     Thread engine = null;
-    Random random;
     Class addingClass;
     int mouseMode = MODE_SELECT;
-    int tempMouseMode = MODE_SELECT;
     String mouseModeStr = "Select";
     int dragX, dragY, initDragX, initDragY;
     int selectedSource;
-    int gridSize, gridMask, gridRound;
+    int gridSize;
     boolean dragging;
-    boolean analyzeFlag;
-    boolean dumpMatrix;
-    boolean useBufferedImage;
-    boolean isMac;
-    String ctrlMetaKey;
     double t;
     int pause = 10;
     int scopeSelected = -1;
     int menuScope = -1;
-    int hintType = -1, hintItem1, hintItem2;
-    String stopMessage;
     double timeStep;
     //    Vector setupList;
-    CircuitElm dragElm, menuElm, mouseElm, stopElm;
+    CircuitElm dragElm;
+    CircuitElm menuElm;
+    CircuitElm mouseElm;
     boolean didSwitch = false;
-    int mousePost = -1;
     CircuitElm plotXElm, plotYElm;
     int draggingPost;
-    SwitchElm heldSwitchElm;
-    double circuitMatrix[][], circuitRightSide[],
-            origRightSide[], origMatrix[][];
-    RowInfo circuitRowInfo[];
-    int circuitPermute[];
-    boolean circuitNonLinear;
-    int voltageSourceCount;
-    int circuitMatrixSize, circuitMatrixFullSize;
-    boolean circuitNeedsMap;
-    int scopeCount;
-    Scope scopes[];
-    int scopeColCount[];
     String clipboard;
-    int circuitBottom;
-    Vector<String> undoStack, redoStack;
-    String startCircuit = null;
-    String startLabel = null;
-    String startCircuitText = null;
     String baseURL = "http://www.falstad.com/circuit/";
     boolean shown = false;
-    long lastTime = 0, lastFrameTime, lastIterTime, secTime = 0;
-    int frames = 0;
-    int steps = 0;
-    int framerate = 0, steprate = 0;
     Vector<CircuitNode> nodeList;
-    CircuitElm voltageSources[];
     boolean converged;
     int subIterations;
     boolean stopped = false;
     boolean dots = true;
-    Rectangle circuitArea;
+    private Random random;
+    private int tempMouseMode = MODE_SELECT;
+    private int gridMask;
+    private int gridRound;
+    private boolean analyzeFlag;
+    private boolean dumpMatrix;
+    private boolean useBufferedImage;
+    private boolean isMac;
+    private String ctrlMetaKey;
+    private int hintType = -1;
+    private int hintItem1;
+    private int hintItem2;
+    private String stopMessage;
+    private CircuitElm stopElm;
+    private int mousePost = -1;
+    private SwitchElm heldSwitchElm;
+    private double[][] circuitMatrix;
+    private double[] circuitRightSide;
+    private double[] origRightSide;
+    private double[][] origMatrix;
+    private RowInfo[] circuitRowInfo;
+    private int[] circuitPermute;
+    private boolean circuitNonLinear;
+    private int voltageSourceCount;
+    private int circuitMatrixSize;
+    private int circuitMatrixFullSize;
+    private boolean circuitNeedsMap;
+    private int scopeCount;
+    private Scope[] scopes;
+    private int[] scopeColCount;
+    private int circuitBottom;
+    private Vector<String> undoStack;
+    private Vector<String> redoStack;
+    private String startCircuit = null;
+    private String startLabel = null;
+    private String startCircuitText = null;
+    private long lastTime = 0;
+    private long lastFrameTime;
+    private long lastIterTime;
+    private long secTime = 0;
+    private int frames = 0;
+    private int steps = 0;
+    private int framerate = 0;
+    private int steprate = 0;
+    private CircuitElm[] voltageSources;
+    private Rectangle circuitArea, selectedArea;
 
     public CirSim() {
 
     }
 
-    static void register(Class<? extends CircuitElm> elmClass) {
+    private static void register(Class<? extends CircuitElm> elmClass) {
         CircuitElm element = constructElement(elmClass, 0, 0);
         if (element == null)
             throw new AssertionError();
@@ -117,16 +135,6 @@ public class CirSim {
             return;
         }
 
-        int s = element.getShortcut();
-        if (element.needsShortcut() && s == 0) {
-            if (s == 0) {
-                System.err.println("no shortcut " + elmClass + " for " + elmClass);
-                return;
-            } else if (s <= ' ' || s >= 127) {
-                System.err.println("invalid shortcut " + elmClass + " for " + elmClass);
-                return;
-            }
-        }
 
         if (dumpTypes[t] != null && dumpTypes[t] != element.getDumpClass()) {
             System.out.println("dump type conflict: " + element.getDumpClass() + " " +
@@ -135,24 +143,30 @@ public class CirSim {
         }
         dumpTypes[t] = element.getDumpClass();
 
-        if (element.needsShortcut() && shortcuts[s] != null &&
-                shortcuts[s] != element.getClass()) {
-            System.err.println("shortcut conflict: " + element.getClass() +
-                    " (previously assigned to " +
-                    shortcuts[s] + ")");
-        } else {
-            shortcuts[s] = element.getClass();
+        int s = element.getShortcut();
+        if (element.needsShortcut()) {
+            if (s == 0) {
+                System.err.println("no shortcut " + elmClass + " for " + elmClass);
+                return;
+            } else if (s <= ' ' || s >= 127) {
+                System.err.println("invalid shortcut " + elmClass + " for " + elmClass);
+                return;
+            } else if (shortcuts[s] != null &&
+                    shortcuts[s] != element.getClass()) {
+                System.err.println("shortcut conflict: " + element.getClass() +
+                        " (previously assigned to " +
+                        shortcuts[s] + ")");
+            } else {
+                shortcuts[s] = element.getClass();
+            }
         }
     }
 
-    static CircuitElm constructElement(Class<? extends CircuitElm> c, int x0, int y0) {
+    private static CircuitElm constructElement(Class<? extends CircuitElm> c, int x0, int y0) {
         // find element class
-        Class carr[] = new Class[2];
-        //carr[0] = getClass();
-        carr[0] = carr[1] = int.class;
         Constructor<? extends CircuitElm> cstr;
         try {
-            cstr = c.getConstructor(carr);
+            cstr = c.getConstructor(int.class, int.class);
         } catch (NoSuchMethodException ee) {
             System.out.println("caught NoSuchMethodException " + c);
             return null;
@@ -718,7 +732,7 @@ public class CirSim {
         registerClasses();
     }
 
-    public void registerClasses() {
+    void registerClasses() {
         CirSim.register(ACVoltageElm.class);
         CirSim.register(ADCElm.class);
         CirSim.register(AMElm.class);
@@ -801,9 +815,9 @@ public class CirSim {
         CirSim.register(ZenerElm.class);
     }
 
-/*    void setupScopes() {
+    void setupScopes() {
         int i;
-
+        Minecraft minecraft = Minecraft.getMinecraft();
         // check scopes to make sure the elements still exist, and remove
         // unused scopes/columns
         int pos = -1;
@@ -824,7 +838,8 @@ public class CirSim {
         }
         while (scopeCount > 0 && scopes[scopeCount - 1].elm == null)
             scopeCount--;
-        int h = winSize.height - circuitArea.height;
+
+        int h = minecraft.displayHeight - circuitArea.getHeight();
         pos = 0;
         for (i = 0; i != scopeCount; i++)
             scopeColCount[i] = 0;
@@ -836,7 +851,7 @@ public class CirSim {
         int iw = infoWidth;
         if (colct <= 2)
             iw = iw * 3 / 2;
-        int w = (winSize.width - iw) / colct;
+        int w = (minecraft.displayWidth - iw) / colct;
         int marg = 10;
         if (w < marg * 2)
             w = marg * 2;
@@ -856,46 +871,41 @@ public class CirSim {
                 s.speed = speed;
                 s.resetGraph();
             }
-            Rectangle r = new Rectangle(pos * w, winSize.height - h + colh * row,
+            Rectangle r = new Rectangle(pos * w, minecraft.displayHeight - h + colh * row,
                     w - marg, colh);
             row++;
             if (!r.equals(s.rect))
                 s.setRect(r);
         }
-    }*/
+    }
 
 
-    public void draw(GuiScreen screen, int mouseX, int mouseY, float partialTicks) {
+    public void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks) {
 
         Tessellator tess = Tessellator.getInstance();
-
-        float halfBoxWidth = screen.width / 2.5f;
-        float halfBoxHeight = screen.height / 2.5f;
+        FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 
         CircuitElm.selectColor = Color.CYAN;
-        if (printableCheckItem.getState()) {
+/*        if (printableCheckItem.getState()) {
             CircuitElm.whiteColor = Color.BLACK;
             CircuitElm.lightGrayColor = Color.BLACK;
             g.setColor(Color.WHITE);
-        } else {
-            CircuitElm.whiteColor = Color.WHITE;
-            CircuitElm.lightGrayColor = Color.LTGREY;
-            g.setColor(Color.BLACK);
-        }
+        } else {*/
+        CircuitElm.whiteColor = Color.WHITE;
+        CircuitElm.lightGrayColor = Color.LTGREY;
+        screen.drawDefaultBackground();
+        CircuitGUI.drawRect(screen.getGuiLeft() + 20, screen.getGuiTop() + 20, screen.getGuiLeft() + screen.getXSize() - 20, screen.getGuiTop() + screen.getYSize() - 20, Color.BLACK.hashCode());
+        //}
         //g.fillRect(0, 0, winSize.width, winSize.height);
         for (int i = 0; i != elmList.size(); i++) {
-            if (powerCheckItem.getState())
-                g.setColor(Color.GREY);
-            else if (conductanceCheckItem.getState())
-                g.setColor(Color.WHITE);
             getElm(i).draw(screen, mouseX, mouseY, partialTicks);
         }
         if (tempMouseMode == MODE_DRAG_ROW || tempMouseMode == MODE_DRAG_COLUMN ||
                 tempMouseMode == MODE_DRAG_POST || tempMouseMode == MODE_DRAG_SELECTED)
-            for (i = 0; i != elmList.size(); i++) {
+            for (int i = 0; i != elmList.size(); i++) {
                 CircuitElm ce = getElm(i);
-                ce.drawPost(g, ce.x, ce.y);
-                ce.drawPost(g, ce.x2, ce.y2);
+                ce.drawPost(screen, ce.x, ce.y, (Color) CircuitElm.whiteColor);
+                ce.drawPost(screen, ce.x2, ce.y2, (Color) CircuitElm.whiteColor);
             }
         int badnodes = 0;
         // find bad connections, nodes not connected to other elements which
@@ -915,28 +925,25 @@ public class CirSim {
                                 getElm(j).boundingBox.contains(cn.x, cn.y))
                             bb++;
                     }
-                    if (bb > 0) {
+                    if (bb > 0) {/*
                         g.setColor(Color.RED);
-                        g.fillOval(cn.x - 3, cn.y - 3, 7, 7);
+                        g.fillOval(cn.x - 3, cn.y - 3, 7, 7);*/
                         badnodes++;
                     }
                 }
                 if (mouseElm != null) {
-                    g.setFont(oldfont);
-                    g.drawString("+", mouseElm.x + 10, mouseElm.y);
+                    screen.drawString(fontRenderer, "+", mouseElm.x + 10, mouseElm.y, Color.RED.hashCode());
                 }
                 if (dragElm != null &&
                         (dragElm.x != dragElm.x2 || dragElm.y != dragElm.y2))
-                    dragElm.draw(g);
-                g.setFont(oldfont);
+                    dragElm.draw(screen, mouseX, mouseY, partialTicks);
                 int ct = scopeCount;
                 if (stopMessage != null)
                     ct = 0;
                 for (i = 0; i != ct; i++)
-                    scopes[i].draw(g);
-                g.setColor(CircuitElm.whiteColor);
+                    scopes[i].draw(screen);
                 if (stopMessage != null) {
-                    g.drawString(stopMessage, 10, circuitArea.height);
+                    screen.drawString(fontRenderer, stopMessage, 10, circuitArea.getHeight(), CircuitElm.whiteColor.hashCode());
                 } else {
                     if (circuitBottom == 0)
                         calcCircuitBottom();
@@ -971,7 +978,7 @@ public class CirSim {
                     int x = 0;
                     if (ct != 0)
                         x = scopes[ct - 1].rightEdge() + 20;
-                    x = max(x, winSize.width * 2 / 3);
+                    x = max(x, Minecraft.getMinecraft().displayWidth * 2 / 3);
 
                     // count lines of data
                     for (i = 0; info[i] != null; i++)
@@ -981,26 +988,24 @@ public class CirSim {
                                 " bad connection" : " bad connections");
 
                     // find where to show data; below circuit, not too high unless we need it
-                    int ybase = winSize.height - 15 * i - 5;
-                    ybase = min(ybase, circuitArea.height);
+                    int ybase = Minecraft.getMinecraft().displayHeight - 15 * i - 5;
+                    ybase = min(ybase, circuitArea.getHeight());
                     ybase = max(ybase, circuitBottom);
                     for (i = 0; info[i] != null; i++)
-                        g.drawString(info[i], x,
-                                ybase + 15 * (i + 1));
+                        screen.drawString(fontRenderer, info[i], x,
+                                ybase + 15 * (i + 1), CircuitElm.whiteColor.hashCode());
                 }
                 if (selectedArea != null) {
-                    g.setColor(CircuitElm.selectColor);
-                    g.drawRect(selectedArea.x, selectedArea.y, selectedArea.width, selectedArea.height);
+                    Gui.drawRect(selectedArea.getX(), selectedArea.getY(), selectedArea.getWidth(), selectedArea.getHeight(), CircuitElm.selectColor.hashCode());
                 }
-                mouseElm = realMouseElm;
             }
         }
 
-        g.setColor(Color.WHITE);
+/*        g.setColor(Color.WHITE);
         g.drawString("Framerate: " + framerate, 10, 10);
         g.drawString("Steprate: " + steprate, 10, 30);
         g.drawString("Steprate/iter: " + (steprate / getIterCount()), 10, 50);
-        g.drawString("iterc: " + (getIterCount()), 10, 70);
+        g.drawString("iterc: " + (getIterCount()), 10, 70);*/
 
     }
 
@@ -1012,6 +1017,7 @@ public class CirSim {
             analyzeCircuit();
             analyzeFlag = false;
         }
+        setupScopes();
         if (!stopped) {
             try {
                 runCircuit();
@@ -1107,7 +1113,7 @@ public class CirSim {
     /**
      * TODO: This might be useful later in-game
      *
-     * @param n
+     * @param n Switch number
      */
     public void toggleSwitch(int n) {
         int i;
@@ -1142,19 +1148,19 @@ public class CirSim {
         return elmList.elementAt(n);
     }
 
-/*    void calcCircuitBottom() {
+    void calcCircuitBottom() {
         int i;
         circuitBottom = 0;
         for (i = 0; i != elmList.size(); i++) {
             Rectangle rect = getElm(i).boundingBox;
-            int bottom = rect.height + rect.y;
+            int bottom = rect.getHeight() + rect.getY();
             if (bottom > circuitBottom)
                 circuitBottom = bottom;
         }
-    }*/
+    }
 
     void analyzeCircuit() {
-        //calcCircuitBottom();
+        calcCircuitBottom();
         if (elmList.isEmpty())
             return;
         stopMessage = null;
@@ -1185,8 +1191,8 @@ public class CirSim {
         if (!gotGround && volt != null && !gotRail) {
             CircuitNode cn = new CircuitNode();
             Point pt = volt.getPost(0);
-            cn.x = pt.x;
-            cn.y = pt.y;
+            cn.x = pt.getX();
+            cn.y = pt.getY();
             nodeList.addElement(cn);
         } else {
             // otherwise allocate extra node for ground
@@ -1209,13 +1215,13 @@ public class CirSim {
                 int k;
                 for (k = 0; k != nodeList.size(); k++) {
                     CircuitNode cn = getCircuitNode(k);
-                    if (pt.x == cn.x && pt.y == cn.y)
+                    if (pt.getX() == cn.x && pt.getY() == cn.y)
                         break;
                 }
                 if (k == nodeList.size()) {
                     CircuitNode cn = new CircuitNode();
-                    cn.x = pt.x;
-                    cn.y = pt.y;
+                    cn.x = pt.getX();
+                    cn.y = pt.getY();
                     CircuitNodeLink cnl = new CircuitNodeLink();
                     cnl.num = j;
                     cnl.elm = ce;
@@ -1411,7 +1417,7 @@ public class CirSim {
                 break;
             }
             //System.out.println("line " + i + " " + qp + " " + qm + " " + j);
-	    /*if (qp != -1 && circuitRowInfo[qp].lsChanges) {
+        /*if (qp != -1 && circuitRowInfo[qp].lsChanges) {
 		System.out.println("lschanges");
 		continue;
 	    }
@@ -2164,12 +2170,12 @@ public class CirSim {
         importCircuit(text, false);
     }
 
-    public void importCircuit(String text, boolean retain) {
+    void importCircuit(String text, boolean retain) {
         importCircuit(text.getBytes(), text.length(), retain);
         //titleLabel.setText("untitled");
     }
 
-    public void importCircuit(String str, String title) {
+    void importCircuit(String str, String title) {
         t = 0;
         System.out.println(str);
         try {
@@ -2189,7 +2195,7 @@ public class CirSim {
         //titleLabel.setText(title);
     }
 
-    public void importCircuit(byte b[], int len, boolean retain) {
+    void importCircuit(byte b[], int len, boolean retain) {
         int i;
         if (!retain) {
             for (i = 0; i != elmList.size(); i++) {
@@ -2225,7 +2231,7 @@ public class CirSim {
                 }
             String line = new String(b, p, linelen);
             StringTokenizer st = new StringTokenizer(line);
-            while (st.hasMoreTokens()) {
+            if (st.hasMoreTokens()) {
                 String type = st.nextToken();
                 int tint = type.charAt(0);
                 try {
@@ -2256,7 +2262,7 @@ public class CirSim {
                     int y2 = new Integer(st.nextToken());
                     int f = new Integer(st.nextToken());
                     CircuitElm ce;
-                    Class cls = dumpTypes[tint];
+                    Class<?> cls = dumpTypes[tint];
                     if (cls == null) {
                         System.out.println("unrecognized dump type: " + type);
                         break;
@@ -2267,8 +2273,7 @@ public class CirSim {
                     carr[0] = carr[1] = carr[2] = carr[3] = carr[4] =
                             int.class;
                     carr[5] = StringTokenizer.class;
-                    Constructor cstr;
-                    cstr = cls.getConstructor(carr);
+                    Constructor clsConstructor = cls.getConstructor(carr);
 
                     // invoke constructor with starting coordinates
                     Object oarr[] = new Object[6];
@@ -2279,7 +2284,7 @@ public class CirSim {
                     oarr[3] = y2;
                     oarr[4] = f;
                     oarr[5] = st;
-                    ce = (CircuitElm) cstr.newInstance(oarr);
+                    ce = (CircuitElm) clsConstructor.newInstance(oarr);
                     ce.setPoints();
                     elmList.addElement(ce);
                 } catch (java.lang.reflect.InvocationTargetException ee) {
@@ -2396,7 +2401,7 @@ public class CirSim {
         }
         cv.repaint(pause);
     }
-
+*/
     void dragAll(int x, int y) {
         int dx = x - dragX;
         int dy = y - dragY;
@@ -2540,7 +2545,7 @@ public class CirSim {
         needAnalyze();
     }
 
-    public void mouseMoved(MouseEvent e) {
+/*    public void mouseMoved(MouseEvent e) {
         if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
             return;
         int x = e.getX();

@@ -1,20 +1,21 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class TunnelDiodeElm extends CircuitElm {
-    static final double pvp = .1;
-    static final double pip = 4.7e-3;
-    static final double pvv = .37;
-    static final double pvt = .026;
-    static final double pvpp = .525;
-    static final double piv = 370e-6;
-    final int hs = 8;
+    private static final double pvp = .1;
+    private static final double pip = 4.7e-3;
+    private static final double pvv = .37;
+    private static final double pvt = .026;
+    private static final double pvpp = .525;
+    private static final double piv = 370e-6;
+    private final int hs = 8;
     //Polygon poly;
-    Point cathode[];
-    double lastvoltdiff;
+    private Point[] cathode;
+    private double lastvoltdiff;
 
     public TunnelDiodeElm(int xx, int yy) {
         super(xx, yy);
@@ -49,7 +50,7 @@ class TunnelDiodeElm extends CircuitElm {
 //        poly = createPolygon(pa[0], pa[1], lead2);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, hs);
 
         double v1 = volts[0];
@@ -58,7 +59,7 @@ class TunnelDiodeElm extends CircuitElm {
         draw2Leads(g);
 
         // draw arrow thingy
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         getVoltageColor(g, v1);
         g.fillPolygon(poly);
 
@@ -124,5 +125,10 @@ class TunnelDiodeElm extends CircuitElm {
         arr[1] = "I = " + getCurrentText(getCurrent());
         arr[2] = "Vd = " + getVoltageText(getVoltageDiff());
         arr[3] = "P = " + getUnitText(getPower(), "W");
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }

@@ -1,7 +1,8 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 // 0 = switch
@@ -13,22 +14,34 @@ import java.util.StringTokenizer;
 // 3n+2 = end of coil resistor
 
 class RelayElm extends CircuitElm {
-    final int nSwitch0 = 0;
-    final int nSwitch1 = 1;
-    final int nSwitch2 = 2;
-    final int FLAG_SWAP_COIL = 1;
-    double inductance;
-    Inductor ind;
-    double r_on, r_off, onCurrent;
-    Point coilPosts[], coilLeads[], swposts[][], swpoles[][], ptSwitch[];
-    Point lines[];
-    double coilCurrent, switchCurrent[], coilCurCount, switchCurCount[];
-    double d_position, coilR;
-    int i_position;
-    int poleCount;
-    int openhs;
-    int nCoil1, nCoil2, nCoil3;
+    private final int nSwitch0 = 0;
+    private final int nSwitch1 = 1;
+    private final int nSwitch2 = 2;
+    private final int FLAG_SWAP_COIL = 1;
     double a1, a2, a3, a4;
+    private double inductance;
+    private Inductor ind;
+    private double r_on;
+    private double r_off;
+    private double onCurrent;
+    private Point[] coilPosts;
+    private Point[] coilLeads;
+    private Point[][] swposts;
+    private Point[][] swpoles;
+    private Point[] ptSwitch;
+    private Point[] lines;
+    private double coilCurrent;
+    private double[] switchCurrent;
+    private double coilCurCount;
+    private double[] switchCurCount;
+    private double d_position;
+    private double coilR;
+    private int i_position;
+    private int poleCount;
+    private int openhs;
+    private int nCoil1;
+    private int nCoil2;
+    private int nCoil3;
 
     public RelayElm(int xx, int yy) {
         super(xx, yy);
@@ -81,7 +94,7 @@ class RelayElm extends CircuitElm {
                 r_on + " " + r_off + " " + onCurrent + " " + coilR;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int i, p;
         for (i = 0; i != 2; i++) {
             getVoltageColor(g, volts[nCoil1 + i]);
@@ -327,6 +340,11 @@ class RelayElm extends CircuitElm {
 
     boolean getConnection(int n1, int n2) {
         return (n1 / 3 == n2 / 3);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getShortcut() {

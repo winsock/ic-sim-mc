@@ -1,12 +1,17 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class LEDElm extends DiodeElm {
-    double colorR, colorG, colorB;
-    Point ledLead1, ledLead2, ledCenter;
+    private double colorR;
+    private double colorG;
+    private double colorB;
+    private Point ledLead1;
+    private Point ledLead2;
+    private Point ledCenter;
 
     public LEDElm(int xx, int yy) {
         super(xx, yy);
@@ -43,7 +48,7 @@ class LEDElm extends DiodeElm {
         ledCenter = interpPoint(point1, point2, .5);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         if (needsHighlight() || this == sim.dragElm) {
             super.draw(g);
             return;

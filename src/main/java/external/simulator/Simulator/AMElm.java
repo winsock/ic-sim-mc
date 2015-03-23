@@ -1,6 +1,8 @@
 package external.simulator.Simulator;
 
-import net.minecraft.client.gui.GuiScreen;
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
 import org.lwjgl.util.ReadableColor;
 
 import java.util.StringTokenizer;
@@ -8,9 +10,12 @@ import java.util.StringTokenizer;
 // contributed by Edward Calver
 
 class AMElm extends CircuitElm {
-    static final int FLAG_COS = 2;
-    final int circleSize = 17;
-    double carrierfreq, signalfreq, maxVoltage, freqTimeZero;
+    private static final int FLAG_COS = 2;
+    private final int circleSize = 17;
+    private double carrierfreq;
+    private double signalfreq;
+    private double maxVoltage;
+    private double freqTimeZero;
 
     public AMElm(int xx, int yy) {
         super(xx, yy);
@@ -66,36 +71,28 @@ class AMElm extends CircuitElm {
         return ((Math.sin(w * signalfreq) + 1) / 2) * Math.sin(w * carrierfreq) * maxVoltage;
     }
 
-    void draw(GuiScreen screen, int mouseX, int mouseY, float partialTicks) {
+    void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, circleSize);
         ReadableColor voltageColor = getVoltageColor(volts[0]);
-        drawThickLine(screen, point1, lead1);
+        drawThickLine(screen, point1, lead1, (Color) voltageColor);
 
-        Font f = new Font("SansSerif", 0, 12);
-        g.setFont(f);
-        g.setColor(needsHighlight() ? selectColor : whiteColor);
-        setPowerColor(g, false);
-        double v = getVoltage();
+        Color color = (Color) (needsHighlight() ? selectColor : whiteColor);
         String s = "AM";
-        drawCenteredText(g, s, x2, y2, true);
-        drawWaveform(g, point2);
-        drawPosts(g);
+        drawCenteredText(screen, s, x2, y2, true, color);
+        drawWaveform(screen, point2);
+        drawPosts(screen, color);
         curcount = updateDotCount(-current, curcount);
         if (sim.dragElm != this)
-            drawDots(g, point1, lead1, curcount);
+            drawDots(screen, point1, lead1, curcount);
     }
 
-    void drawWaveform(Graphics g, Point center) {
-        g.setColor(needsHighlight() ? selectColor : Color.gray);
-        setPowerColor(g, false);
-        int xc = center.x;
-        int yc = center.y;
-        drawThickCircle(g, xc, yc, circleSize);
-        int wl = 8;
-        adjustBbox(xc - circleSize, yc - circleSize,
-                xc + circleSize, yc + circleSize);
+    void drawWaveform(CircuitGUI g, Point center) {
+        Color color = (Color) (needsHighlight() ? selectColor : Color.GREY);
+        int xc = center.getX();
+        int yc = center.getY();
+        drawThickCircle(g, xc, yc, circleSize, color);
+        adjustBbox(xc - circleSize, yc - circleSize, xc + circleSize, yc + circleSize);
     }
-
 
     void setPoints() {
         super.setPoints();
@@ -108,6 +105,11 @@ class AMElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return true;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getVoltageSourceCount() {

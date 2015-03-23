@@ -1,12 +1,14 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class ResistorElm extends CircuitElm {
     double resistance;
-    Point ps3, ps4;
+    private Point ps3;
+    private Point ps4;
 
     public ResistorElm(int xx, int yy) {
         super(xx, yy);
@@ -34,7 +36,7 @@ class ResistorElm extends CircuitElm {
         ps4 = new Point();
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int segments = 16;
         int i;
         int ox = 0;
@@ -43,7 +45,7 @@ class ResistorElm extends CircuitElm {
         double v2 = volts[1];
         setBbox(point1, point2, hs);
         draw2Leads(g);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         double segf = 1. / segments;
         if (!sim.euroResistorCheckItem.getState()) {
             // draw zigzag
@@ -117,6 +119,11 @@ class ResistorElm extends CircuitElm {
     public void setEditValue(int n, EditInfo ei) {
         if (ei.value > 0)
             resistance = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getShortcut() {

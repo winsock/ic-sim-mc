@@ -4,8 +4,8 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class WireElm extends CircuitElm {
-    static final int FLAG_SHOWCURRENT = 1;
-    static final int FLAG_SHOWVOLTAGE = 2;
+    private static final int FLAG_SHOWCURRENT = 1;
+    private static final int FLAG_SHOWVOLTAGE = 2;
 
     public WireElm(int xx, int yy) {
         super(xx, yy);
@@ -16,7 +16,7 @@ class WireElm extends CircuitElm {
         super(xa, ya, xb, yb, f);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         getVoltageColor(g, volts[0]);
         drawThickLine(g, point1, point2);
         doDots(g);

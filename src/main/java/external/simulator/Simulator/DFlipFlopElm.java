@@ -4,8 +4,8 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class DFlipFlopElm extends ChipElm {
-    final int FLAG_RESET = 2;
-    final int FLAG_SET = 4;
+    private final int FLAG_RESET = 2;
+    private final int FLAG_SET = 4;
 
     public DFlipFlopElm(int xx, int yy) {
         super(xx, yy);

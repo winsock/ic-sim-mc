@@ -1,20 +1,29 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class OpAmpElm extends CircuitElm {
     final int FLAG_SWAP = 1;
-    final int FLAG_SMALL = 2;
-    final int FLAG_LOWGAIN = 4;
-    int opsize, opheight, opwidth, opaddtext;
-    double maxOut, minOut, gain, gbw;
+    private final int FLAG_SMALL = 2;
+    private final int FLAG_LOWGAIN = 4;
+    int opaddtext;
     boolean reset;
-    Point in1p[], in2p[], textp[];
+    private int opsize;
+    private int opheight;
+    private int opwidth;
+    private double maxOut;
+    private double minOut;
+    private double gain;
+    private double gbw;
+    private Point[] in1p;
+    private Point[] in2p;
+    private Point[] textp;
     //Polygon triangle;
     //Font plusFont;
-    double lastvd;
+    private double lastvd;
 
     public OpAmpElm(int xx, int yy) {
         super(xx, yy);
@@ -60,14 +69,14 @@ class OpAmpElm extends CircuitElm {
         return true;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, opheight * 2);
         getVoltageColor(g, volts[0]);
         drawThickLine(g, in1p[0], in1p[1]);
         getVoltageColor(g, volts[1]);
         drawThickLine(g, in2p[0], in2p[1]);
         g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         drawThickPolygon(g, triangle);
         g.setFont(plusFont);
         drawCenteredText(g, "-", textp[0].x, textp[0].y - 2, true);
@@ -182,6 +191,11 @@ class OpAmpElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return (n1 == 2);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     double getVoltageDiff() {

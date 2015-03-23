@@ -1,24 +1,34 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class TransistorElm extends CircuitElm {
-    static final double leakage = 1e-13; // 1e-6;
-    static final double vt = .025;
-    static final double vdcoef = 1 / vt;
-    static final double rgain = .5;
-    final int FLAG_FLIP = 1;
-    int pnp;
-    double beta;
-    double fgain;
-    double gmin;
-    double ic, ie, ib, curcount_c, curcount_e, curcount_b;
+    private static final double leakage = 1e-13; // 1e-6;
+    private static final double vt = .025;
+    private static final double vdcoef = 1 / vt;
+    private static final double rgain = .5;
+    private final int FLAG_FLIP = 1;
+    private int pnp;
+    private double beta;
+    private double fgain;
+    private double gmin;
+    private double ic;
+    private double ie;
+    private double ib;
+    private double curcount_c;
+    private double curcount_e;
+    private double curcount_b;
     //Polygon rectPoly, arrowPoly;
-    Point rect[], coll[], emit[], base;
-    double vcrit;
-    double lastvbc, lastvbe;
+    private Point[] rect;
+    private Point[] coll;
+    private Point[] emit;
+    private Point base;
+    private double vcrit;
+    private double lastvbc;
+    private double lastvbe;
 
     TransistorElm(int xx, int yy, boolean pnpflag) {
         super(xx, yy);
@@ -27,8 +37,8 @@ class TransistorElm extends CircuitElm {
         setup();
     }
 
-    public TransistorElm(int xa, int ya, int xb, int yb, int f,
-                         StringTokenizer st) {
+    TransistorElm(int xa, int ya, int xb, int yb, int f,
+                  StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         pnp = new Integer(st.nextToken());
         beta = 100;
@@ -68,9 +78,9 @@ class TransistorElm extends CircuitElm {
                 (volts[0] - volts[2]) + " " + beta;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, 16);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         // draw collector
         getVoltageColor(g, volts[1]);
         drawThickLine(g, coll[0], coll[1]);
@@ -94,7 +104,7 @@ class TransistorElm extends CircuitElm {
         drawDots(g, emit[1], emit[0], curcount_e);
         // draw base rectangle
         getVoltageColor(g, volts[0]);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         g.fillPolygon(rectPoly);
 
         if ((needsHighlight() || sim.dragElm == this) && dy == 0) {
@@ -314,6 +324,11 @@ class TransistorElm extends CircuitElm {
                 flags &= ~FLAG_FLIP;
             setPoints();
         }
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     boolean canViewInScope() {

@@ -6,8 +6,8 @@ import java.util.StringTokenizer;
 class VarRailElm extends RailElm {
     //    Scrollbar slider;
 //    Label label;
-    String sliderText;
-    double railVoltage = 0d;
+    private String sliderText;
+    private double railVoltage = 0d;
 
     public VarRailElm(int xx, int yy) {
         super(xx, yy, WF_VAR);

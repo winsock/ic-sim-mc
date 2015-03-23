@@ -2,11 +2,15 @@ package external.simulator.Simulator;
 
 class Diode {
     public double leakage = 1e-14; // was 1e-9;
-    int nodes[];
-    CirSim sim;
-    double vt, vdcoef, fwdrop, zvoltage, zoffset;
-    double lastvoltdiff;
-    double vcrit;
+    private int[] nodes;
+    private CirSim sim;
+    private double vt;
+    private double vdcoef;
+    private double fwdrop;
+    private double zvoltage;
+    private double zoffset;
+    private double lastvoltdiff;
+    private double vcrit;
 
     Diode(CirSim s) {
         sim = s;

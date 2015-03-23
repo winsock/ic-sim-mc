@@ -4,9 +4,10 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class LogicInputElm extends SwitchElm {
-    final int FLAG_TERNARY = 1;
-    final int FLAG_NUMERIC = 2;
-    double hiV, loV;
+    private final int FLAG_TERNARY = 1;
+    private final int FLAG_NUMERIC = 2;
+    private double hiV;
+    private double loV;
 
     public LogicInputElm(int xx, int yy) {
         super(xx, yy, false);
@@ -53,7 +54,7 @@ class LogicInputElm extends SwitchElm {
         lead1 = interpPoint(point1, point2, 1 - 12 / dn);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         Font f = new Font("SansSerif", Font.BOLD, 20);
         g.setFont(f);
         g.setColor(needsHighlight() ? selectColor : whiteColor);

@@ -21,7 +21,7 @@ class GroundElm extends CircuitElm {
         return 1;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         getVoltageColor(g, 0);
         drawThickLine(g, point1, point2);
         int i;
@@ -60,6 +60,11 @@ class GroundElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return true;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getShortcut() {

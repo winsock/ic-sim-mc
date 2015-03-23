@@ -6,11 +6,11 @@ import java.util.StringTokenizer;
 // contributed by Edward Calver
 
 class SeqGenElm extends ChipElm {
-    short data = 0;
-    byte position = 0;
-    boolean oneshot = false;
-    double lastchangetime = 0;
-    boolean clockstate = false;
+    private short data = 0;
+    private byte position = 0;
+    private boolean oneshot = false;
+    private double lastchangetime = 0;
+    private boolean clockstate = false;
 
     public SeqGenElm(int xx, int yy) {
         super(xx, yy);
@@ -54,8 +54,7 @@ class SeqGenElm extends ChipElm {
     }
 
     void GetNextBit() {
-        if (((data >>> position) & 1) != 0) pins[1].value = true;
-        else pins[1].value = false;
+        pins[1].value = ((data >>> position) & 1) != 0;
         position++;
     }
 

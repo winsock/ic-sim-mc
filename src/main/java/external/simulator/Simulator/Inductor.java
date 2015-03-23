@@ -2,13 +2,14 @@ package external.simulator.Simulator;
 
 class Inductor {
     public static final int FLAG_BACK_EULER = 2;
-    int nodes[];
-    int flags;
-    CirSim sim;
+    private int[] nodes;
+    private int flags;
+    private CirSim sim;
 
-    double inductance;
-    double compResistance, current;
-    double curSourceValue;
+    private double inductance;
+    private double compResistance;
+    private double current;
+    private double curSourceValue;
 
     Inductor(CirSim s) {
         sim = s;

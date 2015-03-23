@@ -4,8 +4,8 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class CounterElm extends ChipElm {
-    final int FLAG_ENABLE = 2;
-    boolean invertreset = false;
+    private final int FLAG_ENABLE = 2;
+    private boolean invertreset = false;
 
     public CounterElm(int xx, int yy) {
         super(xx, yy);

@@ -1,14 +1,16 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class SwitchElm extends CircuitElm {
     boolean momentary;
     // position 0 == closed, position 1 == open
     int position, posCount;
-    Point ps, ps2;
+    private Point ps;
+    private Point ps2;
 
     public SwitchElm(int xx, int yy) {
         super(xx, yy);
@@ -53,7 +55,7 @@ class SwitchElm extends CircuitElm {
         ps2 = new Point();
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int openhs = 16;
         int hs1 = (position == 1) ? 0 : 2;
         int hs2 = (position == 1) ? openhs : 2;

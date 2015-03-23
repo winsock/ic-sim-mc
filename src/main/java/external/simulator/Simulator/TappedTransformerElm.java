@@ -1,15 +1,21 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class TappedTransformerElm extends CircuitElm {
-    double inductance, ratio;
-    Point ptEnds[], ptCoil[], ptCore[];
-    double current[], curcount[];
-    double a[];
-    double curSourceValue[], voltdiff[];
+    private double inductance;
+    private double ratio;
+    private Point[] ptEnds;
+    private Point[] ptCoil;
+    private Point[] ptCore;
+    private double[] current;
+    private double[] curcount;
+    private double[] a;
+    private double[] curSourceValue;
+    private double[] voltdiff;
 
     public TappedTransformerElm(int xx, int yy) {
         super(xx, yy);
@@ -51,7 +57,7 @@ class TappedTransformerElm extends CircuitElm {
                 current[0] + " " + current[1] + " " + current[2];
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         int i;
         for (i = 0; i != 5; i++) {
             getVoltageColor(g, volts[i]);
@@ -60,7 +66,7 @@ class TappedTransformerElm extends CircuitElm {
         for (i = 0; i != 4; i++) {
             if (i == 1)
                 continue;
-            setPowerColor(g, current[i] * (volts[i] - volts[i + 1]));
+            getPowerColor(g, current[i] * (volts[i] - volts[i + 1]));
             drawCoil(g, i > 1 ? -6 : 6,
                     ptCoil[i], ptCoil[i + 1], volts[i], volts[i + 1]);
         }
@@ -225,15 +231,8 @@ class TappedTransformerElm extends CircuitElm {
     }
 
     boolean getConnection(int n1, int n2) {
-        if (comparePair(n1, n2, 0, 1))
-            return true;
-        if (comparePair(n1, n2, 2, 3))
-            return true;
-        if (comparePair(n1, n2, 3, 4))
-            return true;
-        if (comparePair(n1, n2, 2, 4))
-            return true;
-        return false;
+        return comparePair(n1, n2, 0, 1) || comparePair(n1, n2, 2, 3)
+                || comparePair(n1, n2, 3, 4) || comparePair(n1, n2, 2, 4);
     }
 
     public EditInfo getEditInfo(int n) {
@@ -249,5 +248,10 @@ class TappedTransformerElm extends CircuitElm {
             inductance = ei.value;
         if (n == 1)
             ratio = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }

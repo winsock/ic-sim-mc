@@ -16,19 +16,15 @@ class BoxElm extends GraphicElm {
         super(xa, ya, xb, yb, f);
         x2 = xb;
         y2 = yb;
-/*	if ( st.hasMoreTokens() )
-        x = new Integer(st.nextToken()).intValue();
-	if ( st.hasMoreTokens() )
-		y = new Integer(st.nextToken()).intValue();
-	if ( st.hasMoreTokens() )
-		x2 = new Integer(st.nextToken()).intValue();
-	if ( st.hasMoreTokens() )
-		y2 = new Integer(st.nextToken()).intValue();*/
-        //setBbox(x, y, x2, y2);
-    }
-
-    String dump() {
-        return super.dump();
+        if (st.hasMoreTokens())
+            x = new Integer(st.nextToken()).intValue();
+        if (st.hasMoreTokens())
+            y = new Integer(st.nextToken()).intValue();
+        if (st.hasMoreTokens())
+            x2 = new Integer(st.nextToken()).intValue();
+        if (st.hasMoreTokens())
+            y2 = new Integer(st.nextToken()).intValue();
+        setBbox(x, y, x2, y2);
     }
 
     int getDumpType() {
@@ -40,7 +36,7 @@ class BoxElm extends GraphicElm {
         y = yy;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         //g.setColor(needsHighlight() ? selectColor : lightGrayColor);
         g.setColor(needsHighlight() ? selectColor : Color.GRAY);
         setBbox(x, y, x2, y2);

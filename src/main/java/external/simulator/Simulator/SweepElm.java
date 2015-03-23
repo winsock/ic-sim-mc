@@ -4,13 +4,20 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class SweepElm extends CircuitElm {
-    final int FLAG_LOG = 1;
-    final int FLAG_BIDIR = 2;
-    final int circleSize = 17;
-    double maxV, maxF, minF, sweepTime, frequency;
-    double fadd, fmul, freqTime, savedTimeStep;
-    int dir = 1;
-    double v;
+    private final int FLAG_LOG = 1;
+    private final int FLAG_BIDIR = 2;
+    private final int circleSize = 17;
+    private double maxV;
+    private double maxF;
+    private double minF;
+    private double sweepTime;
+    private double frequency;
+    private double fadd;
+    private double fmul;
+    private double freqTime;
+    private double savedTimeStep;
+    private int dir = 1;
+    private double v;
 
     public SweepElm(int xx, int yy) {
         super(xx, yy);
@@ -49,12 +56,12 @@ class SweepElm extends CircuitElm {
         lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, circleSize);
         getVoltageColor(g, volts[0]);
         drawThickLine(g, point1, lead1);
         g.setColor(needsHighlight() ? selectColor : Color.gray);
-        setPowerColor(g, false);
+        getPowerColor(g, false);
         int xc = point2.x;
         int yc = point2.y;
         drawThickCircle(g, xc, yc, circleSize);
@@ -154,6 +161,11 @@ class SweepElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return true;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     public void getInfo(String arr[]) {

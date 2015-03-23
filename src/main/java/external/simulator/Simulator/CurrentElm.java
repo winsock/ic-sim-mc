@@ -1,13 +1,19 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Point;
+import org.lwjgl.util.Color;
+
 import java.awt.*;
 import java.util.StringTokenizer;
 
 class CurrentElm extends CircuitElm {
-    double currentValue;
-    //Polygon arrow;
-    Point ashaft1, ashaft2, center;
+    private double currentValue;
+    Polygon arrow;
+    private Point ashaft1;
+    private Point ashaft2;
+    private Point center;
 
     public CurrentElm(int xx, int yy) {
         super(xx, yy);
@@ -39,30 +45,29 @@ class CurrentElm extends CircuitElm {
         ashaft2 = interpPoint(lead1, lead2, .6);
         center = interpPoint(lead1, lead2, .5);
         Point p2 = interpPoint(lead1, lead2, .75);
-//        arrow = calcArrow(center, p2, 4, 4);
+        arrow = calcArrow(center, p2, 4, 4);
     }
 
-/*
-    void draw(Graphics g) {
+
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int cr = 12;
-        draw2Leads(g);
-        getVoltageColor(g, (volts[0] + volts[1]) / 2);
-        setPowerColor(g, false);
+        draw2Leads(g, (Color) CircuitElm.lightGrayColor);
+        getVoltageColor((volts[0] + volts[1]) / 2);
 
-        drawThickCircle(g, center.x, center.y, cr);
-        drawThickLine(g, ashaft1, ashaft2);
+        drawThickCircle(g, center.getX(), center.getY(), cr, (Color) Color.YELLOW);
+        drawThickLine(g, ashaft1, ashaft2, (Color) CircuitElm.whiteColor);
 
-        g.fillPolygon(arrow);
+//        g.fillPolygon(arrow);
         setBbox(point1, point2, cr);
         doDots(g);
-        if (sim.showValuesCheckItem.getState()) {
+/*        if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(currentValue, "A");
             if (dx == 0 || dy == 0)
                 drawValues(g, s, cr);
-        }
-        drawPosts(g);
+        }*/
+        drawPosts(g, (Color) Color.LTGREY);
     }
-*/
+
 
     void stamp() {
         current = currentValue;
@@ -77,6 +82,11 @@ class CurrentElm extends CircuitElm {
 
     public void setEditValue(int n, EditInfo ei) {
         currentValue = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     public void getInfo(String arr[]) {

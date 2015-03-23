@@ -1,17 +1,18 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class DiodeElm extends CircuitElm {
     static final int FLAG_FWDROP = 1;
-    final double defaultdrop = .805904783;
-    final int hs = 8;
+    private final double defaultdrop = .805904783;
+    private final int hs = 8;
     Diode diode;
     double fwdrop, zvoltage;
     //    Polygon poly;
-    Point cathode[];
+    private Point[] cathode;
 
     public DiodeElm(int xx, int yy) {
         super(xx, yy);
@@ -63,7 +64,7 @@ class DiodeElm extends CircuitElm {
 //        poly = createPolygon(pa[0], pa[1], lead2);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         drawDiode(g);
         doDots(g);
         drawPosts(g);
@@ -74,7 +75,7 @@ class DiodeElm extends CircuitElm {
         volts[0] = volts[1] = curcount = 0;
     }
 
-/*    void drawDiode(Graphics g) {
+/*    void drawDiode(CircuitGUI g) {
         setBbox(point1, point2, hs);
 
         double v1 = volts[0];
@@ -83,7 +84,7 @@ class DiodeElm extends CircuitElm {
         draw2Leads(g);
 
         // draw arrow thingy
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         getVoltageColor(g, v1);
         g.fillPolygon(poly);
 
@@ -121,6 +122,11 @@ class DiodeElm extends CircuitElm {
     public void setEditValue(int n, EditInfo ei) {
         fwdrop = ei.value;
         setup();
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     int getShortcut() {

@@ -1,28 +1,37 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
+
 import java.awt.*;
 import java.util.StringTokenizer;
 
 abstract class GateElm extends CircuitElm {
-    final int FLAG_SMALL = 1;
+    private final int FLAG_SMALL = 1;
     int inputCount = 2;
-    boolean lastOutput;
-    int gsize, gwidth, gwidth2, gheight, hs2;
-    Point inPosts[], inGates[];
+    int hs2;
     int ww;
-    //Polygon gatePoly;
+    Polygon gatePoly;
     Point pcircle, linePoints[];
+    private boolean lastOutput;
+    private int gsize;
+    private int gwidth;
+    private int gwidth2;
+    private int gheight;
+    private Point[] inPosts;
+    private Point[] inGates;
 
-    public GateElm(int xx, int yy) {
+    GateElm(int xx, int yy) {
         super(xx, yy);
         noDiagonal = true;
         inputCount = 2;
         //setSize(sim.smallGridCheckItem.getState() ? 1 : 2);
     }
 
-    public GateElm(int xa, int ya, int xb, int yb, int f,
-                   StringTokenizer st) {
+    GateElm(int xa, int ya, int xb, int yb, int f,
+            StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         inputCount = new Integer(st.nextToken());
         lastOutput = new Double(st.nextToken()) > 2.5;
@@ -73,25 +82,23 @@ abstract class GateElm extends CircuitElm {
         //setBbox(point1, point2, hs2);
     }
 
-/*    void draw(Graphics g) {
+    void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks) {
         int i;
         for (i = 0; i != inputCount; i++) {
-            getVoltageColor(g, volts[i]);
-            drawThickLine(g, inPosts[i], inGates[i]);
+            drawThickLine(screen, inPosts[i], inGates[i], (Color) getVoltageColor(volts[i]));
         }
-        getVoltageColor(g, volts[inputCount]);
-        drawThickLine(g, lead2, point2);
-        g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        drawThickPolygon(g, gatePoly);
+        Color mainColor = (Color) (needsHighlight() ? selectColor : lightGrayColor);
+        drawThickLine(screen, lead2, point2, (Color) getVoltageColor(volts[inputCount]));
+        drawThickPolygon(screen, gatePoly, mainColor);
         if (linePoints != null)
             for (i = 0; i != linePoints.length - 1; i++)
-                drawThickLine(g, linePoints[i], linePoints[i + 1]);
+                drawThickLine(screen, linePoints[i], linePoints[i + 1], mainColor);
         if (isInverting())
-            drawThickCircle(g, pcircle.x, pcircle.y, 3);
+            drawThickCircle(screen, pcircle.getX(), pcircle.getY(), 3, mainColor);
         curcount = updateDotCount(current, curcount);
-        drawDots(g, lead2, point2, curcount);
-        drawPosts(g);
-    }*/
+        drawDots(screen, lead2, point2, curcount);
+        drawPosts(screen, mainColor);
+    }
 
     int getPostCount() {
         return inputCount + 1;
@@ -155,6 +162,11 @@ abstract class GateElm extends CircuitElm {
 
     boolean hasGroundConnection(int n1) {
         return (n1 == inputCount);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

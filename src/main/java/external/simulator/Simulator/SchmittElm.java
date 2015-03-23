@@ -1,7 +1,8 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -49,7 +50,7 @@ class SchmittElm extends InvertingSchmittElm {
         sim.updateVoltageSource(0, nodes[1], voltSource, out);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         drawPosts(g);
         draw2Leads(g);
         g.setColor(needsHighlight() ? selectColor : lightGrayColor);

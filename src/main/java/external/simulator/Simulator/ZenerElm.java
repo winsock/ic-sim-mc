@@ -1,17 +1,18 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 // Zener code contributed by J. Mike Rollins
 // http://www.camotruck.net/rollins/simulator.html
 class ZenerElm extends DiodeElm {
-    final int hs = 8;
-    final double default_zvoltage = 5.6;
+    private final int hs = 8;
+    private final double default_zvoltage = 5.6;
     //Polygon poly;
-    Point cathode[];
-    Point wing[];
+    private Point[] cathode;
+    private Point[] wing;
 
     public ZenerElm(int xx, int yy) {
         super(xx, yy);
@@ -52,7 +53,7 @@ class ZenerElm extends DiodeElm {
         //poly = createPolygon(pa[0], pa[1], lead2);
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, hs);
 
         double v1 = volts[0];
@@ -61,7 +62,7 @@ class ZenerElm extends DiodeElm {
         draw2Leads(g);
 
         // draw arrow thingy
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         getVoltageColor(g, v1);
         g.fillPolygon(poly);
 

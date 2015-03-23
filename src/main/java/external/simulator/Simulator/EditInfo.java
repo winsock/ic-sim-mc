@@ -2,12 +2,15 @@ package external.simulator.Simulator;
 
 
 class EditInfo {
-    String name, text;
-    double value, minval, maxval;
+    String text;
+    double value;
     Toggleable checkbox;
     boolean newDialog;
-    boolean forceLargeM;
-    boolean dimensionless;
+    private String name;
+    private double minval;
+    private double maxval;
+    private boolean forceLargeM;
+    private boolean dimensionless;
 
     EditInfo(String n, double val, double mn, double mx) {
         name = n;

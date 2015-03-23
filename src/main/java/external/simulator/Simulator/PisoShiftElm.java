@@ -5,9 +5,9 @@ import java.util.StringTokenizer;
 // contributed by Edward Calver
 
 class PisoShiftElm extends ChipElm {
-    short data = 0;//Lack of unsigned types sucks
-    boolean clockstate = false;
-    boolean modestate = false;
+    private short data = 0;//Lack of unsigned types sucks
+    private boolean clockstate = false;
+    private boolean modestate = false;
 
     public PisoShiftElm(int xx, int yy) {
         super(xx, yy);
@@ -71,8 +71,7 @@ class PisoShiftElm extends ChipElm {
             if (pins[9].value) data += 1;
         } else if (pins[1].value && !clockstate) {
             clockstate = true;
-            if ((data & 1) == 0) pins[10].value = false;
-            else pins[10].value = true;
+            pins[10].value = (data & 1) != 0;
             data = (byte) (data >>> 1);
         }
         if (!pins[0].value) modestate = false;

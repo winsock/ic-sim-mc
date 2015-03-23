@@ -1,23 +1,28 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class MosfetElm extends CircuitElm {
     final int hs = 16;
-    int pnp;
-    int FLAG_PNP = 1;
     int FLAG_SHOWVT = 2;
-    int FLAG_DIGITAL = 4;
-    double vt;
     int pcircler;
-    Point src[], drn[], gate[], pcircle;
+    Point src[];
+    Point drn[];
+    Point pcircle;
+    private int pnp;
+    private int FLAG_PNP = 1;
+    private int FLAG_DIGITAL = 4;
+    private double vt;
+    private Point[] gate;
     //    Polygon arrowPoly;
-    double lastv1, lastv2;
-    double ids;
-    int mode = 0;
-    double gm = 0;
+    private double lastv1;
+    private double lastv2;
+    private double ids;
+    private int mode = 0;
+    private double gm = 0;
 
     MosfetElm(int xx, int yy, boolean pnpflag) {
         super(xx, yy);
@@ -27,8 +32,8 @@ class MosfetElm extends CircuitElm {
         vt = getDefaultThreshold();
     }
 
-    public MosfetElm(int xa, int ya, int xb, int yb, int f,
-                     StringTokenizer st) {
+    MosfetElm(int xa, int ya, int xb, int yb, int f,
+              StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         pnp = ((f & FLAG_PNP) != 0) ? -1 : 1;
         noDiagonal = true;
@@ -67,7 +72,7 @@ class MosfetElm extends CircuitElm {
         return 'f';
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         setBbox(point1, point2, hs);
         getVoltageColor(g, volts[1]);
         drawThickLine(g, src[0], src[1]);
@@ -75,7 +80,7 @@ class MosfetElm extends CircuitElm {
         drawThickLine(g, drn[0], drn[1]);
         int segments = 6;
         int i;
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         double segf = 1. / segments;
         for (i = 0; i != segments; i++) {
             double v = volts[1] + (volts[2] - volts[1]) * i / segments;
@@ -271,6 +276,11 @@ class MosfetElm extends CircuitElm {
 
     boolean getConnection(int n1, int n2) {
         return !(n1 == 0 || n2 == 0);
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     public EditInfo getEditInfo(int n) {

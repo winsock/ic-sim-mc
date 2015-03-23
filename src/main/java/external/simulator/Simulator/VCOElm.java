@@ -4,9 +4,9 @@ package external.simulator.Simulator;
 import java.util.StringTokenizer;
 
 class VCOElm extends ChipElm {
-    final double cResistance = 1e6;
+    private final double cResistance = 1e6;
     double cCurrent;
-    int cDir;
+    private int cDir;
 
     public VCOElm(int xx, int yy) {
         super(xx, yy);
@@ -94,7 +94,7 @@ class VCOElm extends ChipElm {
         pins[0].current = -pins[4].current;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         computeCurrent();
         drawChip(g);
     }*/

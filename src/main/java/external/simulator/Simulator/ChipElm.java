@@ -2,34 +2,42 @@ package external.simulator.Simulator;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Point;
 import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
 
-
-import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 abstract class ChipElm extends CircuitElm {
     final int FLAG_SMALL = 1;
     final int FLAG_FLIP_X = 1024;
     final int FLAG_FLIP_Y = 2048;
+
+    @Override
+    boolean isWire() {
+        return false;
+    }
+
     final int SIDE_N = 0;
     final int SIDE_S = 1;
     final int SIDE_W = 2;
     final int SIDE_E = 3;
-    int csize, cspc, cspc2;
     int bits;
-    int rectPointsX[], rectPointsY[];
-    int clockPointsX[], clockPointsY[];
     Pin pins[];
     int sizeX, sizeY;
     boolean lastClock;
+    private int csize;
+    private int cspc;
+    private int cspc2;
+    private int[] rectPointsX;
+    private int[] rectPointsY;
+    private int[] clockPointsX;
+    private int[] clockPointsY;
 
-    public ChipElm(int xx, int yy) {
+    ChipElm(int xx, int yy) {
         super(xx, yy);
         if (needsBits())
             bits = (this instanceof DecadeElm) ? 10 : 4;
@@ -38,8 +46,8 @@ abstract class ChipElm extends CircuitElm {
         //setSize(sim.smallGridCheckItem.getState() ? 1 : 2);
     }
 
-    public ChipElm(int xa, int ya, int xb, int yb, int f,
-                   StringTokenizer st) {
+    ChipElm(int xa, int ya, int xb, int yb, int f,
+            StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         if (needsBits())
             bits = new Integer(st.nextToken());
@@ -69,11 +77,11 @@ abstract class ChipElm extends CircuitElm {
 
     abstract void setupPins();
 
-    void draw(GuiScreen screen, int mouseX, int mouseY, float partialTicks) {
+    void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks) {
         drawChip(screen);
     }
 
-    void drawChip(GuiScreen g) {
+    void drawChip(CircuitGUI g) {
         int i;
         for (i = 0; i != getPostCount(); i++) {
             Pin p = pins[i];

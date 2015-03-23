@@ -3,13 +3,19 @@ package external.simulator.Simulator;// stub implementation of DiacElm, based on
 // FIXME need to uncomment DiacElm line from CirSim.java
 
 
-import java.awt.*;
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class DiacElm extends CircuitElm {
-    double onresistance, offresistance, breakdown, holdcurrent;
-    boolean state;
-    Point ps3, ps4;
+    private double onresistance;
+    private double offresistance;
+    private double breakdown;
+    private double holdcurrent;
+    private boolean state;
+    private Point ps3;
+    private Point ps4;
 
     public DiacElm(int xx, int yy) {
         super(xx, yy);
@@ -49,18 +55,18 @@ class DiacElm extends CircuitElm {
         ps3 = new Point();
         ps4 = new Point();
     }
-/*
-    void draw(Graphics g) {
+
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         // FIXME need to draw Diac
         int i;
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 6);
         draw2Leads(g);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         doDots(g);
         drawPosts(g);
-    }*/
+    }
 
     void calculateCurrent() {
         double vd = volts[0] - volts[1];
@@ -121,6 +127,11 @@ class DiacElm extends CircuitElm {
             breakdown = ei.value;
         if (ei.value > 0 && n == 3)
             holdcurrent = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
 

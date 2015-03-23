@@ -1,16 +1,23 @@
 package external.simulator.Simulator;
 
 
-import java.awt.*;
+import org.lwjgl.util.Point;
+import org.lwjgl.util.Color;
 import java.util.StringTokenizer;
 
 class LampElm extends CircuitElm {
-    final double roomTemp = 300;
-    final int filament_len = 24;
-    double resistance;
-    double temp, nom_pow, nom_v, warmTime, coolTime;
-    Point bulbLead[], filament[], bulb;
-    int bulbR;
+    private final double roomTemp = 300;
+    private final int filament_len = 24;
+    private double resistance;
+    private double temp;
+    private double nom_pow;
+    private double nom_v;
+    private double warmTime;
+    private double coolTime;
+    private Point[] bulbLead;
+    private Point[] filament;
+    private Point bulb;
+    private int bulbR;
 
     public LampElm(int xx, int yy) {
         super(xx, yy);
@@ -79,10 +86,10 @@ class LampElm extends CircuitElm {
                 x = 0;
             return new Color(255, 255, x);
         }
-        return Color.white;
+        return (Color) Color.WHITE;
     }
 
-/*    void draw(Graphics g) {
+/*    void draw(CircuitGUI g) {
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 4);
@@ -90,7 +97,7 @@ class LampElm extends CircuitElm {
                 bulb.x + bulbR, bulb.y + bulbR);
         // adjustbbox
         draw2Leads(g);
-        setPowerColor(g, true);
+        getPowerColor(g, true);
         g.setColor(getTempColor());
         g.fillOval(bulb.x - bulbR, bulb.y - bulbR, bulbR * 2, bulbR * 2);
         g.setColor(Color.white);
@@ -182,5 +189,10 @@ class LampElm extends CircuitElm {
             warmTime = ei.value;
         if (n == 3 && ei.value > 0)
             coolTime = ei.value;
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 }
