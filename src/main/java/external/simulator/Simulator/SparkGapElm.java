@@ -1,8 +1,10 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
-
+import org.lwjgl.util.Color;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class SparkGapElm extends CircuitElm {
@@ -12,7 +14,7 @@ class SparkGapElm extends CircuitElm {
     private double breakdown;
     private double holdcurrent;
     private boolean state;
-    //Polygon arrow1, arrow2;
+    Polygon arrow1, arrow2;
 
     public SparkGapElm(int xx, int yy) {
         super(xx, yy);
@@ -51,26 +53,23 @@ class SparkGapElm extends CircuitElm {
         int alen = 8;
         calcLeads(dist + alen);
         Point p1 = interpPoint(point1, point2, (dn - alen) / (2 * dn));
-        //arrow1 = calcArrow(point1, p1, alen, alen);
+        arrow1 = calcArrow(point1, p1, alen, alen);
         p1 = interpPoint(point1, point2, (dn + alen) / (2 * dn));
-        //arrow2 = calcArrow(point2, p1, alen, alen);
+        arrow2 = calcArrow(point2, p1, alen, alen);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int i;
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 8);
-        draw2Leads(g);
-        getPowerColor(g, true);
-        getVoltageColor(g, volts[0]);
-        g.fillPolygon(arrow1);
-        getVoltageColor(g, volts[1]);
-        g.fillPolygon(arrow2);
+        draw2Leads(g, (Color) lightGrayColor);
+        drawPolygon(arrow1, (Color) getVoltageColor(volts[0]));
+        drawPolygon(arrow2, (Color) getVoltageColor(volts[1]));
         if (state)
             doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         double vd = volts[0] - volts[1];

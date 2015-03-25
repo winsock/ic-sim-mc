@@ -1,8 +1,11 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 // Silicon-Controlled Rectifier
@@ -30,7 +33,7 @@ class SCRElm extends CircuitElm {
     private double cresistance;
     private double triggerI;
     private double holdingI;
-    //Polygon poly;
+    Polygon poly;
     private Point[] cathode;
     private Point[] gate;
     private double aresistance;
@@ -107,7 +110,7 @@ class SCRElm extends CircuitElm {
         Point pa[] = newPointArray(2);
         interpPoint2(lead1, lead2, pa[0], pa[1], 0, hs);
         interpPoint2(lead1, lead2, cathode[0], cathode[1], 1, hs);
-        //poly = createPolygon(pa[0], pa[1], lead2);
+        poly = createPolygon(pa[0], pa[1], lead2);
 
         gate = newPointArray(2);
         double leadlen = (dn - 16) / 2;
@@ -122,26 +125,24 @@ class SCRElm extends CircuitElm {
         interpPoint(lead2, point2, gate[1], gatelen / leadlen, sim.gridSize * 2 * dir);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, hs);
         adjustBbox(gate[0], gate[1]);
 
         double v1 = volts[anode];
         double v2 = volts[cnode];
 
-        draw2Leads(g);
+        draw2Leads(g, (Color) lightGrayColor);
 
         // draw arrow thingy
-        getPowerColor(g, true);
-        getVoltageColor(g, v1);
-        g.fillPolygon(poly);
+        drawPolygon(poly, (Color) getVoltageColor(v1));
 
         // draw thing arrow is pointing to
-        getVoltageColor(g, v2);
-        drawThickLine(g, cathode[0], cathode[1]);
+        Color color = (Color) getVoltageColor(v2);
+        drawThickLine(g, cathode[0], cathode[1], color);
 
-        drawThickLine(g, lead2, gate[0]);
-        drawThickLine(g, gate[0], gate[1]);
+        drawThickLine(g, lead2, gate[0], color);
+        drawThickLine(g, gate[0], gate[1], color);
 
         curcount_a = updateDotCount(ia, curcount_a);
         curcount_c = updateDotCount(ic, curcount_c);
@@ -152,8 +153,8 @@ class SCRElm extends CircuitElm {
             drawDots(g, gate[1], gate[0], curcount_g);
             drawDots(g, gate[0], lead2, curcount_g + distance(gate[1], gate[0]));
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     Point getPost(int n) {
         return (n == 0) ? point1 : (n == 1) ? point2 : gate[1];

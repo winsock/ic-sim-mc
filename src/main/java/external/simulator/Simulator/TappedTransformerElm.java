@@ -1,6 +1,8 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -57,22 +59,21 @@ class TappedTransformerElm extends CircuitElm {
                 current[0] + " " + current[1] + " " + current[2];
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int i;
         for (i = 0; i != 5; i++) {
-            getVoltageColor(g, volts[i]);
-            drawThickLine(g, ptEnds[i], ptCoil[i]);
+
+            drawThickLine(g, ptEnds[i], ptCoil[i], (Color) getVoltageColor(volts[i]));
         }
         for (i = 0; i != 4; i++) {
             if (i == 1)
                 continue;
-            getPowerColor(g, current[i] * (volts[i] - volts[i + 1]));
             drawCoil(g, i > 1 ? -6 : 6,
-                    ptCoil[i], ptCoil[i + 1], volts[i], volts[i + 1]);
+                    ptCoil[i], ptCoil[i + 1], volts[i], volts[i + 1], getPowerColor(current[i] * (volts[i] - volts[i + 1])));
         }
-        g.setColor(needsHighlight() ? selectColor : lightGrayColor);
+        Color color = (Color) (needsHighlight() ? selectColor : lightGrayColor);
         for (i = 0; i != 4; i += 2) {
-            drawThickLine(g, ptCore[i], ptCore[i + 1]);
+            drawThickLine(g, ptCore[i], ptCore[i + 1], color);
         }
         // calc current of tap wire
         current[3] = current[1] - current[2];
@@ -91,9 +92,9 @@ class TappedTransformerElm extends CircuitElm {
         drawDots(g, ptCoil[3], ptCoil[4], curcount[2]);
         drawDots(g, ptCoil[4], ptEnds[4], curcount[2]);
 
-        drawPosts(g);
+        drawPosts(g, color);
         setBbox(ptEnds[0], ptEnds[4], 0);
-    }*/
+    }
 
     void setPoints() {
         super.setPoints();

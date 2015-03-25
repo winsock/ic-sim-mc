@@ -2,15 +2,15 @@ package external.simulator.Simulator;
 
 
 import me.querol.andrew.ic.Gui.CircuitGUI;
-import org.lwjgl.util.Point;
 import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
 
 import java.awt.*;
 import java.util.StringTokenizer;
 
 class CurrentElm extends CircuitElm {
-    private double currentValue;
     Polygon arrow;
+    private double currentValue;
     private Point ashaft1;
     private Point ashaft2;
     private Point center;

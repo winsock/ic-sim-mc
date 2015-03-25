@@ -1,5 +1,7 @@
 package external.simulator.Simulator;
 
+import org.lwjgl.util.Color;
+import me.querol.andrew.ic.Gui.CircuitGUI;
 
 import java.util.StringTokenizer;
 
@@ -56,15 +58,13 @@ class SweepElm extends CircuitElm {
         lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, circleSize);
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, lead1);
-        g.setColor(needsHighlight() ? selectColor : Color.gray);
-        getPowerColor(g, false);
-        int xc = point2.x;
-        int yc = point2.y;
-        drawThickCircle(g, xc, yc, circleSize);
+        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
+        Color color = (Color) (needsHighlight() ? selectColor : Color.GREY);
+        int xc = point2.getX();
+        int yc = point2.getY();
+        drawThickCircle(g, xc, yc, circleSize, color);
         int wl = 8;
         adjustBbox(xc - circleSize, yc - circleSize,
                 xc + circleSize, yc + circleSize);
@@ -77,26 +77,26 @@ class SweepElm extends CircuitElm {
         if (tm > 1000)
             tm = 2000 - tm;
         double w = 1 + tm * .002;
-        if (!sim.stoppedCheck.getState())
+        if (!sim.stopped)
             w = 1 + 2 * (frequency - minF) / (maxF - minF);
         for (i = -xl; i <= xl; i++) {
             int yy = yc + (int) (.95 * Math.sin(i * pi * w / xl) * wl);
             if (ox != -1)
-                drawThickLine(g, ox, oy, xc + i, yy);
+                drawThickLine(g, ox, oy, xc + i, yy, color);
             ox = xc + i;
             oy = yy;
         }
-        if (sim.showValuesCheckItem.getState()) {
+        /*if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(frequency, "Hz");
             if (dx == 0 || dy == 0)
                 drawValues(g, s, circleSize);
-        }
+        }*/
 
-        drawPosts(g);
+        drawPosts(g, (Color) lightGrayColor);
         curcount = updateDotCount(-current, curcount);
         if (sim.dragElm != this)
             drawDots(g, point1, lead1, curcount);
-    }*/
+    }
 
     void stamp() {
         sim.stampVoltageSource(0, nodes[0], voltSource);

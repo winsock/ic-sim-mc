@@ -1,6 +1,8 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -76,20 +78,19 @@ class TransformerElm extends CircuitElm {
         return (flags & FLAG_BACK_EULER) == 0;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int i;
         for (i = 0; i != 4; i++) {
-            getVoltageColor(g, volts[i]);
-            drawThickLine(g, ptEnds[i], ptCoil[i]);
+            ;
+            drawThickLine(g, ptEnds[i], ptCoil[i], (Color) getVoltageColor(volts[i]));
         }
         for (i = 0; i != 2; i++) {
-            getPowerColor(g, current[i] * (volts[i] - volts[i + 2]));
             drawCoil(g, dsign * (i == 1 ? -6 : 6),
-                    ptCoil[i], ptCoil[i + 2], volts[i], volts[i + 2]);
+                    ptCoil[i], ptCoil[i + 2], volts[i], volts[i + 2], getPowerColor(current[i] * (volts[i] - volts[i + 2])));
         }
-        g.setColor(needsHighlight() ? selectColor : lightGrayColor);
+        Color color = (Color) (needsHighlight() ? selectColor : lightGrayColor);
         for (i = 0; i != 2; i++) {
-            drawThickLine(g, ptCore[i], ptCore[i + 2]);
+            drawThickLine(g, ptCore[i], ptCore[i + 2], color);
             curcount[i] = updateDotCount(current[i], curcount[i]);
         }
         for (i = 0; i != 2; i++) {
@@ -98,9 +99,9 @@ class TransformerElm extends CircuitElm {
             drawDots(g, ptEnds[i + 2], ptCoil[i + 2], -curcount[i]);
         }
 
-        drawPosts(g);
+        drawPosts(g, color);
         setBbox(ptEnds[0], ptEnds[3], 0);
-    }*/
+    }
 
     void setPoints() {
         super.setPoints();

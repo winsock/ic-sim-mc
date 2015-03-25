@@ -1,6 +1,8 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -52,7 +54,7 @@ class MemristorElm extends CircuitElm {
         ps4 = new Point();
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int segments = 6;
         int i;
         int ox = 0;
@@ -60,8 +62,7 @@ class MemristorElm extends CircuitElm {
         double v2 = volts[1];
         int hs = 2 + (int) (8 * (1 - dopeWidth / totalWidth));
         setBbox(point1, point2, hs);
-        draw2Leads(g);
-        getPowerColor(g, true);
+        draw2Leads(g, (Color) lightGrayColor);
         double segf = 1. / segments;
 
         // draw zigzag
@@ -70,20 +71,20 @@ class MemristorElm extends CircuitElm {
             if (i == segments)
                 nx = 0;
             double v = v1 + (v2 - v1) * i / segments;
-            getVoltageColor(g, v);
+            Color color = (Color) getVoltageColor(v);
             interpPoint(lead1, lead2, ps1, i * segf, hs * ox);
             interpPoint(lead1, lead2, ps2, i * segf, hs * nx);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, color);
             if (i == segments)
                 break;
             interpPoint(lead1, lead2, ps1, (i + 1) * segf, hs * nx);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, color);
             ox = nx;
         }
 
         doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     boolean nonLinear() {
         return true;

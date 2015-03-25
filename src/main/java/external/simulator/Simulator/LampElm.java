@@ -1,8 +1,13 @@
 package external.simulator.Simulator;
 
 
-import org.lwjgl.util.Point;
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class LampElm extends CircuitElm {
@@ -89,25 +94,41 @@ class LampElm extends CircuitElm {
         return (Color) Color.WHITE;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 4);
-        adjustBbox(bulb.x - bulbR, bulb.y - bulbR,
-                bulb.x + bulbR, bulb.y + bulbR);
+        adjustBbox(bulb.getX() - bulbR, bulb.getY() - bulbR,
+                bulb.getX() + bulbR, bulb.getY() + bulbR);
         // adjustbbox
-        draw2Leads(g);
-        getPowerColor(g, true);
-        g.setColor(getTempColor());
-        g.fillOval(bulb.x - bulbR, bulb.y - bulbR, bulbR * 2, bulbR * 2);
-        g.setColor(Color.white);
-        drawThickCircle(g, bulb.x, bulb.y, bulbR);
-        getVoltageColor(g, v1);
-        drawThickLine(g, lead1, filament[0]);
-        getVoltageColor(g, v2);
-        drawThickLine(g, lead2, filament[1]);
-        getVoltageColor(g, (v1 + v2) * .5);
-        drawThickLine(g, filament[0], filament[1]);
+        draw2Leads(g, (Color) lightGrayColor);
+
+        int a;
+        double m = pi / 180;
+        double r = bulbR;
+
+        Color color = getTempColor();
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer renderer = tessellator.getWorldRenderer();
+        renderer.startDrawing(GL11.GL_TRIANGLE_FAN);
+        renderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        renderer.addVertex(bulb.getX(), bulb.getY(), 0); // Add center
+        double ax = Math.cos(m) * r + bulb.getX();
+        double ay = Math.sin(m) * r + bulb.getY();
+        renderer.addVertex(ax, ay, 0); // Add the first outer vertex to start the triangle fan
+
+
+        for (a = 20; a != 360; a += 20) {
+            double bx = Math.cos(a * m) * r + bulb.getX();
+            double by = Math.sin(a + 20 * m) * r + bulb.getY();
+            renderer.addVertex(bx, by, 0);
+        }
+        renderer.finishDrawing();
+
+        drawThickCircle(g, bulb.getX(), bulb.getY(), bulbR, (Color) whiteColor);
+        drawThickLine(g, lead1, filament[0], (Color) getVoltageColor(v1));
+        drawThickLine(g, lead2, filament[1], (Color) getVoltageColor(v2));
+        drawThickLine(g, filament[0], filament[1], (Color) getVoltageColor((v1 + v2) * .5));
         updateDotCount();
         if (sim.dragElm != this) {
             drawDots(g, point1, lead1, curcount);
@@ -117,11 +138,10 @@ class LampElm extends CircuitElm {
             drawDots(g, filament[0], filament[1], cc);
             cc += 16;
             drawDots(g, filament[1], lead2, cc);
-            cc += filament_len;
             drawDots(g, lead2, point2, curcount);
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         current = (volts[0] - volts[1]) / resistance;

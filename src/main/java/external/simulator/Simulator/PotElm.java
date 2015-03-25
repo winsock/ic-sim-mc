@@ -1,6 +1,8 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -120,20 +122,19 @@ class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
         ps4 = new Point();
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int segments = 16;
         int i;
         int ox = 0;
-        int hs = sim.euroResistorCheckItem.getState() ? 6 : 8;
+        int hs = 8;
         double v1 = volts[0];
         double v2 = volts[1];
         double v3 = volts[2];
         setBbox(point1, point2, hs);
-        draw2Leads(g);
-        getPowerColor(g, true);
+        draw2Leads(g, (Color) lightGrayColor);
         double segf = 1. / segments;
         int divide = (int) (segments * position);
-        if (!sim.euroResistorCheckItem.getState()) {
+        if (!sim.euroResistors) {
             // draw zigzag
             for (i = 0; i != segments; i++) {
                 int nx = 0;
@@ -151,35 +152,33 @@ class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
                 double v = v1 + (v3 - v1) * i / divide;
                 if (i >= divide)
                     v = v3 + (v2 - v3) * (i - divide) / (segments - divide);
-                getVoltageColor(g, v);
                 interpPoint(lead1, lead2, ps1, i * segf, hs * ox);
                 interpPoint(lead1, lead2, ps2, (i + 1) * segf, hs * nx);
-                drawThickLine(g, ps1, ps2);
+                drawThickLine(g, ps1, ps2, (Color) getVoltageColor(v));
                 ox = nx;
             }
         } else {
             // draw rectangle
-            getVoltageColor(g, v1);
             interpPoint2(lead1, lead2, ps1, ps2, 0, hs);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, (Color) getVoltageColor(v1));
             for (i = 0; i != segments; i++) {
                 double v = v1 + (v3 - v1) * i / divide;
                 if (i >= divide)
                     v = v3 + (v2 - v3) * (i - divide) / (segments - divide);
-                getVoltageColor(g, v);
+                Color color = (Color) getVoltageColor(v);
                 interpPoint2(lead1, lead2, ps1, ps2, i * segf, hs);
                 interpPoint2(lead1, lead2, ps3, ps4, (i + 1) * segf, hs);
-                drawThickLine(g, ps1, ps3);
-                drawThickLine(g, ps2, ps4);
+                drawThickLine(g, ps1, ps3, color);
+                drawThickLine(g, ps2, ps4, color);
             }
             interpPoint2(lead1, lead2, ps1, ps2, 1, hs);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, (Color) getVoltageColor(v1));
         }
-        getVoltageColor(g, v3);
-        drawThickLine(g, post3, corner2);
-        drawThickLine(g, corner2, arrowPoint);
-        drawThickLine(g, arrow1, arrowPoint);
-        drawThickLine(g, arrow2, arrowPoint);
+        Color color = (Color) getVoltageColor(v3);
+        drawThickLine(g, post3, corner2, color);
+        drawThickLine(g, corner2, arrowPoint, color);
+        drawThickLine(g, arrow1, arrowPoint, color);
+        drawThickLine(g, arrow2, arrowPoint, color);
         curcount1 = updateDotCount(current1, curcount1);
         curcount2 = updateDotCount(current2, curcount2);
         curcount3 = updateDotCount(current3, curcount3);
@@ -190,8 +189,8 @@ class PotElm extends CircuitElm /*implements AdjustmentListener*/ {
             drawDots(g, corner2, midpoint,
                     curcount3 + distance(post3, corner2));
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         current1 = (volts[0] - volts[2]) / resistance1;

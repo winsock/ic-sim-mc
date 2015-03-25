@@ -1,8 +1,10 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
-
+import org.lwjgl.util.Color;
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class TunnelDiodeElm extends CircuitElm {
@@ -13,7 +15,7 @@ class TunnelDiodeElm extends CircuitElm {
     private static final double pvpp = .525;
     private static final double piv = 370e-6;
     private final int hs = 8;
-    //Polygon poly;
+    Polygon poly;
     private Point[] cathode;
     private double lastvoltdiff;
 
@@ -47,31 +49,29 @@ class TunnelDiodeElm extends CircuitElm {
         interpPoint2(lead1, lead2, pa[0], pa[1], 0, hs);
         interpPoint2(lead1, lead2, cathode[0], cathode[1], 1, hs);
         interpPoint2(lead1, lead2, cathode[2], cathode[3], .8, hs);
-//        poly = createPolygon(pa[0], pa[1], lead2);
+        poly = createPolygon(pa[0], pa[1], lead2);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, hs);
 
         double v1 = volts[0];
         double v2 = volts[1];
 
-        draw2Leads(g);
+        draw2Leads(g, (Color) lightGrayColor);
 
         // draw arrow thingy
-        getPowerColor(g, true);
-        getVoltageColor(g, v1);
-        g.fillPolygon(poly);
+        drawPolygon(poly, (Color) getVoltageColor(v1));
 
         // draw thing arrow is pointing to
-        getVoltageColor(g, v2);
-        drawThickLine(g, cathode[0], cathode[1]);
-        drawThickLine(g, cathode[2], cathode[0]);
-        drawThickLine(g, cathode[3], cathode[1]);
+        Color color = (Color) getVoltageColor(v2);
+        drawThickLine(g, cathode[0], cathode[1], color);
+        drawThickLine(g, cathode[2], cathode[0], color);
+        drawThickLine(g, cathode[3], cathode[1], color);
 
         doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void reset() {
         lastvoltdiff = volts[0] = volts[1] = curcount = 0;

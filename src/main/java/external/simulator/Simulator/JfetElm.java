@@ -1,13 +1,16 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
+import org.lwjgl.util.Color;
 
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class JfetElm extends MosfetElm {
-    /*    Polygon gatePoly;
-        Polygon arrowPoly;*/
+    Polygon gatePoly;
+    Polygon arrowPoly;
     private Point gatePt;
 
     JfetElm(int xx, int yy, boolean pnpflag) {
@@ -21,19 +24,18 @@ class JfetElm extends MosfetElm {
         noDiagonal = true;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, hs);
-        getVoltageColor(g, volts[1]);
-        drawThickLine(g, src[0], src[1]);
-        drawThickLine(g, src[1], src[2]);
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, drn[0], drn[1]);
-        drawThickLine(g, drn[1], drn[2]);
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, gatePt);
-        g.fillPolygon(arrowPoly);
-        getPowerColor(g, true);
-        g.fillPolygon(gatePoly);
+        Color colorV1 = (Color) getVoltageColor(volts[1]);
+        drawThickLine(g, src[0], src[1], colorV1);
+        drawThickLine(g, src[1], src[2], colorV1);
+        Color colorV2 = (Color) getVoltageColor(volts[2]);
+        drawThickLine(g, drn[0], drn[1], colorV2);
+        drawThickLine(g, drn[1], drn[2], colorV2);
+        Color color = (Color) getVoltageColor(volts[0]);
+        drawThickLine(g, point1, gatePt, color);
+        drawPolygon(arrowPoly, color);
+        drawPolygon(gatePoly, color);
         curcount = updateDotCount(-ids, curcount);
         if (curcount != 0) {
             drawDots(g, src[0], src[1], curcount);
@@ -41,8 +43,8 @@ class JfetElm extends MosfetElm {
             drawDots(g, drn[0], drn[1], -curcount);
             drawDots(g, drn[1], drn[2], -(curcount + 8));
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void setPoints() {
         super.setPoints();
@@ -61,12 +63,12 @@ class JfetElm extends MosfetElm {
         Point ra[] = newPointArray(4);
         interpPoint2(point1, point2, ra[0], ra[1], 1 - 13 / dn, hs);
         interpPoint2(point1, point2, ra[2], ra[3], 1 - 10 / dn, hs);
-/*        gatePoly = createPolygon(ra[0], ra[1], ra[3], ra[2]);
+        gatePoly = createPolygon(ra[0], ra[1], ra[3], ra[2]);
         if (pnp == -1) {
             Point x = interpPoint(gatePt, point1, 18 / dn);
             arrowPoly = calcArrow(gatePt, x, 8, 3);
         } else
-            arrowPoly = calcArrow(point1, gatePt, 8, 3);*/
+            arrowPoly = calcArrow(point1, gatePt, 8, 3);
     }
 
     int getDumpType() {

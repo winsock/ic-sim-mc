@@ -1,13 +1,16 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class InverterElm extends CircuitElm {
     private double slewRate; // V/ns
-    //    Polygon gatePoly;
+    Polygon gatePoly;
     private Point pcircle;
 
     public InverterElm(int xx, int yy) {
@@ -35,15 +38,15 @@ class InverterElm extends CircuitElm {
         return 'I';
     }
 
-/*    void draw(CircuitGUI g) {
-        drawPosts(g);
-        draw2Leads(g);
-        g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        drawThickPolygon(g, gatePoly);
-        drawThickCircle(g, pcircle.x, pcircle.y, 3);
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+        drawPosts(g, (Color) Color.LTGREY);
+        draw2Leads(g, (Color) Color.LTGREY);
+        Color color = (Color) (needsHighlight() ? selectColor : lightGrayColor);
+        drawThickPolygon(g, gatePoly, color);
+        drawThickCircle(g, pcircle.getX(), pcircle.getY(), 3, color);
         curcount = updateDotCount(current, curcount);
         drawDots(g, lead2, point2, curcount);
-    }*/
+    }
 
     void setPoints() {
         super.setPoints();
@@ -57,8 +60,8 @@ class InverterElm extends CircuitElm {
         Point triPoints[] = newPointArray(3);
         interpPoint2(lead1, lead2, triPoints[0], triPoints[1], 0, hs);
         triPoints[2] = interpPoint(point1, point2, .5 + (ww - 5) / dn);
-/*        gatePoly = createPolygon(triPoints);
-        setBbox(point1, point2, hs);*/
+        gatePoly = createPolygon(triPoints);
+        setBbox(point1, point2, hs);
     }
 
     int getVoltageSourceCount() {

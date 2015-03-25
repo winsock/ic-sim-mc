@@ -1,5 +1,7 @@
 package external.simulator.Simulator;
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -33,31 +35,27 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
         return 4;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g) {
         setBbox(point1, point2, openhs);
 
         // draw first lead
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, lead1);
+        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
 
         // draw second lead
-        getVoltageColor(g, volts[1]);
-        drawThickLine(g, swpoles[0], swposts[0]);
+        drawThickLine(g, swpoles[0], swposts[0], (Color) getVoltageColor(volts[1]));
 
         // draw third lead
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, swpoles[1], swposts[1]);
+        drawThickLine(g, swpoles[1], swposts[1], (Color) getVoltageColor(volts[2]));
 
         // draw switch
-        g.setColor(lightGrayColor);
         int position = (open) ? 1 : 0;
-        drawThickLine(g, lead1, swpoles[position]);
+        drawThickLine(g, lead1, swpoles[position], (Color) lightGrayColor);
 
         updateDotCount();
         drawDots(g, point1, lead1, curcount);
         drawDots(g, swpoles[position], swposts[position], curcount);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     Point getPost(int n) {
         return (n == 0) ? point1 : (n == 3) ? ctlPoint : swposts[n - 1];

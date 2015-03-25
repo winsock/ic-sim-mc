@@ -1,9 +1,9 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
@@ -17,12 +17,6 @@ class TextElm extends GraphicElm {
     private final int FLAG_BAR = 2;
     private String text;
     private Vector<String> lines;
-
-    @Override
-    boolean isWire() {
-        return false;
-    }
-
     private int size;
 
     public TextElm(int xx, int yy) {
@@ -41,6 +35,11 @@ class TextElm extends GraphicElm {
         while (st.hasMoreTokens())
             text += ' ' + st.nextToken();
         split();
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     void split() {
@@ -77,7 +76,7 @@ class TextElm extends GraphicElm {
         y2 = yy;
     }
 
-    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         //Graphics2D g2 = (Graphics2D)g;
         //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         //	RenderingHints.VALUE_ANTIALIAS_ON);

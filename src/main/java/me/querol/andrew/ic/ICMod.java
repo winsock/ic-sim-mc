@@ -34,7 +34,7 @@ public class ICMod {
 
     @SubscribeEvent
     public void onServerTick(TickEvent.ServerTickEvent serverTickEvent) {
-        //System.out.println(simulator.elmList.get(32).volts[0]);
+        System.out.println(simulator.elmList.get(32).toString());
         simulator.updateCircuit();
     }
 }

@@ -1,6 +1,7 @@
 package external.simulator.Simulator;
 
-
+import org.lwjgl.util.Color;
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -55,25 +56,23 @@ class SwitchElm extends CircuitElm {
         ps2 = new Point();
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int openhs = 16;
         int hs1 = (position == 1) ? 0 : 2;
         int hs2 = (position == 1) ? openhs : 2;
         setBbox(point1, point2, openhs);
 
-        draw2Leads(g);
+        draw2Leads(g, (Color) lightGrayColor);
 
         if (position == 0)
             doDots(g);
 
-        if (!needsHighlight())
-            g.setColor(whiteColor);
         interpPoint(lead1, lead2, ps, 0, hs1);
         interpPoint(lead1, lead2, ps2, 1, hs2);
 
-        drawThickLine(g, ps, ps2);
-        drawPosts(g);
-    }*/
+        drawThickLine(g, ps, ps2, (Color) lightGrayColor);
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         if (position == 1)

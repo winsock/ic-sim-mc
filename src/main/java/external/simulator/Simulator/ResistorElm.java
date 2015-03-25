@@ -1,6 +1,8 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -36,18 +38,17 @@ class ResistorElm extends CircuitElm {
         ps4 = new Point();
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int segments = 16;
         int i;
         int ox = 0;
-        int hs = sim.euroResistorCheckItem.getState() ? 6 : 8;
+        int hs = sim.euroResistors ? 6 : 8;
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, hs);
-        draw2Leads(g);
-        getPowerColor(g, true);
+        draw2Leads(g, (Color) lightGrayColor);
         double segf = 1. / segments;
-        if (!sim.euroResistorCheckItem.getState()) {
+        if (!sim.euroResistors) {
             // draw zigzag
             for (i = 0; i != segments; i++) {
                 int nx = 0;
@@ -63,35 +64,34 @@ class ResistorElm extends CircuitElm {
                         break;
                 }
                 double v = v1 + (v2 - v1) * i / segments;
-                getVoltageColor(g, v);
                 interpPoint(lead1, lead2, ps1, i * segf, hs * ox);
                 interpPoint(lead1, lead2, ps2, (i + 1) * segf, hs * nx);
-                drawThickLine(g, ps1, ps2);
+                drawThickLine(g, ps1, ps2, (Color) getVoltageColor(v));
                 ox = nx;
             }
         } else {
             // draw rectangle
-            getVoltageColor(g, v1);
             interpPoint2(lead1, lead2, ps1, ps2, 0, hs);
-            drawThickLine(g, ps1, ps2);
+            Color color = (Color) getVoltageColor(v1);
+            drawThickLine(g, ps1, ps2, color);
             for (i = 0; i != segments; i++) {
                 double v = v1 + (v2 - v1) * i / segments;
-                getVoltageColor(g, v);
+                Color innerColor = (Color) getVoltageColor(v);
                 interpPoint2(lead1, lead2, ps1, ps2, i * segf, hs);
                 interpPoint2(lead1, lead2, ps3, ps4, (i + 1) * segf, hs);
-                drawThickLine(g, ps1, ps3);
-                drawThickLine(g, ps2, ps4);
+                drawThickLine(g, ps1, ps3, innerColor);
+                drawThickLine(g, ps2, ps4, innerColor);
             }
             interpPoint2(lead1, lead2, ps1, ps2, 1, hs);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, color);
         }
-        if (sim.showValuesCheckItem.getState()) {
+/*        if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(resistance, "");
             drawValues(g, s, hs);
-        }
+        }*/
         doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         current = (volts[0] - volts[1]) / resistance;

@@ -1,8 +1,13 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
+import java.awt.*;
 import java.util.StringTokenizer;
 
 class DiodeElm extends CircuitElm {
@@ -11,7 +16,7 @@ class DiodeElm extends CircuitElm {
     private final int hs = 8;
     Diode diode;
     double fwdrop, zvoltage;
-    //    Polygon poly;
+    Polygon poly;
     private Point[] cathode;
 
     public DiodeElm(int xx, int yy) {
@@ -61,37 +66,31 @@ class DiodeElm extends CircuitElm {
         Point pa[] = newPointArray(2);
         interpPoint2(lead1, lead2, pa[0], pa[1], 0, hs);
         interpPoint2(lead1, lead2, cathode[0], cathode[1], 1, hs);
-//        poly = createPolygon(pa[0], pa[1], lead2);
+        poly = createPolygon(pa[0], pa[1], lead2);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         drawDiode(g);
         doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) Color.LTGREY);
+    }
 
     void reset() {
         diode.reset();
         volts[0] = volts[1] = curcount = 0;
     }
 
-/*    void drawDiode(CircuitGUI g) {
+    void drawDiode(CircuitGUI g) {
         setBbox(point1, point2, hs);
 
         double v1 = volts[0];
         double v2 = volts[1];
 
-        draw2Leads(g);
-
+        draw2Leads(g, (Color) getVoltageColor(v1));
         // draw arrow thingy
-        getPowerColor(g, true);
-        getVoltageColor(g, v1);
-        g.fillPolygon(poly);
-
-        // draw thing arrow is pointing to
-        getVoltageColor(g, v2);
-        drawThickLine(g, cathode[0], cathode[1]);
-    }*/
+        drawPolygon(poly, (Color) getVoltageColor(v1));
+        drawThickLine(g, cathode[0], cathode[1], (Color) getVoltageColor(v2));
+    }
 
     void stamp() {
         diode.stamp(nodes[0], nodes[1]);

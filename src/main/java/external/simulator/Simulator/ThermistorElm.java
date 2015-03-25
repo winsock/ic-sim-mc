@@ -3,6 +3,8 @@ package external.simulator.Simulator;// stub ThermistorElm based on SparkGapElm
 // FIXME need to add ThermistorElm.java to srclist
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -60,19 +62,18 @@ class ThermistorElm extends CircuitElm {
 /*    void delete() {
         sim.main.remove(label);
         sim.main.remove(slider);
-    }
+    }*/
 
-    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int i;
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 6);
-        draw2Leads(g);
+        draw2Leads(g, (Color) lightGrayColor);
         // FIXME need to draw properly, see ResistorElm.java
-        getPowerColor(g, true);
         doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         double vd = volts[0] - volts[1];

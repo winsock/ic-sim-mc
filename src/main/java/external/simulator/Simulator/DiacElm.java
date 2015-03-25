@@ -4,6 +4,7 @@ package external.simulator.Simulator;// stub implementation of DiacElm, based on
 
 
 import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -62,10 +63,9 @@ class DiacElm extends CircuitElm {
         double v1 = volts[0];
         double v2 = volts[1];
         setBbox(point1, point2, 6);
-        draw2Leads(g);
-        getPowerColor(g, true);
+        draw2Leads(g, (Color) Color.LTGREY);
         doDots(g);
-        drawPosts(g);
+        drawPosts(g, (Color) Color.LTGREY);
     }
 
     void calculateCurrent() {

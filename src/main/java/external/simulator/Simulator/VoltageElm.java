@@ -1,6 +1,10 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+import org.lwjgl.util.Point;
+
 import java.util.StringTokenizer;
 
 class VoltageElm extends CircuitElm {
@@ -118,19 +122,16 @@ class VoltageElm extends CircuitElm {
         calcLeads((waveform == WF_DC || waveform == WF_VAR) ? 8 : circleSize * 2);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(x, y, x2, y2);
-        draw2Leads(g);
+        draw2Leads(g, (Color) lightGrayColor);
         if (waveform == WF_DC) {
-            getPowerColor(g, false);
-            getVoltageColor(g, volts[0]);
             interpPoint2(lead1, lead2, ps1, ps2, 0, 10);
-            drawThickLine(g, ps1, ps2);
-            getVoltageColor(g, volts[1]);
+            drawThickLine(g, ps1, ps2, (Color) getVoltageColor(volts[0]));
             int hs = 16;
             setBbox(point1, point2, hs);
             interpPoint2(lead1, lead2, ps1, ps2, 1, hs);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, (Color) getVoltageColor(volts[1]));
         } else {
             setBbox(point1, point2, circleSize);
             interpPoint(lead1, lead2, ps1, .5);
@@ -145,15 +146,14 @@ class VoltageElm extends CircuitElm {
                 drawDots(g, point2, lead2, -curcount);
             }
         }
-        drawPosts(g);
+        drawPosts(g, (Color) lightGrayColor);
     }
 
     void drawWaveform(CircuitGUI g, Point center) {
-        g.setColor(needsHighlight() ? selectColor : Color.gray);
-        getPowerColor(g, false);
-        int xc = center.x;
-        int yc = center.y;
-        drawThickCircle(g, xc, yc, circleSize);
+        Color color = (Color) (needsHighlight() ? selectColor : Color.GREY);
+        int xc = center.getX();
+        int yc = center.getY();
+        drawThickCircle(g, xc, yc, circleSize, color);
         int wl = 8;
         adjustBbox(xc - circleSize, yc - circleSize,
                 xc + circleSize, yc + circleSize);
@@ -165,30 +165,30 @@ class VoltageElm extends CircuitElm {
             case WF_SQUARE:
                 xc2 = (int) (wl * 2 * dutyCycle - wl + xc);
                 xc2 = max(xc - wl + 3, min(xc + wl - 3, xc2));
-                drawThickLine(g, xc - wl, yc - wl, xc - wl, yc);
-                drawThickLine(g, xc - wl, yc - wl, xc2, yc - wl);
-                drawThickLine(g, xc2, yc - wl, xc2, yc + wl);
-                drawThickLine(g, xc + wl, yc + wl, xc2, yc + wl);
-                drawThickLine(g, xc + wl, yc, xc + wl, yc + wl);
+                drawThickLine(g, xc - wl, yc - wl, xc - wl, yc, color);
+                drawThickLine(g, xc - wl, yc - wl, xc2, yc - wl, color);
+                drawThickLine(g, xc2, yc - wl, xc2, yc + wl, color);
+                drawThickLine(g, xc + wl, yc + wl, xc2, yc + wl, color);
+                drawThickLine(g, xc + wl, yc, xc + wl, yc + wl, color);
                 break;
             case WF_PULSE:
                 yc += wl / 2;
-                drawThickLine(g, xc - wl, yc - wl, xc - wl, yc);
-                drawThickLine(g, xc - wl, yc - wl, xc - wl / 2, yc - wl);
-                drawThickLine(g, xc - wl / 2, yc - wl, xc - wl / 2, yc);
-                drawThickLine(g, xc - wl / 2, yc, xc + wl, yc);
+                drawThickLine(g, xc - wl, yc - wl, xc - wl, yc, color);
+                drawThickLine(g, xc - wl, yc - wl, xc - wl / 2, yc - wl, color);
+                drawThickLine(g, xc - wl / 2, yc - wl, xc - wl / 2, yc, color);
+                drawThickLine(g, xc - wl / 2, yc, xc + wl, yc, color);
                 break;
             case WF_SAWTOOTH:
-                drawThickLine(g, xc, yc - wl, xc - wl, yc);
-                drawThickLine(g, xc, yc - wl, xc, yc + wl);
-                drawThickLine(g, xc, yc + wl, xc + wl, yc);
+                drawThickLine(g, xc, yc - wl, xc - wl, yc, color);
+                drawThickLine(g, xc, yc - wl, xc, yc + wl, color);
+                drawThickLine(g, xc, yc + wl, xc + wl, yc, color);
                 break;
             case WF_TRIANGLE: {
                 int xl = 5;
-                drawThickLine(g, xc - xl * 2, yc, xc - xl, yc - wl);
-                drawThickLine(g, xc - xl, yc - wl, xc, yc);
-                drawThickLine(g, xc, yc, xc + xl, yc + wl);
-                drawThickLine(g, xc + xl, yc + wl, xc + xl * 2, yc);
+                drawThickLine(g, xc - xl * 2, yc, xc - xl, yc - wl, color);
+                drawThickLine(g, xc - xl, yc - wl, xc, yc, color);
+                drawThickLine(g, xc, yc, xc + xl, yc + wl, color);
+                drawThickLine(g, xc + xl, yc + wl, xc + xl * 2, yc, color);
                 break;
             }
             case WF_AC: {
@@ -198,19 +198,19 @@ class VoltageElm extends CircuitElm {
                 for (i = -xl; i <= xl; i++) {
                     int yy = yc + (int) (.95 * Math.sin(i * pi / xl) * wl);
                     if (ox != -1)
-                        drawThickLine(g, ox, oy, xc + i, yy);
+                        drawThickLine(g, ox, oy, xc + i, yy, color);
                     ox = xc + i;
                     oy = yy;
                 }
                 break;
             }
         }
-        if (sim.showValuesCheckItem.getState()) {
+/*        if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(frequency, "Hz");
             if (dx == 0 || dy == 0)
                 drawValues(g, s, circleSize);
-        }
-    }*/
+        }*/
+    }
 
     int getVoltageSourceCount() {
         return 1;

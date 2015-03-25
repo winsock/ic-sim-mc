@@ -4,7 +4,6 @@ package external.simulator.Simulator;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
@@ -25,6 +24,10 @@ class Scope {
     static final int VAL_VCE = 6;
     static final int VAL_R = 2;
     final int FLAG_YELM = 32;
+    /**
+     * Dynamic scope texture id
+     */
+    protected int scopeTextureId = -1;
     double minV[], maxV[], minMaxV;
     double minI[], maxI[], minMaxI;
     int scopePointCount = 128;
@@ -38,8 +41,6 @@ class Scope {
     int draw_ox, draw_oy;
     float dpixels[];
     private CirSim sim;
-    /** Dynamic scope texture id */
-    protected int scopeTextureId = -1;
 
 
     Scope(CirSim s) {

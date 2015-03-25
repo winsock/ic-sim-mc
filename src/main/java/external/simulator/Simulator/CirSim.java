@@ -119,6 +119,7 @@ public class CirSim {
     private int steprate = 0;
     private CircuitElm[] voltageSources;
     private Rectangle circuitArea, selectedArea;
+    public boolean euroResistors = false;
 
     public CirSim() {
 
@@ -882,9 +883,8 @@ public class CirSim {
 
     public void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks) {
 
-        Tessellator tess = Tessellator.getInstance();
+        setupScopes();
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
-
         CircuitElm.selectColor = Color.CYAN;
 /*        if (printableCheckItem.getState()) {
             CircuitElm.whiteColor = Color.BLACK;
@@ -1017,7 +1017,6 @@ public class CirSim {
             analyzeCircuit();
             analyzeFlag = false;
         }
-        setupScopes();
         if (!stopped) {
             try {
                 runCircuit();
@@ -1418,7 +1417,7 @@ public class CirSim {
             }
             //System.out.println("line " + i + " " + qp + " " + qm + " " + j);
         /*if (qp != -1 && circuitRowInfo[qp].lsChanges) {
-		System.out.println("lschanges");
+        System.out.println("lschanges");
 		continue;
 	    }
 	    if (qm != -1 && circuitRowInfo[qm].lsChanges) {
@@ -2218,9 +2217,8 @@ public class CirSim {
             scopeCount = 0;
         }
         //cv.repaint();
-        int p;
-        for (p = 0; p < len; ) {
-            int l;
+        int p, l;
+        for (p = 0; p < len; p += l) {
             int linelen = 0;
             for (l = 0; l != len - p; l++)
                 if (b[l + p] == '\n' || b[l + p] == '\r') {
@@ -2236,26 +2234,23 @@ public class CirSim {
                 int tint = type.charAt(0);
                 try {
                     if (tint == 'o') {
-/*                        Scope sc = new Scope(this);
+                        Scope sc = new Scope(this);
                         sc.position = scopeCount;
                         sc.undump(st);
-                        scopes[scopeCount++] = sc;*/
-                        break;
-                    }
-                    if (tint == 'h') {
+                        scopes[scopeCount++] = sc;
+                        continue;
+                    } else if (tint == 'h') {
                         readHint(st);
-                        break;
-                    }
-                    if (tint == '$') {
+                        continue;
+                    } else if (tint == '$') {
                         readOptions(st);
-                        break;
-                    }
-                    if (tint == '%' || tint == '?' || tint == 'B') {
+                        continue;
+                    } else if (tint == '%' || tint == '?' || tint == 'B') {
                         // ignore afilter-specific stuff
-                        break;
-                    }
-                    if (tint >= '0' && tint <= '9')
+                        continue;
+                    } else if (tint >= '0' && tint <= '9') {
                         tint = new Integer(type);
+                    }
                     int x1 = new Integer(st.nextToken());
                     int y1 = new Integer(st.nextToken());
                     int x2 = new Integer(st.nextToken());
@@ -2287,17 +2282,13 @@ public class CirSim {
                     ce = (CircuitElm) clsConstructor.newInstance(oarr);
                     ce.setPoints();
                     elmList.addElement(ce);
+
                 } catch (java.lang.reflect.InvocationTargetException ee) {
                     ee.getTargetException().printStackTrace();
-                    break;
                 } catch (Exception ee) {
                     ee.printStackTrace();
-                    break;
                 }
-                break;
             }
-            p += l;
-
         }
 /*      enableItems();
         if (!retain)
@@ -2348,60 +2339,60 @@ public class CirSim {
         return true;
     }
 
-/*    public void mouseDragged(MouseEvent e) {
-        // ignore right mouse button with no modifiers (needed on PC)
-        if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0) {
-            int ex = e.getModifiersEx();
-            if ((ex & (MouseEvent.META_DOWN_MASK |
-                    MouseEvent.SHIFT_DOWN_MASK |
-                    MouseEvent.CTRL_DOWN_MASK |
-                    MouseEvent.ALT_DOWN_MASK)) == 0)
-                return;
-        }
-        if (!circuitArea.contains(e.getX(), e.getY()))
-            return;
-        if (dragElm != null)
-            dragElm.drag(e.getX(), e.getY());
-        boolean success = true;
-        switch (tempMouseMode) {
-            case MODE_DRAG_ALL:
-                dragAll(snapGrid(e.getX()), snapGrid(e.getY()));
-                break;
-            case MODE_DRAG_ROW:
-                dragRow(snapGrid(e.getX()), snapGrid(e.getY()));
-                break;
-            case MODE_DRAG_COLUMN:
-                dragColumn(snapGrid(e.getX()), snapGrid(e.getY()));
-                break;
-            case MODE_DRAG_POST:
-                if (mouseElm != null)
-                    dragPost(snapGrid(e.getX()), snapGrid(e.getY()));
-                break;
-            case MODE_SELECT:
-                if (mouseElm == null)
-                    selectArea(e.getX(), e.getY());
-                else {
-                    tempMouseMode = MODE_DRAG_SELECTED;
-                    success = dragSelected(e.getX(), e.getY());
-                }
-                break;
-            case MODE_DRAG_SELECTED:
-                success = dragSelected(e.getX(), e.getY());
-                break;
-        }
-        dragging = true;
-        if (success) {
-            if (tempMouseMode == MODE_DRAG_SELECTED && mouseElm instanceof GraphicElm) {
-                dragX = e.getX();
-                dragY = e.getY();
-            } else {
-                dragX = snapGrid(e.getX());
-                dragY = snapGrid(e.getY());
+    /*    public void mouseDragged(MouseEvent e) {
+            // ignore right mouse button with no modifiers (needed on PC)
+            if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0) {
+                int ex = e.getModifiersEx();
+                if ((ex & (MouseEvent.META_DOWN_MASK |
+                        MouseEvent.SHIFT_DOWN_MASK |
+                        MouseEvent.CTRL_DOWN_MASK |
+                        MouseEvent.ALT_DOWN_MASK)) == 0)
+                    return;
             }
+            if (!circuitArea.contains(e.getX(), e.getY()))
+                return;
+            if (dragElm != null)
+                dragElm.drag(e.getX(), e.getY());
+            boolean success = true;
+            switch (tempMouseMode) {
+                case MODE_DRAG_ALL:
+                    dragAll(snapGrid(e.getX()), snapGrid(e.getY()));
+                    break;
+                case MODE_DRAG_ROW:
+                    dragRow(snapGrid(e.getX()), snapGrid(e.getY()));
+                    break;
+                case MODE_DRAG_COLUMN:
+                    dragColumn(snapGrid(e.getX()), snapGrid(e.getY()));
+                    break;
+                case MODE_DRAG_POST:
+                    if (mouseElm != null)
+                        dragPost(snapGrid(e.getX()), snapGrid(e.getY()));
+                    break;
+                case MODE_SELECT:
+                    if (mouseElm == null)
+                        selectArea(e.getX(), e.getY());
+                    else {
+                        tempMouseMode = MODE_DRAG_SELECTED;
+                        success = dragSelected(e.getX(), e.getY());
+                    }
+                    break;
+                case MODE_DRAG_SELECTED:
+                    success = dragSelected(e.getX(), e.getY());
+                    break;
+            }
+            dragging = true;
+            if (success) {
+                if (tempMouseMode == MODE_DRAG_SELECTED && mouseElm instanceof GraphicElm) {
+                    dragX = e.getX();
+                    dragY = e.getY();
+                } else {
+                    dragX = snapGrid(e.getX());
+                    dragY = snapGrid(e.getY());
+                }
+            }
+            cv.repaint(pause);
         }
-        cv.repaint(pause);
-    }
-*/
+    */
     void dragAll(int x, int y) {
         int dx = x - dragX;
         int dy = y - dragY;

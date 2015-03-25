@@ -1,8 +1,13 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.util.Point;
+import org.lwjgl.util.Color;
 
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class MosfetElm extends CircuitElm {
@@ -12,15 +17,15 @@ class MosfetElm extends CircuitElm {
     Point src[];
     Point drn[];
     Point pcircle;
-    private int pnp;
+    protected int pnp;
     private int FLAG_PNP = 1;
     private int FLAG_DIGITAL = 4;
     private double vt;
     private Point[] gate;
-    //    Polygon arrowPoly;
+    Polygon arrowPoly;
     private double lastv1;
     private double lastv2;
-    private double ids;
+    protected double ids;
     private int mode = 0;
     private double gm = 0;
 
@@ -72,58 +77,47 @@ class MosfetElm extends CircuitElm {
         return 'f';
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, hs);
-        getVoltageColor(g, volts[1]);
-        drawThickLine(g, src[0], src[1]);
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, drn[0], drn[1]);
+        drawThickLine(g, src[0], src[1], (Color) getVoltageColor(volts[1]));
+        drawThickLine(g, drn[0], drn[1], (Color) getVoltageColor(volts[2]));
         int segments = 6;
         int i;
-        getPowerColor(g, true);
         double segf = 1. / segments;
         for (i = 0; i != segments; i++) {
             double v = volts[1] + (volts[2] - volts[1]) * i / segments;
-            getVoltageColor(g, v);
             interpPoint(src[1], drn[1], ps1, i * segf);
             interpPoint(src[1], drn[1], ps2, (i + 1) * segf);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, (Color) getVoltageColor(v));
         }
-        getVoltageColor(g, volts[1]);
-        drawThickLine(g, src[1], src[2]);
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, drn[1], drn[2]);
+        ;
+        drawThickLine(g, src[1], src[2], (Color) getVoltageColor(volts[1]));
+        drawThickLine(g, drn[1], drn[2], (Color) getVoltageColor(volts[2]));
         if (!drawDigital()) {
-            getVoltageColor(g, pnp == 1 ? volts[1] : volts[2]);
-            g.fillPolygon(arrowPoly);
+            drawPolygon(arrowPoly, (Color) getVoltageColor(pnp == 1 ? volts[1] : volts[2]));
         }
-        if (sim.powerCheckItem.getState())
-            g.setColor(Color.gray);
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, gate[1]);
-        drawThickLine(g, gate[0], gate[2]);
+        Color color = (Color) getVoltageColor(volts[0]);
+        drawThickLine(g, point1, gate[1], color);
+        drawThickLine(g, gate[0], gate[2], color);
         if (drawDigital() && pnp == -1)
-            drawThickCircle(g, pcircle.x, pcircle.y, pcircler);
+            drawThickCircle(g, pcircle.getX(), pcircle.getY(), pcircler, color);
         if ((flags & FLAG_SHOWVT) != 0) {
             String s = "" + (vt * pnp);
-            g.setColor(whiteColor);
-            g.setFont(unitsFont);
-            drawCenteredText(g, s, x2 + 2, y2, false);
+            drawCenteredText(g, s, x2 + 2, y2, false, (Color) whiteColor);
         }
         if ((needsHighlight() || sim.dragElm == this) && dy == 0) {
-            g.setColor(Color.white);
-            g.setFont(unitsFont);
+            FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
             int ds = sign(dx);
-            g.drawString("G", gate[1].x - 10 * ds, gate[1].y - 5);
-            g.drawString(pnp == -1 ? "D" : "S", src[0].x - 3 + 9 * ds, src[0].y + 4); // x+6 if ds=1, -12 if -1
-            g.drawString(pnp == -1 ? "S" : "D", drn[0].x - 3 + 9 * ds, drn[0].y + 4);
+            g.drawString(renderer, "G", gate[1].getX() - 10 * ds, gate[1].getY() - 5, whiteColor.hashCode());
+            g.drawString(renderer, pnp == -1 ? "D" : "S", src[0].getX() - 3 + 9 * ds, src[0].getY() + 4, whiteColor.hashCode()); // x+6 if ds=1, -12 if -1
+            g.drawString(renderer, pnp == -1 ? "S" : "D", drn[0].getX() - 3 + 9 * ds, drn[0].getY() + 4, whiteColor.hashCode());
         }
         curcount = updateDotCount(-ids, curcount);
         drawDots(g, src[0], src[1], curcount);
         drawDots(g, src[1], drn[1], curcount);
         drawDots(g, drn[1], drn[0], curcount);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     Point getPost(int n) {
         return (n == 0) ? point1 : (n == 1) ? src[0] : drn[0];

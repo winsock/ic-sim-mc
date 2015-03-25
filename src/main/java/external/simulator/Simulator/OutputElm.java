@@ -1,6 +1,9 @@
 package external.simulator.Simulator;
 
-
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -30,26 +33,23 @@ class OutputElm extends CircuitElm {
         lead1 = new Point();
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         boolean selected = (needsHighlight() || sim.plotYElm == this);
-        Font f = new Font("SansSerif", selected ? Font.BOLD : 0, 14);
-        g.setFont(f);
-        g.setColor(selected ? selectColor : whiteColor);
+        Color color = (Color) (selected ? selectColor : whiteColor);
         String s = (flags & FLAG_VALUE) != 0 ? getVoltageText(volts[0]) : "out";
-        FontMetrics fm = g.getFontMetrics();
+        FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
         if (this == sim.plotXElm)
             s = "X";
         if (this == sim.plotYElm)
             s = "Y";
-        interpPoint(point1, point2, lead1, 1 - (fm.stringWidth(s) / 2 + 8) / dn);
+        interpPoint(point1, point2, lead1, 1 - (renderer.getStringWidth(s) / 2 + 8) / dn);
         setBbox(point1, lead1, 0);
-        drawCenteredText(g, s, x2, y2, true);
-        getVoltageColor(g, volts[0]);
-        if (selected)
-            g.setColor(selectColor);
-        drawThickLine(g, point1, lead1);
-        drawPosts(g);
-    }*/
+        drawCenteredText(g, s, x2, y2, true, color);
+/*        if (selected)
+            g.setColor(selectColor);*/
+        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     double getVoltageDiff() {
         return volts[0];

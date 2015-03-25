@@ -1,6 +1,9 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 
 class GroundElm extends CircuitElm {
@@ -21,21 +24,21 @@ class GroundElm extends CircuitElm {
         return 1;
     }
 
-/*    void draw(CircuitGUI g) {
-        getVoltageColor(g, 0);
-        drawThickLine(g, point1, point2);
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+        Color color = (Color) getVoltageColor(0);
+        drawThickLine(g, point1, point2, color);
         int i;
         for (i = 0; i != 3; i++) {
             int a = 10 - i * 4;
             int b = i * 5; // -10;
             interpPoint2(point1, point2, ps1, ps2, 1 + b / dn, a);
-            drawThickLine(g, ps1, ps2);
+            drawThickLine(g, ps1, ps2, color);
         }
         doDots(g);
         interpPoint(point1, point2, ps2, 1 + 11. / dn);
         setBbox(point1, ps2, 11);
-        drawPost(g, x, y, nodes[0]);
-    }*/
+        drawPost(g, x, y, nodes[0], color);
+    }
 
     void setCurrent(int x, double c) {
         current = -c;

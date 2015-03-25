@@ -1,6 +1,7 @@
 package external.simulator.Simulator;
 
-
+import org.lwjgl.util.Color;
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -90,25 +91,21 @@ class TriodeElm extends CircuitElm {
         interpPoint(point2, plate[1], cath[0], -farw / (double) nearw, cathw);
     }
 
-/*    void draw(CircuitGUI g) {
-        g.setColor(Color.gray);
-        drawThickCircle(g, point2.x, point2.y, circler);
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+        drawThickCircle(g, point2.getX(), point2.getY(), circler, (Color) Color.GREY);
         setBbox(point1, plate[0], 16);
-        adjustBbox(cath[0].x, cath[1].y, point2.x + circler, point2.y + circler);
-        getPowerColor(g, true);
+        adjustBbox(cath[0].getX(), cath[1].getY(), point2.getX() + circler, point2.getY() + circler);
         // draw plate
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, plate[0], plate[1]);
-        drawThickLine(g, plate[2], plate[3]);
+        Color color = (Color) getVoltageColor(volts[0]);
+        drawThickLine(g, plate[0], plate[1], color);
+        drawThickLine(g, plate[2], plate[3], color);
         // draw grid
-        getVoltageColor(g, volts[1]);
         int i;
         for (i = 0; i != 8; i += 2)
-            drawThickLine(g, grid[i], grid[i + 1]);
+            drawThickLine(g, grid[i], grid[i + 1], (Color) getVoltageColor(volts[1]));
         // draw cathode
-        getVoltageColor(g, volts[2]);
         for (i = 0; i != 3; i++)
-            drawThickLine(g, cath[i], cath[i + 1]);
+            drawThickLine(g, cath[i], cath[i + 1], (Color) getVoltageColor(volts[2]));
         // draw dots
         curcountp = updateDotCount(currentp, curcountp);
         curcountc = updateDotCount(currentc, curcountc);
@@ -120,8 +117,8 @@ class TriodeElm extends CircuitElm {
             drawDots(g, cath[1], cath[0], curcountc + 8);
             drawDots(g, point1, midgrid, curcountg);
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     Point getPost(int n) {
         return (n == 0) ? plate[0] : (n == 1) ? grid[0] : cath[0];

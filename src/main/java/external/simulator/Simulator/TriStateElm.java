@@ -1,7 +1,9 @@
 package external.simulator.Simulator;
 
-
+import org.lwjgl.util.Color;
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
+import java.awt.Polygon;
 
 import java.util.StringTokenizer;
 
@@ -16,7 +18,7 @@ class TriStateElm extends CircuitElm {
     private Point point3;
     private Point point4;
     private Point lead3;
-    //Polygon gatePoly;
+    Polygon gatePoly;
 
     public TriStateElm(int xx, int yy) {
         super(xx, yy);
@@ -56,34 +58,32 @@ class TriStateElm extends CircuitElm {
         Point triPoints[] = newPointArray(3);
         interpPoint2(lead1, lead2, triPoints[0], triPoints[1], 0, hs + 2);
         triPoints[2] = interpPoint(point1, point2, .5 + (ww - 2) / dn);
-        //gatePoly = createPolygon(triPoints);
+        gatePoly = createPolygon(triPoints);
 
         point3 = interpPoint(point1, point2, .5, -hs);
         point4 = interpPoint(point1, point2, .5, 0);
         lead3 = interpPoint(point1, point2, .5, -hs / 2);
     }
 
-/*    void drawPosts(CircuitGUI g) {
+    void drawPosts(CircuitGUI g, Color color) {
         int i;
         for (i = 0; i != 3; i++) {
             Point p = getPost(i);
-            drawPost(g, p.x, p.y, nodes[i]);
+            drawPost(g, p.getX(), p.getY(), nodes[i], color);
         }
     }
 
-    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int hs = 16;
         setBbox(point1, point2, hs);
 
-        draw2Leads(g);
+        draw2Leads(g, (Color) lightGrayColor);
 
-        g.setColor(lightGrayColor);
-        drawThickPolygon(g, gatePoly);
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, point3, lead3);
+        drawThickPolygon(g, gatePoly, (Color) lightGrayColor);
+        drawThickLine(g, point3, lead3, (Color) getVoltageColor(volts[2]));
 
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void calculateCurrent() {
         current = (volts[0] - volts[1]) / resistance;

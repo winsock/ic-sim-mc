@@ -1,8 +1,11 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -12,8 +15,8 @@ class InvertingSchmittElm extends CircuitElm {
     double lowerTrigger;
     double upperTrigger;
     boolean state;
-    /*    Polygon gatePoly;
-        Polygon symbolPoly;*/
+    Polygon gatePoly;
+    Polygon symbolPoly;
     private Point pcircle;
     private double dlt;
     private double dut;
@@ -51,16 +54,16 @@ class InvertingSchmittElm extends CircuitElm {
         return 183;
     }//Trying to find unused type
 
-/*    void draw(CircuitGUI g) {
-        drawPosts(g);
-        draw2Leads(g);
-        g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        drawThickPolygon(g, gatePoly);
-        drawThickPolygon(g, symbolPoly);
-        drawThickCircle(g, pcircle.x, pcircle.y, 3);
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+        drawPosts(g, (Color) lightGrayColor);
+        draw2Leads(g, (Color) lightGrayColor);
+        Color color = (Color) (needsHighlight() ? selectColor : lightGrayColor);
+        drawThickPolygon(g, gatePoly, color);
+        drawThickPolygon(g, symbolPoly, color);
+        drawThickCircle(g, pcircle.getX(), pcircle.getY(), 3, color);
         curcount = updateDotCount(current, curcount);
         drawDots(g, lead2, point2, curcount);
-    }*/
+    }
 
     void setPoints() {
         super.setPoints();
@@ -82,9 +85,9 @@ class InvertingSchmittElm extends CircuitElm {
         interpPoint2(lead1, lead2, symPoints[0], dummy, 0.1, hs / 4);
         interpPoint2(lead1, lead2, dummy, symPoints[3], 0.45, hs / 4);
 
-/*        gatePoly = createPolygon(triPoints);
+        gatePoly = createPolygon(triPoints);
         symbolPoly = createPolygon(symPoints);
-        setBbox(point1, point2, hs);*/
+        setBbox(point1, point2, hs);
     }
 
     int getVoltageSourceCount() {

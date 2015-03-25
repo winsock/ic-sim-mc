@@ -1,8 +1,8 @@
 package external.simulator.Simulator;
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
@@ -26,8 +26,8 @@ public abstract class CircuitElm {
     private static NumberFormat noCommaFormat;
     private static int colorScaleCount = 32;
     private static ReadableColor[] colorScale;
-    private static Point ps1;
-    private static Point ps2;
+    protected static Point ps1;
+    protected static Point ps2;
     int x, y, x2, y2, flags, nodes[], voltSource;
     int dx, dy, dsign;
     double dn;
@@ -87,7 +87,18 @@ public abstract class CircuitElm {
         noCommaFormat.setGroupingUsed(false);
     }
 
-    private static void drawThickLine(CircuitGUI g, int x, int y, int x2, int y2, Color color) {
+    protected static void drawPolygon(Polygon polygon, Color color) {
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer renderer = tessellator.getWorldRenderer();
+        renderer.startDrawingQuads();
+        renderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        for (int i = 0; i < polygon.npoints; i++) {
+            renderer.addVertex(polygon.xpoints[i], polygon.ypoints[i], 0);
+        }
+        renderer.finishDrawing();
+    }
+
+    protected static void drawThickLine(CircuitGUI g, int x, int y, int x2, int y2, Color color) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
         worldrenderer.startDrawingQuads();
@@ -802,5 +813,16 @@ public abstract class CircuitElm {
 
     boolean isGraphicElmt() {
         return false;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (double volt : volts) {
+            builder.append("V: ");
+            builder.append(volt);
+            builder.append(";");
+        }
+        return builder.toString();
     }
 }

@@ -1,6 +1,10 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Point;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 
 // contributed by Edward Calver
@@ -41,10 +45,11 @@ class FMElm extends CircuitElm {
     int getDumpType() {
         return 201;
     }
-    /*void setCurrent(double c) {
+
+    void setCurrent(double c) {
       current = c;
       System.out.print("v current set to " + c + "\n");
-      }*/
+    }
 
     String dump() {
         return super.dump() + " " + carrierfreq + " " + signalfreq + " " + maxVoltage + " " + deviation;
@@ -76,35 +81,31 @@ class FMElm extends CircuitElm {
         return Math.sin(w) * maxVoltage;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, circleSize);
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, lead1);
 
-        Font f = new Font("SansSerif", 0, 12);
-        g.setFont(f);
-        g.setColor(needsHighlight() ? selectColor : whiteColor);
-        getPowerColor(g, false);
+        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
+
+        Color color = (Color) (needsHighlight() ? selectColor : whiteColor);
         double v = getVoltage();
         String s = "FM";
-        drawCenteredText(g, s, x2, y2, true);
+        drawCenteredText(g, s, x2, y2, true, color);
         drawWaveform(g, point2);
-        drawPosts(g);
+        drawPosts(g, color);
         curcount = updateDotCount(-current, curcount);
         if (sim.dragElm != this)
             drawDots(g, point1, lead1, curcount);
     }
 
     void drawWaveform(CircuitGUI g, Point center) {
-        g.setColor(needsHighlight() ? selectColor : Color.gray);
-        getPowerColor(g, false);
-        int xc = center.x;
-        int yc = center.y;
-        drawThickCircle(g, xc, yc, circleSize);
+        Color color = (Color) (needsHighlight() ? selectColor : Color.GREY);
+        int xc = center.getX();
+        int yc = center.getY();
+        drawThickCircle(g, xc, yc, circleSize, color);
         int wl = 8;
         adjustBbox(xc - circleSize, yc - circleSize,
                 xc + circleSize, yc + circleSize);
-    }*/
+    }
 
 
     void setPoints() {

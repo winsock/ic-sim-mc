@@ -1,6 +1,10 @@
 package external.simulator.Simulator;
 
-
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -94,18 +98,17 @@ class RelayElm extends CircuitElm {
                 r_on + " " + r_off + " " + onCurrent + " " + coilR;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int i, p;
         for (i = 0; i != 2; i++) {
-            getVoltageColor(g, volts[nCoil1 + i]);
-            drawThickLine(g, coilLeads[i], coilPosts[i]);
+            drawThickLine(g, coilLeads[i], coilPosts[i], (Color) getVoltageColor(volts[nCoil1 + i]));
         }
         int x = ((flags & FLAG_SWAP_COIL) != 0) ? 1 : 0;
-        drawCoil(g, dsign * 6, coilLeads[x], coilLeads[1 - x],
-                volts[nCoil1 + x], volts[nCoil2 - x]);
+        drawCoil(g, dsign * 6, coilLeads[x], coilLeads[1 - x], volts[nCoil1 + x], volts[nCoil2 - x], (Color) lightGrayColor);
 
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer renderer = tessellator.getWorldRenderer();
         // draw lines
-        g.setColor(Color.darkGray);
         for (i = 0; i != poleCount; i++) {
             if (i == 0)
                 interpPoint(point1, point2, lines[i * 2], .5,
@@ -115,21 +118,22 @@ class RelayElm extends CircuitElm {
                         (int) (openhs * (-i * 3 + 3 - .5 + d_position)) + 5 * dsign);
             interpPoint(point1, point2, lines[i * 2 + 1], .5,
                     (int) (openhs * (-i * 3 - .5 + d_position)) - 5 * dsign);
-            g.drawLine(lines[i * 2].x, lines[i * 2].y, lines[i * 2 + 1].x, lines[i * 2 + 1].y);
+            renderer.startDrawing(GL11.GL_LINE);
+            renderer.setColorRGBA(Color.DKGREY.getRed(), Color.DKGREY.getGreen(), Color.DKGREY.getBlue(), Color.DKGREY.getAlpha());
+            renderer.addVertex(lines[i * 2].getX(), lines[i * 2].getY(), 0);
+            renderer.addVertex(lines[i * 2 + 1].getX(), lines[i * 2 + 1].getY(), 0);
         }
 
         for (p = 0; p != poleCount; p++) {
             int po = p * 3;
             for (i = 0; i != 3; i++) {
                 // draw lead
-                getVoltageColor(g, volts[nSwitch0 + po + i]);
-                drawThickLine(g, swposts[p][i], swpoles[p][i]);
+                drawThickLine(g, swposts[p][i], swpoles[p][i], (Color) getVoltageColor(volts[nSwitch0 + po + i]));
             }
 
             interpPoint(swpoles[p][1], swpoles[p][2], ptSwitch[p], d_position);
             //getVoltageColor(g, volts[nSwitch0]);
-            g.setColor(Color.lightGray);
-            drawThickLine(g, swpoles[p][0], ptSwitch[p]);
+            drawThickLine(g, swpoles[p][0], ptSwitch[p], (Color) lightGrayColor);
             switchCurCount[p] = updateDotCount(switchCurrent[p],
                     switchCurCount[p]);
             drawDots(g, swposts[p][0], swpoles[p][0], switchCurCount[p]);
@@ -145,10 +149,10 @@ class RelayElm extends CircuitElm {
         drawDots(g, coilLeads[0], coilLeads[1], coilCurCount);
         drawDots(g, coilLeads[1], coilPosts[1], coilCurCount);
 
-        drawPosts(g);
+        drawPosts(g, (Color) lightGrayColor);
         setBbox(coilPosts[0], coilLeads[1], 0);
         adjustBbox(swpoles[poleCount - 1][0], swposts[poleCount - 1][1]); // XXX
-    }*/
+    }
 
     void setPoints() {
         super.setPoints();

@@ -1,8 +1,10 @@
 package external.simulator.Simulator;
 
-
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class OpAmpElm extends CircuitElm {
@@ -21,8 +23,7 @@ class OpAmpElm extends CircuitElm {
     private Point[] in1p;
     private Point[] in2p;
     private Point[] textp;
-    //Polygon triangle;
-    //Font plusFont;
+    Polygon triangle;
     private double lastvd;
 
     public OpAmpElm(int xx, int yy) {
@@ -31,7 +32,7 @@ class OpAmpElm extends CircuitElm {
         maxOut = 15;
         minOut = -15;
         gbw = 1e6;
-        // setSize(sim.smallGridCheckItem.getState() ? 1 : 2);
+        setSize(1);
         setGain();
     }
 
@@ -69,24 +70,19 @@ class OpAmpElm extends CircuitElm {
         return true;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, opheight * 2);
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, in1p[0], in1p[1]);
-        getVoltageColor(g, volts[1]);
-        drawThickLine(g, in2p[0], in2p[1]);
-        g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        getPowerColor(g, true);
-        drawThickPolygon(g, triangle);
-        g.setFont(plusFont);
-        drawCenteredText(g, "-", textp[0].x, textp[0].y - 2, true);
-        drawCenteredText(g, "+", textp[1].x, textp[1].y, true);
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, lead2, point2);
+        drawThickLine(g, in1p[0], in1p[1], (Color) getVoltageColor(volts[0]));
+        drawThickLine(g, in2p[0], in2p[1], (Color) getVoltageColor(volts[1]));
+        Color color = (Color) (needsHighlight() ? selectColor : lightGrayColor);
+        drawThickPolygon(g, triangle, color);
+        drawCenteredText(g, "-", textp[0].getX(), textp[0].getY() - 2, true, color);
+        drawCenteredText(g, "+", textp[1].getX(), textp[1].getY(), true, color);
+        drawThickLine(g, lead2, point2, (Color) getVoltageColor(volts[2]));
         curcount = updateDotCount(current, curcount);
         drawDots(g, point2, lead2, curcount);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     double getPower() {
         return volts[2] * current;
@@ -118,8 +114,7 @@ class OpAmpElm extends CircuitElm {
         interpPoint2(lead1, lead2, textp[0], textp[1], .2, hs);
         Point tris[] = newPointArray(2);
         interpPoint2(lead1, lead2, tris[0], tris[1], 0, hs * 2);
-/*        triangle = createPolygon(tris[0], tris[1], lead2);
-        plusFont = new Font("SansSerif", 0, opsize == 2 ? 14 : 10);*/
+        triangle = createPolygon(tris[0], tris[1], lead2);
     }
 
     int getPostCount() {

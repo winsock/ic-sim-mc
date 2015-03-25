@@ -1,8 +1,13 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import org.lwjgl.util.Point;
+import org.lwjgl.util.Color;
 
+import java.awt.Polygon;
 import java.util.StringTokenizer;
 
 class TransistorElm extends CircuitElm {
@@ -21,7 +26,7 @@ class TransistorElm extends CircuitElm {
     private double curcount_c;
     private double curcount_e;
     private double curcount_b;
-    //Polygon rectPoly, arrowPoly;
+    Polygon rectPoly, arrowPoly;
     private Point[] rect;
     private Point[] coll;
     private Point[] emit;
@@ -37,7 +42,7 @@ class TransistorElm extends CircuitElm {
         setup();
     }
 
-    TransistorElm(int xa, int ya, int xb, int yb, int f,
+    public TransistorElm(int xa, int ya, int xb, int yb, int f,
                   StringTokenizer st) {
         super(xa, ya, xb, yb, f);
         pnp = new Integer(st.nextToken());
@@ -78,23 +83,16 @@ class TransistorElm extends CircuitElm {
                 (volts[0] - volts[2]) + " " + beta;
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, 16);
-        getPowerColor(g, true);
         // draw collector
-        getVoltageColor(g, volts[1]);
-        drawThickLine(g, coll[0], coll[1]);
+        drawThickLine(g, coll[0], coll[1], (Color) getVoltageColor(volts[1]));
         // draw emitter
-        getVoltageColor(g, volts[2]);
-        drawThickLine(g, emit[0], emit[1]);
+        drawThickLine(g, emit[0], emit[1], (Color) getVoltageColor(volts[2]));
         // draw arrow
-        g.setColor(lightGrayColor);
-        g.fillPolygon(arrowPoly);
+        drawPolygon(arrowPoly, (Color) lightGrayColor);
         // draw base
-        getVoltageColor(g, volts[0]);
-        if (sim.powerCheckItem.getState())
-            g.setColor(Color.gray);
-        drawThickLine(g, point1, base);
+        drawThickLine(g, point1, base, (Color) getVoltageColor(volts[0]));
         // draw dots
         curcount_b = updateDotCount(-ib, curcount_b);
         drawDots(g, base, point1, curcount_b);
@@ -103,20 +101,17 @@ class TransistorElm extends CircuitElm {
         curcount_e = updateDotCount(-ie, curcount_e);
         drawDots(g, emit[1], emit[0], curcount_e);
         // draw base rectangle
-        getVoltageColor(g, volts[0]);
-        getPowerColor(g, true);
-        g.fillPolygon(rectPoly);
+        drawPolygon(rectPoly, (Color) getVoltageColor(volts[0]));
 
         if ((needsHighlight() || sim.dragElm == this) && dy == 0) {
-            g.setColor(Color.white);
-            g.setFont(unitsFont);
             int ds = sign(dx);
-            g.drawString("B", base.x - 10 * ds, base.y - 5);
-            g.drawString("C", coll[0].x - 3 + 9 * ds, coll[0].y + 4); // x+6 if ds=1, -12 if -1
-            g.drawString("E", emit[0].x - 3 + 9 * ds, emit[0].y + 4);
+            FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
+            g.drawString(renderer, "B", base.getX() - 10 * ds, base.getY() - 5, Color.WHITE.hashCode());
+            g.drawString(renderer, "C", coll[0].getX() - 3 + 9 * ds, coll[0].getY() + 4, Color.WHITE.hashCode()); // x+6 if ds=1, -12 if -1
+            g.drawString(renderer, "E", emit[0].getX() - 3 + 9 * ds, emit[0].getY() + 4, Color.WHITE.hashCode());
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     Point getPost(int n) {
         return (n == 0) ? point1 : (n == 1) ? coll[0] : emit[0];
@@ -151,7 +146,7 @@ class TransistorElm extends CircuitElm {
         interpPoint(point1, point2, base, 1 - 16 / dn);
 
         // rectangle
-/*        rectPoly = createPolygon(rect[0], rect[2], rect[3], rect[1]);
+        rectPoly = createPolygon(rect[0], rect[2], rect[3], rect[1]);
 
         // arrow
         if (pnp == 1)
@@ -159,7 +154,7 @@ class TransistorElm extends CircuitElm {
         else {
             Point pt = interpPoint(point1, point2, 1 - 11 / dn, -5 * dsign * pnp);
             arrowPoly = calcArrow(emit[0], pt, 8, 4);
-        }*/
+        }
     }
 
     double limitStep(double vnew, double vold) {

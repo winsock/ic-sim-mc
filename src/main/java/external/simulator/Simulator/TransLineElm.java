@@ -1,6 +1,11 @@
 package external.simulator.Simulator;
 
-
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.Color;
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -109,35 +114,40 @@ class TransLineElm extends CircuitElm {
         inner = new Point[]{p7, p8, p5, p6};
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(posts[0], posts[3], 0);
         int segments = (int) (dn / 2);
         int ix0 = ptr - 1 + lenSteps;
         double segf = 1. / segments;
         int i;
-        g.setColor(Color.darkGray);
-        g.fillRect(inner[2].x, inner[2].y,
-                inner[1].x - inner[2].x + 2, inner[1].y - inner[2].y + 2);
+        Gui.drawRect(inner[2].getX(), inner[2].getY(),
+                inner[1].getX() - inner[2].getX() + 2, inner[1].getY() - inner[2].getY() + 2, Color.DKGREY.hashCode());
         for (i = 0; i != 4; i++) {
-            getVoltageColor(g, volts[i]);
-            drawThickLine(g, posts[i], inner[i]);
+            drawThickLine(g, posts[i], inner[i], (Color) getVoltageColor(volts[i]));
         }
+
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer renderer = tessellator.getWorldRenderer();
         if (voltageL != null) {
             for (i = 0; i != segments; i++) {
                 int ix1 = (ix0 - lenSteps * i / segments) % lenSteps;
                 int ix2 = (ix0 - lenSteps * (segments - 1 - i) / segments) % lenSteps;
                 double v = (voltageL[ix1] + voltageR[ix2]) / 2;
-                getVoltageColor(g, v);
+                Color color = (Color) getVoltageColor(v);
                 interpPoint(inner[0], inner[1], ps1, i * segf);
                 interpPoint(inner[2], inner[3], ps2, i * segf);
-                g.drawLine(ps1.x, ps1.y, ps2.x, ps2.y);
+                renderer.startDrawing(GL11.GL_LINE);
+                renderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+                renderer.addVertex(ps1.getX(), ps1.getY(), 0);
+                renderer.addVertex(ps2.getX(), ps2.getY(), 0);
+                renderer.finishDrawing();
                 interpPoint(inner[2], inner[3], ps1, (i + 1) * segf);
-                drawThickLine(g, ps1, ps2);
+                drawThickLine(g, ps1, ps2, color);
             }
         }
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, inner[0], inner[1]);
-        drawPosts(g);
+        ;
+        drawThickLine(g, inner[0], inner[1], (Color) getVoltageColor(volts[0]));
+        drawPosts(g, (Color) lightGrayColor);
 
         curCount1 = updateDotCount(-current1, curCount1);
         curCount2 = updateDotCount(current2, curCount2);
@@ -147,7 +157,7 @@ class TransLineElm extends CircuitElm {
             drawDots(g, posts[1], inner[1], -curCount2);
             drawDots(g, posts[3], inner[3], curCount2);
         }
-    }*/
+    }
 
     void setVoltageSource(int n, int v) {
         if (n == 0)

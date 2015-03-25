@@ -1,6 +1,9 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 
 class RailElm extends VoltageElm {
@@ -32,16 +35,12 @@ class RailElm extends VoltageElm {
         lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, circleSize);
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, lead1);
+        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
         boolean clock = waveform == WF_SQUARE && (flags & FLAG_CLOCK) != 0;
         if (waveform == WF_DC || waveform == WF_VAR || clock) {
-            Font f = new Font("SansSerif", 0, 12);
-            g.setFont(f);
-            g.setColor(needsHighlight() ? selectColor : whiteColor);
-            getPowerColor(g, false);
+            Color color = (Color) (needsHighlight() ? selectColor : whiteColor);
             double v = getVoltage();
             String s = getShortUnitText(v, "V");
             if (Math.abs(v) < 1)
@@ -52,15 +51,15 @@ class RailElm extends VoltageElm {
                 s = "Ant";
             if (clock)
                 s = "CLK";
-            drawCenteredText(g, s, x2, y2, true);
+            drawCenteredText(g, s, x2, y2, true, color);
         } else {
             drawWaveform(g, point2);
         }
-        drawPosts(g);
+        drawPosts(g, (Color) lightGrayColor);
         curcount = updateDotCount(-current, curcount);
         if (sim.dragElm != this)
             drawDots(g, point1, lead1, curcount);
-    }*/
+    }
 
     double getVoltageDiff() {
         return volts[0];

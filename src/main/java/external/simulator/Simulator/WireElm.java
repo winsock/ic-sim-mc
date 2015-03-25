@@ -1,6 +1,9 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 
 class WireElm extends CircuitElm {
@@ -16,20 +19,20 @@ class WireElm extends CircuitElm {
         super(xa, ya, xb, yb, f);
     }
 
-/*    void draw(CircuitGUI g) {
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, point2);
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+        Color color = (Color) getVoltageColor(volts[0]);
+        drawThickLine(g, point1, point2, color);
         doDots(g);
         setBbox(point1, point2, 3);
         if (mustShowCurrent()) {
             String s = getShortUnitText(Math.abs(getCurrent()), "A");
-            drawValues(g, s, 4);
+            drawValues(g, s, 4, color);
         } else if (mustShowVoltage()) {
             String s = getShortUnitText(volts[0], "V");
-            drawValues(g, s, 4);
+            drawValues(g, s, 4, color);
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void stamp() {
         sim.stampVoltageSource(nodes[0], nodes[1], voltSource, 0);

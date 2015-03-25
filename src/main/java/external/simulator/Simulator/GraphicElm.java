@@ -1,6 +1,6 @@
 package external.simulator.Simulator;
 
-class GraphicElm extends CircuitElm {
+abstract class GraphicElm extends CircuitElm {
 
     GraphicElm(int xx, int yy) {
         super(xx, yy);

@@ -1,6 +1,8 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
@@ -33,32 +35,26 @@ class ProbeElm extends CircuitElm {
         center = interpPoint(point1, point2, .5);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         int hs = 8;
         setBbox(point1, point2, hs);
         boolean selected = (needsHighlight() || sim.plotYElm == this);
         double len = (selected || sim.dragElm == this) ? 16 : dn - 32;
         calcLeads((int) len);
-        getVoltageColor(g, volts[0]);
-        if (selected)
-            g.setColor(selectColor);
-        drawThickLine(g, point1, lead1);
-        getVoltageColor(g, volts[1]);
-        if (selected)
-            g.setColor(selectColor);
-        drawThickLine(g, lead2, point2);
-        Font f = new Font("SansSerif", Font.BOLD, 14);
-        g.setFont(f);
+        Color color = (Color) getVoltageColor(volts[0]);
+        drawThickLine(g, point1, lead1, color);
+        color = (Color) getVoltageColor(volts[1]);
+        drawThickLine(g, lead2, point2, color);
         if (this == sim.plotXElm)
-            drawCenteredText(g, "X", center.x, center.y, true);
+            drawCenteredText(g, "X", center.getX(), center.getY(), true, (Color) whiteColor);
         if (this == sim.plotYElm)
-            drawCenteredText(g, "Y", center.x, center.y, true);
+            drawCenteredText(g, "Y", center.getX(), center.getY(), true, (Color) whiteColor);
         if (mustShowVoltage()) {
             String s = getShortUnitText(volts[0], "V");
-            drawValues(g, s, 4);
+            drawValues(g, s, 4, (Color) whiteColor);
         }
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     boolean mustShowVoltage() {
         return (flags & FLAG_SHOWVOLTAGE) != 0;

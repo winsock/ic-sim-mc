@@ -1,6 +1,9 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 
 class InductorElm extends CircuitElm {
@@ -36,22 +39,21 @@ class InductorElm extends CircuitElm {
         calcLeads(32);
     }
 
-/*    void draw(CircuitGUI g) {
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         double v1 = volts[0];
         double v2 = volts[1];
         int i;
         int hs = 8;
         setBbox(point1, point2, hs);
-        draw2Leads(g);
-        getPowerColor(g, false);
-        drawCoil(g, 8, lead1, lead2, v1, v2);
-        if (sim.showValuesCheckItem.getState()) {
+        draw2Leads(g, (Color) Color.LTGREY);
+        drawCoil(g, 8, lead1, lead2, v1, v2, (Color) Color.LTGREY);
+/*        if (sim.showValuesCheckItem.getState()) {
             String s = getShortUnitText(inductance, "H");
             drawValues(g, s, hs);
-        }
+        }*/
         doDots(g);
-        drawPosts(g);
-    }*/
+        drawPosts(g, (Color) Color.LTGREY);
+    }
 
     void reset() {
         current = volts[0] = volts[1] = curcount = 0;

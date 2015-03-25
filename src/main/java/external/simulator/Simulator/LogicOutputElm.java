@@ -1,6 +1,9 @@
 package external.simulator.Simulator;
 
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
+import org.lwjgl.util.Color;
+
 import java.util.StringTokenizer;
 
 class LogicOutputElm extends CircuitElm {
@@ -54,11 +57,8 @@ class LogicOutputElm extends CircuitElm {
         lead1 = interpPoint(point1, point2, 1 - 12 / dn);
     }
 
-/*    void draw(CircuitGUI g) {
-        Font f = new Font("SansSerif", Font.BOLD, 20);
-        g.setFont(f);
+    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
         //g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        g.setColor(lightGrayColor);
         String s = (volts[0] < threshold) ? "L" : "H";
         if (isTernary()) {
             if (volts[0] > 3.75)
@@ -71,11 +71,10 @@ class LogicOutputElm extends CircuitElm {
             s = (volts[0] < threshold) ? "0" : "1";
         value = s;
         setBbox(point1, lead1, 0);
-        drawCenteredText(g, s, x2, y2, true);
-        getVoltageColor(g, volts[0]);
-        drawThickLine(g, point1, lead1);
-        drawPosts(g);
-    }*/
+        drawCenteredText(g, s, x2, y2, true, (Color) lightGrayColor);
+        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
+        drawPosts(g, (Color) lightGrayColor);
+    }
 
     void stamp() {
         if (needsPullDown())

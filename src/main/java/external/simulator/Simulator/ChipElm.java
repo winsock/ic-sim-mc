@@ -1,8 +1,8 @@
 package external.simulator.Simulator;
 
+import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
@@ -15,12 +15,6 @@ abstract class ChipElm extends CircuitElm {
     final int FLAG_SMALL = 1;
     final int FLAG_FLIP_X = 1024;
     final int FLAG_FLIP_Y = 2048;
-
-    @Override
-    boolean isWire() {
-        return false;
-    }
-
     final int SIDE_N = 0;
     final int SIDE_S = 1;
     final int SIDE_W = 2;
@@ -36,7 +30,6 @@ abstract class ChipElm extends CircuitElm {
     private int[] rectPointsY;
     private int[] clockPointsX;
     private int[] clockPointsY;
-
     ChipElm(int xx, int yy) {
         super(xx, yy);
         if (needsBits())
@@ -61,6 +54,11 @@ abstract class ChipElm extends CircuitElm {
                 pins[i].value = volts[i] > 2.5;
             }
         }
+    }
+
+    @Override
+    boolean isWire() {
+        return false;
     }
 
     boolean needsBits() {
