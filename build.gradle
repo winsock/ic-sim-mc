@@ -65,6 +65,11 @@ task sourcesJar(type: Jar) {
     classifier = 'sources'
 }
 
+artifacts {
+    archives deobfJar
+    archives sourcesJar
+}
+
 processResources {
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
