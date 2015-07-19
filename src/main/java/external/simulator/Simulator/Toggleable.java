@@ -1,9 +1,9 @@
 package external.simulator.Simulator;
 
 
-class Toggleable {
-    private String description;
-    private boolean state;
+public class Toggleable {
+    private final String description;
+    private final boolean state;
 
     public Toggleable(String description, boolean state) {
         this.description = description;

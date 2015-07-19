@@ -1,18 +1,18 @@
 package external.simulator.Simulator;
 
 
-class EditInfo {
-    String text;
-    double value;
-    Toggleable checkbox;
-    boolean newDialog;
-    private String name;
+public class EditInfo {
+	private String text;
+	private double value;
+	private Toggleable checkbox;
+    private boolean newDialog;
+    private final String name;
     private double minval;
-    private double maxval;
-    private boolean forceLargeM;
+    private final double maxval;
+    private final boolean forceLargeM;
     private boolean dimensionless;
 
-    EditInfo(String n, double val, double mn, double mx) {
+    public EditInfo(String n, double val, double mn, double mx) {
         name = n;
         value = val;
         if (mn == 0 && mx == 0 && val > 0) {
@@ -29,9 +29,41 @@ class EditInfo {
         dimensionless = false;
     }
 
-    EditInfo setDimensionless() {
+    public EditInfo setDimensionless() {
         dimensionless = true;
         return this;
     }
+
+	public Toggleable getCheckbox() {
+		return checkbox;
+	}
+
+	public void setCheckbox(Toggleable checkbox) {
+		this.checkbox = checkbox;
+	}
+
+	public double getValue() {
+		return value;
+	}
+
+	public void setValue(double value) {
+		this.value = value;
+	}
+
+	public boolean isNewDialog() {
+		return newDialog;
+	}
+
+	public void setNewDialog(boolean newDialog) {
+		this.newDialog = newDialog;
+	}
+
+	public String getText() {
+		return text;
+	}
+
+	public void setText(String text) {
+		this.text = text;
+	}
 }
     

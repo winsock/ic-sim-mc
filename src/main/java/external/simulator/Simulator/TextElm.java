@@ -39,11 +39,11 @@ public class TextElm extends GraphicElm {
     }
 
     @Override
-    boolean isWire() {
+    protected boolean isWire() {
         return false;
     }
 
-    void split() {
+    private void split() {
         int i;
         lines = new Vector<String>();
         StringBuilder sb = new StringBuilder(text);
@@ -62,15 +62,15 @@ public class TextElm extends GraphicElm {
         lines.add(sb.toString());
     }
 
-    String dump() {
+    protected String dump() {
         return super.dump() + " " + size + " " + text;
     }
 
-    int getDumpType() {
+    public int getDumpType() {
         return 'x';
     }
 
-    void drag(int xx, int yy) {
+    protected void drag(int xx, int yy) {
         x = xx;
         y = yy;
         x2 = xx + 16;
@@ -120,21 +120,19 @@ public class TextElm extends GraphicElm {
     public EditInfo getEditInfo(int n) {
         if (n == 0) {
             EditInfo ei = new EditInfo("Text", 0, -1, -1);
-            ei.text = text;
+            ei.setText(text);
             return ei;
         }
         if (n == 1)
             return new EditInfo("Size", size, 5, 100);
         if (n == 2) {
             EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.checkbox =
-                    new Toggleable("Center", (flags & FLAG_CENTER) != 0);
+            ei.setCheckbox(new Toggleable("Center", (flags & FLAG_CENTER) != 0));
             return ei;
         }
         if (n == 3) {
             EditInfo ei = new EditInfo("", 0, -1, -1);
-            ei.checkbox =
-                    new Toggleable("Draw Bar On Top", (flags & FLAG_BAR) != 0);
+            ei.setCheckbox(new Toggleable("Draw Bar On Top", (flags & FLAG_BAR) != 0));
             return ei;
         }
         return null;
@@ -146,22 +144,22 @@ public class TextElm extends GraphicElm {
             split();
         }*/
         if (n == 1)
-            size = (int) ei.value;
+            size = (int) ei.getValue();
         if (n == 3) {
-            if (ei.checkbox.getState())
+            if (ei.getCheckbox().getState())
                 flags |= FLAG_BAR;
             else
                 flags &= ~FLAG_BAR;
         }
         if (n == 2) {
-            if (ei.checkbox.getState())
+            if (ei.getCheckbox().getState())
                 flags |= FLAG_CENTER;
             else
                 flags &= ~FLAG_CENTER;
         }
     }
 
-    boolean isCenteredText() {
+    protected boolean isCenteredText() {
         return (flags & FLAG_CENTER) != 0;
     }
 
@@ -170,7 +168,7 @@ public class TextElm extends GraphicElm {
     }
 
     @Override
-    int getShortcut() {
+    public int getShortcut() {
         return 't';
     }
 }

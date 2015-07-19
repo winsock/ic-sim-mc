@@ -1,5 +1,6 @@
 package external.simulator.Simulator;
 
+import external.simulator.Simulator.parts.DecadeElm;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -13,26 +14,26 @@ import java.awt.*;
 import java.util.StringTokenizer;
 
 public abstract class ChipElm extends CircuitElm {
-	final int FLAG_SMALL = 1;
-	final int FLAG_FLIP_X = 1024;
-	final int FLAG_FLIP_Y = 2048;
-	final int SIDE_N = 0;
-	final int SIDE_S = 1;
-	final int SIDE_W = 2;
-	final int SIDE_E = 3;
-	int bits;
-	Pin pins[];
-	int sizeX, sizeY;
-	boolean lastClock;
-	private int csize;
-	private int cspc;
-	private int cspc2;
+	protected final int FLAG_SMALL = 1;
+	protected final int FLAG_FLIP_X = 1024;
+	protected final int FLAG_FLIP_Y = 2048;
+	protected final int SIDE_N = 0;
+	protected final int SIDE_S = 1;
+	protected final int SIDE_W = 2;
+	protected final int SIDE_E = 3;
+	protected int bits;
+	protected Pin pins[];
+	protected int sizeX, sizeY;
+	protected boolean lastClock;
+	protected int csize;
+	protected int cspc;
+	protected int cspc2;
 	private int[] rectPointsX;
 	private int[] rectPointsY;
 	private int[] clockPointsX;
 	private int[] clockPointsY;
 
-	ChipElm(int xx, int yy) {
+	public ChipElm(int xx, int yy) {
 		super(xx, yy);
 		if (needsBits())
 			bits = (this instanceof DecadeElm) ? 10 : 4;
@@ -41,8 +42,8 @@ public abstract class ChipElm extends CircuitElm {
 		//setSize(sim.smallGridCheckItem.getState() ? 1 : 2);
 	}
 
-	ChipElm(int xa, int ya, int xb, int yb, int f,
-	        StringTokenizer st) {
+	public ChipElm(int xa, int ya, int xb, int yb, int f,
+	                  StringTokenizer st) {
 		super(xa, ya, xb, yb, f);
 		if (needsBits())
 			bits = new Integer(st.nextToken());
@@ -59,11 +60,11 @@ public abstract class ChipElm extends CircuitElm {
 	}
 
 	@Override
-	boolean isWire() {
+	protected boolean isWire() {
 		return false;
 	}
 
-	boolean needsBits() {
+	protected boolean needsBits() {
 		return false;
 	}
 
@@ -75,13 +76,13 @@ public abstract class ChipElm extends CircuitElm {
         flags |= (s == 1) ? FLAG_SMALL : 0;
     }*/
 
-	abstract void setupPins();
+	abstract protected void setupPins();
 
 	public void draw(CircuitGUI.ClientCircuitGui screen, int mouseX, int mouseY, float partialTicks) {
 		drawChip(screen);
 	}
 
-	void drawChip(CircuitGUI.ClientCircuitGui g) {
+	protected void drawChip(CircuitGUI.ClientCircuitGui g) {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
 			Pin p = pins[i];
@@ -139,7 +140,7 @@ public abstract class ChipElm extends CircuitElm {
 			drawPost(g, pins[i].post.getX(), pins[i].post.getY(), nodes[i], color);
 	}
 
-	void drag(int xx, int yy) {
+	protected void drag(int xx, int yy) {
 		yy = sim.snapGrid(yy);
 		if (xx < x) {
 			xx = x;
@@ -151,7 +152,7 @@ public abstract class ChipElm extends CircuitElm {
 		setPoints();
 	}
 
-	void setPoints() {
+	protected void setPoints() {
 /*        if (x2 - x > sizeX * cspc2 && this == sim.dragElm)
             setSize(2);*/
 		int hs = cspc;
@@ -184,13 +185,13 @@ public abstract class ChipElm extends CircuitElm {
 		}
 	}
 
-	Point getPost(int n) {
+	protected Point getPost(int n) {
 		return pins[n].post;
 	}
 
-	abstract int getVoltageSourceCount(); // output count
+	protected abstract int getVoltageSourceCount(); // output count
 
-	void setVoltageSource(int j, int vs) {
+	protected void setVoltageSource(int j, int vs) {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
 			Pin p = pins[i];
@@ -202,7 +203,7 @@ public abstract class ChipElm extends CircuitElm {
 		System.out.println("setVoltageSource failed for " + this);
 	}
 
-	void stamp() {
+	public void stamp() {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
 			Pin p = pins[i];
@@ -211,10 +212,10 @@ public abstract class ChipElm extends CircuitElm {
 		}
 	}
 
-	void execute() {
+	protected void execute() {
 	}
 
-	void doStep() {
+	public void doStep() {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
 			Pin p = pins[i];
@@ -230,7 +231,7 @@ public abstract class ChipElm extends CircuitElm {
 		}
 	}
 
-	void reset() {
+	public void reset() {
 		int i;
 		for (i = 0; i != getPostCount(); i++) {
 			pins[i].value = false;
@@ -240,7 +241,7 @@ public abstract class ChipElm extends CircuitElm {
 		lastClock = false;
 	}
 
-	String dump() {
+	protected String dump() {
 		int t = getDumpType();
 		String s = super.dump();
 		if (needsBits())
@@ -273,34 +274,34 @@ public abstract class ChipElm extends CircuitElm {
 		}
 	}
 
-	void setCurrent(int x, double c) {
+	protected void setCurrent(int x, double c) {
 		int i;
 		for (i = 0; i != getPostCount(); i++)
 			if (pins[i].output && pins[i].voltSource == x)
 				pins[i].current = c;
 	}
 
-	String getChipName() {
+	public String getChipName() {
 		return "chip";
 	}
 
-	boolean getConnection(int n1, int n2) {
+	protected boolean getConnection(int n1, int n2) {
 		return false;
 	}
 
-	boolean hasGroundConnection(int n1) {
+	protected boolean hasGroundConnection(int n1) {
 		return pins[n1].output;
 	}
 
 	public EditInfo getEditInfo(int n) {
 		if (n == 0) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
-			ei.checkbox = new Toggleable("Flip X", (flags & FLAG_FLIP_X) != 0);
+			ei.setCheckbox(new Toggleable("Flip X", (flags & FLAG_FLIP_X) != 0));
 			return ei;
 		}
 		if (n == 1) {
 			EditInfo ei = new EditInfo("", 0, -1, -1);
-			ei.checkbox = new Toggleable("Flip Y", (flags & FLAG_FLIP_Y) != 0);
+			ei.setCheckbox(new Toggleable("Flip Y", (flags & FLAG_FLIP_Y) != 0));
 			return ei;
 		}
 		return null;
@@ -308,14 +309,14 @@ public abstract class ChipElm extends CircuitElm {
 
 	public void setEditValue(int n, EditInfo ei) {
 		if (n == 0) {
-			if (ei.checkbox.getState())
+			if (ei.getCheckbox().getState())
 				flags |= FLAG_FLIP_X;
 			else
 				flags &= ~FLAG_FLIP_X;
 			setPoints();
 		}
 		if (n == 1) {
-			if (ei.checkbox.getState())
+			if (ei.getCheckbox().getState())
 				flags |= FLAG_FLIP_Y;
 			else
 				flags &= ~FLAG_FLIP_Y;
@@ -323,21 +324,25 @@ public abstract class ChipElm extends CircuitElm {
 		}
 	}
 
-	class Pin {
-		Point post, stub;
-		Point textloc;
-		int pos, side, voltSource, bubbleX, bubbleY;
-		String text;
-		boolean lineOver, bubble, clock, output, value, state;
-		double curcount, current;
+	protected class Pin {
+		public Point post, stub;
+		public Point textloc;
+		public final int pos;
+		public final int side;
+		public int voltSource;
+		public int bubbleX;
+		public int bubbleY;
+		public final String text;
+		public boolean lineOver, bubble, clock, output, value, state;
+		public double curcount, current;
 
-		Pin(int p, int s, String t) {
+		public Pin(int p, int s, String t) {
 			pos = p;
 			side = s;
 			text = t;
 		}
 
-		void setPoint(int px, int py, int dx, int dy, int dax, int day,
+		public void setPoint(int px, int py, int dx, int dy, int dax, int day,
 		              int sx, int sy) {
 			if ((flags & FLAG_FLIP_X) != 0) {
 				dx = -dx;

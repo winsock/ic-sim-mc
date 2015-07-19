@@ -1,6 +1,10 @@
 package external.simulator.Simulator;
 
 
+import external.simulator.Simulator.parts.LogicOutputElm;
+import external.simulator.Simulator.parts.OutputElm;
+import external.simulator.Simulator.parts.ProbeElm;
+import external.simulator.Simulator.parts.TransistorElm;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -15,33 +19,51 @@ import java.nio.IntBuffer;
 import java.util.StringTokenizer;
 
 
-class Scope {
-    static final int VAL_POWER = 1;
-    static final int VAL_IB = 1;
-    static final int VAL_IC = 2;
-    static final int VAL_IE = 3;
-    static final int VAL_VBE = 4;
-    static final int VAL_VBC = 5;
-    static final int VAL_VCE = 6;
-    static final int VAL_R = 2;
-    final int FLAG_YELM = 32;
+public class Scope {
+    public static final int VAL_POWER = 1;
+	public static final int VAL_IB = 1;
+	public static final int VAL_IC = 2;
+	public static final int VAL_IE = 3;
+	public static final int VAL_VBE = 4;
+	public static final int VAL_VBC = 5;
+	public static final int VAL_VCE = 6;
+	public static final int VAL_R = 2;
+    private final int FLAG_YELM = 32;
     /**
      * Dynamic scope texture id
      */
-    protected int scopeTextureId = -1;
-    double minV[], maxV[], minMaxV;
-    double minI[], maxI[], minMaxI;
-    int scopePointCount = 128;
-    int ptr, ctr, speed, position;
-    int value, ivalue;
-    String text;
+    private int scopeTextureId = -1;
+    private double[] minV;
+	private double[] maxV;
+	private double minMaxV;
+    private double[] minI;
+	private double[] maxI;
+	private double minMaxI;
+    private int scopePointCount = 128;
+    private int ptr;
+	private int ctr;
+	int speed;
+	int position;
+    private int value;
+	private int ivalue;
+    private String text;
     Rectangle rect;
-    boolean showI, showV, showMax, showMin, showFreq, lockScale, plot2d, plotXY;
-    CircuitElm elm, xElm, yElm;
-    int pixels[];
-    int draw_ox, draw_oy;
-    float dpixels[];
-    private CirSim sim;
+    private boolean showI;
+	private boolean showV;
+	boolean showMax;
+	boolean showMin;
+	private boolean showFreq;
+	private boolean lockScale;
+	private boolean plot2d;
+	private boolean plotXY;
+    CircuitElm elm;
+	CircuitElm xElm;
+	private CircuitElm yElm;
+    private int[] pixels;
+    private int draw_ox;
+	private int draw_oy;
+    private float[] dpixels;
+    private final CirSim sim;
 
 
     Scope(CirSim s) {
@@ -92,7 +114,7 @@ class Scope {
         return elm != null;
     }
 
-    void reset() {
+    private void reset() {
         resetGraph();
         minMaxV = 5;
         minMaxI = .1;
@@ -176,7 +198,7 @@ class Scope {
         }
     }
 
-    void drawTo(int x2, int y2) {
+    private void drawTo(int x2, int y2) {
         if (draw_ox == -1) {
             draw_ox = x2;
             draw_oy = y2;
@@ -207,7 +229,7 @@ class Scope {
         draw_oy = y2;
     }
 
-    void clear2dView() {
+    private void clear2dView() {
         int i;
         for (i = 0; i != dpixels.length; i++)
             dpixels[i] = 0;
@@ -219,7 +241,7 @@ class Scope {
         minMaxI *= x;
     }
 
-    public void drawScopeTexture(CircuitGUI.ClientCircuitGui g, int x, int y, int x2, int y2, int[] pixels) {
+    private void drawScopeTexture(CircuitGUI.ClientCircuitGui g, int x, int y, int x2, int y2, int[] pixels) {
         if (GL11.glIsTexture(scopeTextureId)) {
             scopeTextureId = GL11.glGenTextures();
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, scopeTextureId);
@@ -251,7 +273,7 @@ class Scope {
 	    GlStateManager.disableBlend();
     }
 
-    void draw2d(CircuitGUI.ClientCircuitGui g) {
+    private void draw2d(CircuitGUI.ClientCircuitGui g) {
         int i;
         if (pixels == null || dpixels == null)
             return;
@@ -645,7 +667,7 @@ class Scope {
         showMin = (flags & 256) != 0;
     }
 
-    void allocImage() {
+    private void allocImage() {
         pixels = null;
         int w = rect.getWidth();
         int h = rect.getHeight();

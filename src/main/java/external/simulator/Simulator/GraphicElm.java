@@ -2,20 +2,20 @@ package external.simulator.Simulator;
 
 public abstract class GraphicElm extends CircuitElm {
 
-	GraphicElm(int xx, int yy) {
+	public GraphicElm(int xx, int yy) {
 		super(xx, yy);
 	}
 
-	GraphicElm(int xa, int ya, int xb, int yb, int flags) {
+	public GraphicElm(int xa, int ya, int xb, int yb, int flags) {
 		super(xa, ya, xb, yb, flags);
 	}
 
-	int getPostCount() {
+	protected int getPostCount() {
 		return 0;
 	}
 
 	@Override
-	boolean isWire() {
+	protected boolean isWire() {
 		return false;
 	}
 }

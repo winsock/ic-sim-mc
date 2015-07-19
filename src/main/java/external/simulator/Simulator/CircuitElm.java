@@ -1,5 +1,8 @@
 package external.simulator.Simulator;
 
+import external.simulator.Simulator.parts.RailElm;
+import external.simulator.Simulator.parts.SweepElm;
+import external.simulator.Simulator.parts.VoltageElm;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -17,31 +20,32 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public abstract class CircuitElm {
-    static final double pi = 3.14159265358979323846;
-    public static NumberFormat showFormat;
-    static double voltageRange = 5;
-    static double currentMult, powerMult;
-    static CirSim sim;
-    static Color whiteColor, selectColor, lightGrayColor;
+	static final double DEG2RAD = Math.PI / 180.0;
+	protected static NumberFormat showFormat;
+	static double voltageRange = 5;
+	static double currentMult;
+	static double powerMult;
+	protected static CirSim sim;
+	protected static Color whiteColor, selectColor, lightGrayColor;
     private static NumberFormat shortFormat;
     private static NumberFormat noCommaFormat;
-    private static int colorScaleCount = 32;
+    private static final int colorScaleCount = 32;
     private static Color[] colorScale;
     protected static Point ps1;
     protected static Point ps2;
-    int x, y, x2, y2, flags, nodes[], voltSource;
-    int dx, dy, dsign;
-    double dn;
-    Point point1, point2, lead1, lead2;
-    double volts[];
-    double current, curcount;
-    Rectangle boundingBox;
-    boolean noDiagonal;
+    protected int x, y, x2, y2, flags, nodes[], voltSource;
+	protected int dx, dy, dsign;
+	protected double dn;
+	protected Point point1, point2, lead1, lead2;
+	protected double volts[];
+	protected double current, curcount;
+	protected Rectangle boundingBox;
+	protected boolean noDiagonal;
     private boolean selected;
     private double dpx1;
     private double dpy1;
 
-    CircuitElm(int xx, int yy) {
+    protected CircuitElm(int xx, int yy) {
         x = x2 = xx;
         y = y2 = yy;
         flags = getDefaultFlags();
@@ -49,7 +53,7 @@ public abstract class CircuitElm {
         initBoundingBox();
     }
 
-    CircuitElm(int xa, int ya, int xb, int yb, int f) {
+    protected CircuitElm(int xa, int ya, int xb, int yb, int f) {
         x = xa;
         y = ya;
         x2 = xb;
@@ -59,7 +63,7 @@ public abstract class CircuitElm {
         initBoundingBox();
     }
 
-    static void initClass(CirSim s) {
+	public static void initClass(CirSim s) {
         sim = s;
         colorScale = new Color[colorScaleCount];
         int i;
@@ -126,21 +130,21 @@ public abstract class CircuitElm {
 	    GlStateManager.disableBlend();
     }
 
-    static void drawThickLine(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, Color color) {
+    protected static void drawThickLine(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, Color color) {
         drawThickLine(g, pa.getX(), pa.getY(), pb.getX(), pb.getY(), color);
     }
 
-    static void drawThickPolygon(CircuitGUI.ClientCircuitGui g, int xs[], int ys[], int c, Color color) {
+	protected static void drawThickPolygon(CircuitGUI.ClientCircuitGui g, int xs[], int ys[], int c, Color color) {
         drawPolygon(g, new Polygon(xs, ys, c), color);
     }
 
-    static void drawThickPolygon(CircuitGUI.ClientCircuitGui g, Polygon p, Color color) {
+	protected static void drawThickPolygon(CircuitGUI.ClientCircuitGui g, Polygon p, Color color) {
 	    drawPolygon(g, p, color);
     }
 
-    static void drawThickCircle(CircuitGUI.ClientCircuitGui g, int cx, int cy, int ri, Color color) {
+	protected static void drawThickCircle(CircuitGUI.ClientCircuitGui g, int cx, int cy, int ri, Color color) {
         int a;
-        double m = pi / 180;
+        double m = Math.PI / 180;
         double r = ri * .98;
         for (a = 0; a != 360; a += 20) {
             double ax = Math.cos(a * m) * r + cx;
@@ -151,15 +155,15 @@ public abstract class CircuitElm {
         }
     }
 
-    static String getVoltageDText(double v) {
+	protected static String getVoltageDText(double v) {
         return getUnitText(Math.abs(v), "V");
     }
 
-    static String getVoltageText(double v) {
+	protected static String getVoltageText(double v) {
         return getUnitText(v, "V");
     }
 
-    static String getUnitText(double v, String u) {
+    protected static String getUnitText(double v, String u) {
         double va = Math.abs(v);
         if (va < 1e-14)
             return "0 " + u;
@@ -180,7 +184,7 @@ public abstract class CircuitElm {
         return showFormat.format(v * 1e-9) + " G" + u;
     }
 
-    static String getShortUnitText(double v, String u) {
+	protected static String getShortUnitText(double v, String u) {
         double va = Math.abs(v);
         if (va < 1e-13)
             return null;
@@ -201,66 +205,66 @@ public abstract class CircuitElm {
         return shortFormat.format(v * 1e-9) + "G" + u;
     }
 
-    static String getCurrentText(double i) {
+	protected static String getCurrentText(double i) {
         return getUnitText(i, "A");
     }
 
-    static String getCurrentDText(double i) {
+	protected static String getCurrentDText(double i) {
         return getUnitText(Math.abs(i), "A");
     }
 
-    static int abs(int x) {
+	protected static int abs(int x) {
         return x < 0 ? -x : x;
     }
 
-    static int sign(int x) {
+	protected static int sign(int x) {
         return (x < 0) ? -1 : (x == 0) ? 0 : 1;
     }
 
-    static int min(int a, int b) {
+	protected static int min(int a, int b) {
         return (a < b) ? a : b;
     }
 
-    static int max(int a, int b) {
+	protected static int max(int a, int b) {
         return (a > b) ? a : b;
     }
 
-    static double distance(Point p1, Point p2) {
+	protected static double distance(Point p1, Point p2) {
         double x = p1.getX() - p2.getX();
         double y = p1.getY() - p2.getY();
         return Math.sqrt(x * x + y * y);
     }
 
-    int getDumpType() {
+	public int getDumpType() {
         return 0;
     }
 
-    Class getDumpClass() {
+	protected Class getDumpClass() {
         return getClass();
     }
 
-    int getDefaultFlags() {
+	protected int getDefaultFlags() {
         return 0;
     }
 
-    void initBoundingBox() {
+	private void initBoundingBox() {
         boundingBox = new Rectangle();
         boundingBox.setBounds(min(x, x2), min(y, y2),
                 abs(x2 - x) + 1, abs(y2 - y) + 1);
     }
 
-    void allocNodes() {
+	protected void allocNodes() {
         nodes = new int[getPostCount() + getInternalNodeCount()];
         volts = new double[getPostCount() + getInternalNodeCount()];
     }
 
-    String dump() {
+    protected String dump() {
         int t = getDumpType();
         return (t < 127 ? ((char) t) + " " : t + " ") + x + " " + y + " " +
                 x2 + " " + y2 + " " + flags;
     }
 
-    void reset() {
+	public void reset() {
         int i;
         for (i = 0; i != getPostCount() + getInternalNodeCount(); i++)
             volts[i] = 0;
@@ -270,36 +274,36 @@ public abstract class CircuitElm {
 	@SideOnly(Side.CLIENT)
 	public abstract void draw(CircuitGUI.ClientCircuitGui screen, int mouseX, int mouseY, float partialTicks);
 
-    void setCurrent(int x, double c) {
+	protected void setCurrent(int x, double c) {
         current = c;
     }
 
-    double getCurrent() {
+	protected double getCurrent() {
         return current;
     }
 
-    void doStep() {
+	public void doStep() {
     }
 
-    void delete() {
+	public void delete() {
     }
 
-    void startIteration() {
+    protected void startIteration() {
     }
 
-    double getPostVoltage(int x) {
+	protected double getPostVoltage(int x) {
         return volts[x];
     }
 
-    void setNodeVoltage(int n, double c) {
+    protected void setNodeVoltage(int n, double c) {
         volts[n] = c;
         calculateCurrent();
     }
 
-    void calculateCurrent() {
+	protected void calculateCurrent() {
     }
 
-    void setPoints() {
+    protected void setPoints() {
         dx = x2 - x;
         dy = y2 - y;
         dn = Math.sqrt(dx * dx + dy * dy);
@@ -310,7 +314,7 @@ public abstract class CircuitElm {
         point2 = new Point(x2, y2);
     }
 
-    void calcLeads(int len) {
+    protected void calcLeads(int len) {
         if (dn < len || len == 0) {
             lead1 = point1;
             lead2 = point2;
@@ -320,13 +324,13 @@ public abstract class CircuitElm {
         lead2 = interpPoint(point1, point2, (dn + len) / (2 * dn));
     }
 
-    Point interpPoint(Point a, Point b, double f) {
+    protected Point interpPoint(Point a, Point b, double f) {
         Point p = new Point();
         interpPoint(a, b, p, f);
         return p;
     }
 
-    void interpPoint(Point a, Point b, Point c, double f) {
+	protected void interpPoint(Point a, Point b, Point c, double f) {
         int xpd = b.getX() - a.getX();
         int ypd = b.getY() - a.getY();
     /*double q = (a.x*(1-f)+b.x*f+.48);
@@ -335,7 +339,7 @@ public abstract class CircuitElm {
         c.setY((int) Math.floor(a.getY() * (1 - f) + b.getY() * f + .48));
     }
 
-    void interpPoint(Point a, Point b, Point c, double f, double g) {
+	protected void interpPoint(Point a, Point b, Point c, double f, double g) {
         int xpd = b.getX() - a.getX();
         int ypd = b.getY() - a.getY();
         int gx = b.getY() - a.getY();
@@ -345,13 +349,13 @@ public abstract class CircuitElm {
         c.setY((int) Math.floor(a.getY() * (1 - f) + b.getY() * f + g * gy + .48));
     }
 
-    Point interpPoint(Point a, Point b, double f, double g) {
+	protected Point interpPoint(Point a, Point b, double f, double g) {
         Point p = new Point();
         interpPoint(a, b, p, f, g);
         return p;
     }
 
-    void interpPoint2(Point a, Point b, Point c, Point d, double f, double g) {
+    protected void interpPoint2(Point a, Point b, Point c, Point d, double f, double g) {
         int xpd = b.getX() - a.getX();
         int ypd = b.getY() - a.getY();
         int gx = b.getY() - a.getY();
@@ -363,7 +367,7 @@ public abstract class CircuitElm {
         d.setY((int) Math.floor(a.getY() * (1 - f) + b.getY() * f - g * gy + .48));
     }
 
-    void draw2Leads(CircuitGUI.ClientCircuitGui g, Color color) {
+    protected void draw2Leads(CircuitGUI.ClientCircuitGui g, Color color) {
         // draw first lead
         getVoltageColor(volts[0]);
         drawThickLine(g, point1, lead1, color);
@@ -373,18 +377,18 @@ public abstract class CircuitElm {
         drawThickLine(g, lead2, point2, color);
     }
 
-    Point[] newPointArray(int n) {
+    protected Point[] newPointArray(int n) {
         Point a[] = new Point[n];
         while (n > 0)
             a[--n] = new Point();
         return a;
     }
 
-    void drawDots(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, double pos) {
+    protected void drawDots(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, double pos) {
         drawDots(g, pa, pb, pos, Color.YELLOW);
     }
 
-    void drawDots(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, double pos, Color color) {
+	protected void drawDots(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, double pos, Color color) {
         if (sim.stopped || pos == 0 || !sim.dots)
             return;
 
@@ -416,7 +420,7 @@ public abstract class CircuitElm {
 	    GlStateManager.disableBlend();
     }
 
-    Polygon calcArrow(Point a, Point b, double al, double aw) {
+	protected Polygon calcArrow(Point a, Point b, double al, double aw) {
         Polygon poly = new Polygon();
         Point p1 = new Point();
         Point p2 = new Point();
@@ -430,7 +434,7 @@ public abstract class CircuitElm {
         return poly;
     }
 
-    Polygon createPolygon(Point a, Point b, Point c) {
+	protected Polygon createPolygon(Point a, Point b, Point c) {
         Polygon p = new Polygon();
         p.addPoint(a.getX(), a.getY());
         p.addPoint(b.getX(), b.getY());
@@ -438,7 +442,7 @@ public abstract class CircuitElm {
         return p;
     }
 
-    Polygon createPolygon(Point a, Point b, Point c, Point d) {
+	protected Polygon createPolygon(Point a, Point b, Point c, Point d) {
         Polygon p = new Polygon();
         p.addPoint(a.getX(), a.getY());
         p.addPoint(b.getX(), b.getY());
@@ -447,7 +451,7 @@ public abstract class CircuitElm {
         return p;
     }
 
-    Polygon createPolygon(Point a[]) {
+	protected Polygon createPolygon(Point a[]) {
         Polygon p = new Polygon();
         int i;
         for (i = 0; i != a.length; i++)
@@ -455,7 +459,7 @@ public abstract class CircuitElm {
         return p;
     }
 
-    void drag(int xx, int yy) {
+	protected void drag(int xx, int yy) {
         xx = sim.snapGrid(xx);
         yy = sim.snapGrid(yy);
         if (noDiagonal) {
@@ -470,7 +474,7 @@ public abstract class CircuitElm {
         setPoints();
     }
 
-    void move(int dx, int dy) {
+	protected void move(int dx, int dy) {
         x += dx;
         y += dy;
         x2 += dx;
@@ -480,7 +484,7 @@ public abstract class CircuitElm {
     }
 
     // determine if moving this element by (dx,dy) will put it on top of another element
-    boolean allowMove(int dx, int dy) {
+    protected boolean allowMove(int dx, int dy) {
         int nx = x + dx;
         int ny = y + dy;
         int nx2 = x2 + dx;
@@ -496,7 +500,7 @@ public abstract class CircuitElm {
         return true;
     }
 
-    void movePoint(int n, int dx, int dy) {
+	protected void movePoint(int n, int dx, int dy) {
         if (n == 0) {
             x += dx;
             y += dy;
@@ -507,7 +511,7 @@ public abstract class CircuitElm {
         setPoints();
     }
 
-    void drawPosts(CircuitGUI.ClientCircuitGui g, Color color) {
+    protected void drawPosts(CircuitGUI.ClientCircuitGui g, Color color) {
         int i;
         for (i = 0; i != getPostCount(); i++) {
             Point p = getPost(i);
@@ -515,50 +519,69 @@ public abstract class CircuitElm {
         }
     }
 
-    void stamp() {
+	protected static void drawOval(CircuitGUI.ClientCircuitGui g, double xPos, double yPos, float radiusX, float radiusY, Color color) {
+		Tessellator tessellator = Tessellator.getInstance();
+		WorldRenderer renderer = tessellator.getWorldRenderer();
+		GlStateManager.enableBlend();
+		GlStateManager.disableTexture2D();
+		GlStateManager.disableCull();
+		GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+		renderer.startDrawing(GL11.GL_POLYGON);
+		for(int i=0; i<360; i++) {
+			double rad = i * DEG2RAD;
+			renderer.addVertex(g.getGuiLeft() + xPos + (Math.cos(rad) * radiusX), g.getGuiTop() + yPos + (Math.sin(rad) * radiusY), g.getZLevel());
+		}
+		tessellator.draw();
+		GlStateManager.enableTexture2D();
+		GlStateManager.enableCull();
+		GlStateManager.disableBlend();
+	}
+
+	public void stamp() {
     }
 
-    int getVoltageSourceCount() {
+	protected int getVoltageSourceCount() {
         return 0;
     }
 
-    int getInternalNodeCount() {
+	protected int getInternalNodeCount() {
         return 0;
     }
 
-    void setNode(int p, int n) {
+	protected void setNode(int p, int n) {
         nodes[p] = n;
     }
 
-    void setVoltageSource(int n, int v) {
+	protected void setVoltageSource(int n, int v) {
         voltSource = v;
     }
 
-    int getVoltageSource() {
+	protected int getVoltageSource() {
         return voltSource;
     }
 
-    double getVoltageDiff() {
+	protected double getVoltageDiff() {
         return volts[0] - volts[1];
     }
 
-    boolean nonLinear() {
+	protected  boolean nonLinear() {
         return false;
     }
 
-    int getPostCount() {
+	protected  int getPostCount() {
         return 2;
     }
 
-    int getNode(int n) {
+	protected int getNode(int n) {
         return nodes[n];
     }
 
-    Point getPost(int n) {
+	protected Point getPost(int n) {
         return (n == 0) ? point1 : (n == 1) ? point2 : null;
     }
 
-    void drawPost(CircuitGUI.ClientCircuitGui g, int x0, int y0, int n, Color color) {
+	protected void drawPost(CircuitGUI.ClientCircuitGui g, int x0, int y0, int n, Color color) {
         if (sim.dragElm == null && !needsHighlight() &&
                 sim.getCircuitNode(n).links.size() == 2)
             return;
@@ -568,7 +591,7 @@ public abstract class CircuitElm {
         drawPost(g, x0, y0, color);
     }
 
-    void drawPost(CircuitGUI.ClientCircuitGui g, int x0, int y0, Color color) {
+	protected void drawPost(CircuitGUI.ClientCircuitGui g, int x0, int y0, Color color) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer renderer = tessellator.getWorldRenderer();
 	    GlStateManager.enableBlend();
@@ -578,7 +601,7 @@ public abstract class CircuitElm {
 	    GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         renderer.startDrawing(GL11.GL_LINE_LOOP);
         int a;
-        double m = pi / 180;
+        double m = Math.PI / 180;
         double r = 2.94;
         for (a = 0; a != 360; a += 20) {
             double ax = Math.cos(a * m) * r + x0;
@@ -594,7 +617,7 @@ public abstract class CircuitElm {
 	    GlStateManager.disableBlend();
     }
 
-    void setBbox(int x1, int y1, int x2, int y2) {
+	protected void setBbox(int x1, int y1, int x2, int y2) {
         if (x1 > x2) {
             int q = x1;
             x1 = x2;
@@ -608,7 +631,7 @@ public abstract class CircuitElm {
         boundingBox.setBounds(x1, y1, x2 - x1 + 1, y2 - y1 + 1);
     }
 
-    void setBbox(Point p1, Point p2, double w) {
+    protected void setBbox(Point p1, Point p2, double w) {
         setBbox(p1.getX(), p1.getY(), p2.getX(), p2.getY());
         int gx = p2.getY() - p1.getY();
         int gy = p1.getX() - p2.getX();
@@ -617,7 +640,7 @@ public abstract class CircuitElm {
         adjustBbox(p1.getX() + dpx, p1.getY() + dpy, p1.getX() - dpx, p1.getY() - dpy);
     }
 
-    void adjustBbox(int x1, int y1, int x2, int y2) {
+	protected void adjustBbox(int x1, int y1, int x2, int y2) {
         if (x1 > x2) {
             int q = x1;
             x1 = x2;
@@ -635,15 +658,15 @@ public abstract class CircuitElm {
         boundingBox.setBounds(x1, y1, x2 - x1, y2 - y1);
     }
 
-    void adjustBbox(Point p1, Point p2) {
+	protected void adjustBbox(Point p1, Point p2) {
         adjustBbox(p1.getX(), p1.getY(), p2.getX(), p2.getY());
     }
 
-    boolean isCenteredText() {
+	protected boolean isCenteredText() {
         return false;
     }
 
-    void drawCenteredText(CircuitGUI.ClientCircuitGui g, String s, int x, int y, boolean cx, Color color) {
+	protected void drawCenteredText(CircuitGUI.ClientCircuitGui g, String s, int x, int y, boolean cx, Color color) {
         FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
         int w = renderer.getStringWidth(s);
         if (cx)
@@ -653,7 +676,7 @@ public abstract class CircuitElm {
         g.drawString(renderer, s, g.getGuiLeft() + x, g.getGuiTop() + (y + renderer.FONT_HEIGHT / 2), color.getRGB());
     }
 
-    void drawValues(CircuitGUI.ClientCircuitGui g, String s, double hs, Color color) {
+	protected void drawValues(CircuitGUI.ClientCircuitGui g, String s, double hs, Color color) {
         if (s == null)
             return;
         FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
@@ -679,8 +702,8 @@ public abstract class CircuitElm {
         }
     }
 
-    void drawCoil(CircuitGUI.ClientCircuitGui g, int hs, Point p1, Point p2,
-                  double v1, double v2, Color color) {
+    protected void drawCoil(CircuitGUI.ClientCircuitGui g, int hs, Point p1, Point p2,
+                            double v1, double v2, Color color) {
         double len = distance(p1, p2);
         int segments = 30; // 10*(int) (len/10);
         int i;
@@ -700,11 +723,11 @@ public abstract class CircuitElm {
         }
     }
 
-    void updateDotCount() {
+    protected void updateDotCount() {
         curcount = updateDotCount(current, curcount);
     }
 
-    double updateDotCount(double cur, double cc) {
+	protected double updateDotCount(double cur, double cc) {
         if (sim.stopped)
             return cc;
         double cadd = cur * currentMult;
@@ -718,28 +741,28 @@ public abstract class CircuitElm {
         return cc + cadd;
     }
 
-    void doDots(CircuitGUI.ClientCircuitGui g) {
+    protected void doDots(CircuitGUI.ClientCircuitGui g) {
         updateDotCount();
         if (sim.dragElm != this)
             drawDots(g, point1, point2, curcount);
     }
 
-    void doAdjust() {
+	protected void doAdjust() {
     }
 
-    void setupAdjust() {
+	protected void setupAdjust() {
     }
 
     public void getInfo(String arr[]) {
     }
 
-    int getBasicInfo(String arr[]) {
+    protected int getBasicInfo(String arr[]) {
         arr[1] = "I = " + getCurrentDText(getCurrent());
         arr[2] = "Vd = " + getVoltageDText(getVoltageDiff());
         return 3;
     }
 
-    Color getVoltageColor(double volts) {
+    protected Color getVoltageColor(double volts) {
         if (needsHighlight()) {
             return selectColor;
         }
@@ -752,7 +775,7 @@ public abstract class CircuitElm {
         return colorScale[c];
     }
 
-    Color getPowerColor(double w0) {
+	protected Color getPowerColor(double w0) {
         w0 *= powerMult;
         double w = (w0 < 0) ? -w0 : w0;
         if (w > 1)
@@ -765,7 +788,7 @@ public abstract class CircuitElm {
             return new Color(b, rg, b);
     }
 
-    Color setConductanceColor(CircuitGUI.ClientCircuitGui g, double w0) {
+	protected Color setConductanceColor(CircuitGUI.ClientCircuitGui g, double w0) {
         w0 *= powerMult;
         double w = (w0 < 0) ? -w0 : w0;
         if (w > 1)
@@ -774,15 +797,15 @@ public abstract class CircuitElm {
         return new Color(rg, rg, rg);
     }
 
-    double getPower() {
+    protected double getPower() {
         return getVoltageDiff() * current;
     }
 
-    double getScopeValue(int x) {
+	protected double getScopeValue(int x) {
         return (x == 1) ? getPower() : getVoltageDiff();
     }
 
-    String getScopeUnits(int x) {
+	protected String getScopeUnits(int x) {
         return (x == 1) ? "W" : "V";
     }
 
@@ -793,53 +816,53 @@ public abstract class CircuitElm {
     public void setEditValue(int n, EditInfo ei) {
     }
 
-    boolean getConnection(int n1, int n2) {
+	protected boolean getConnection(int n1, int n2) {
         return true;
     }
 
-    boolean hasGroundConnection(int n1) {
+	protected boolean hasGroundConnection(int n1) {
         return false;
     }
 
-    abstract boolean isWire();
+    protected abstract boolean isWire();
 
-    boolean canViewInScope() {
+	protected boolean canViewInScope() {
         return getPostCount() <= 2;
     }
 
-    boolean comparePair(int x1, int x2, int y1, int y2) {
+	protected boolean comparePair(int x1, int x2, int y1, int y2) {
         return ((x1 == y1 && x2 == y2) || (x1 == y2 && x2 == y1));
     }
 
-    boolean needsHighlight() {
+	protected boolean needsHighlight() {
         return sim.mouseElm == this || selected;
     }
 
-    boolean isSelected() {
+	protected boolean isSelected() {
         return selected;
     }
 
-    void setSelected(boolean x) {
+	protected void setSelected(boolean x) {
         selected = x;
     }
 
-    void selectRect(Rectangle r) {
+	protected void selectRect(Rectangle r) {
         selected = r.intersects(boundingBox);
     }
 
-    Rectangle getBoundingBox() {
+	protected Rectangle getBoundingBox() {
         return boundingBox;
     }
 
-    boolean needsShortcut() {
+	protected boolean needsShortcut() {
         return getShortcut() > 0;
     }
 
-    int getShortcut() {
+	public int getShortcut() {
         return 0;
     }
 
-    boolean isGraphicElmt() {
+	protected boolean isGraphicElmt() {
         return false;
     }
 
