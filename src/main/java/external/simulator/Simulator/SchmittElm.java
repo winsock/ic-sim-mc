@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 // contributed by Edward Calver
 
-class SchmittElm extends InvertingSchmittElm {
+public class SchmittElm extends InvertingSchmittElm {
 /*    Polygon gatePoly;
     Polygon symbolPoly;*/
 

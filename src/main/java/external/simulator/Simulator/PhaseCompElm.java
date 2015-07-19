@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class PhaseCompElm extends ChipElm {
+public class PhaseCompElm extends ChipElm {
     private boolean ff1;
     private boolean ff2;
 

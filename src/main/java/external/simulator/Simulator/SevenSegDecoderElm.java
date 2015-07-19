@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class SevenSegDecoderElm extends ChipElm {
+public class SevenSegDecoderElm extends ChipElm {
 
     private static final boolean[][] symbols = {
             {true, true, true, true, true, true, false},//0

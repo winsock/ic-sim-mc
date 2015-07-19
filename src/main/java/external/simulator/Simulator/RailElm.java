@@ -2,11 +2,11 @@ package external.simulator.Simulator;
 
 
 import me.querol.andrew.ic.Gui.CircuitGUI;
-import org.lwjgl.util.Color;
 
+import java.awt.*;
 import java.util.StringTokenizer;
 
-class RailElm extends VoltageElm {
+public class RailElm extends VoltageElm {
     final int FLAG_CLOCK = 1;
 
     public RailElm(int xx, int yy) {
@@ -35,12 +35,12 @@ class RailElm extends VoltageElm {
         lead1 = interpPoint(point1, point2, 1 - circleSize / dn);
     }
 
-    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+    public void draw(CircuitGUI.ClientCircuitGui g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, circleSize);
         drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
         boolean clock = waveform == WF_SQUARE && (flags & FLAG_CLOCK) != 0;
         if (waveform == WF_DC || waveform == WF_VAR || clock) {
-            Color color = (Color) (needsHighlight() ? selectColor : whiteColor);
+            Color color = (needsHighlight() ? selectColor : whiteColor);
             double v = getVoltage();
             String s = getShortUnitText(v, "V");
             if (Math.abs(v) < 1)

@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class JKFlipFlopElm extends ChipElm {
+public class JKFlipFlopElm extends ChipElm {
     private final int FLAG_RESET = 2;
 
     public JKFlipFlopElm(int xx, int yy) {

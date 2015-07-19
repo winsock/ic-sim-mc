@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class DecadeElm extends ChipElm {
+public class DecadeElm extends ChipElm {
     public DecadeElm(int xx, int yy) {
         super(xx, yy);
     }

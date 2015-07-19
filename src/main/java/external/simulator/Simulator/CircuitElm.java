@@ -3,12 +3,13 @@ package external.simulator.Simulator;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
-import org.lwjgl.util.ReadableColor;
 import org.lwjgl.util.Rectangle;
 
 import java.awt.*;
@@ -21,11 +22,11 @@ public abstract class CircuitElm {
     static double voltageRange = 5;
     static double currentMult, powerMult;
     static CirSim sim;
-    static ReadableColor whiteColor, selectColor, lightGrayColor;
+    static Color whiteColor, selectColor, lightGrayColor;
     private static NumberFormat shortFormat;
     private static NumberFormat noCommaFormat;
     private static int colorScaleCount = 32;
-    private static ReadableColor[] colorScale;
+    private static Color[] colorScale;
     protected static Point ps1;
     protected static Point ps2;
     int x, y, x2, y2, flags, nodes[], voltSource;
@@ -87,45 +88,57 @@ public abstract class CircuitElm {
         noCommaFormat.setGroupingUsed(false);
     }
 
-    protected static void drawPolygon(Polygon polygon, Color color) {
+    protected static void drawPolygon(CircuitGUI.ClientCircuitGui g, Polygon polygon, Color color) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer renderer = tessellator.getWorldRenderer();
-        renderer.startDrawingQuads();
-        renderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	    GlStateManager.enableBlend();
+	    GlStateManager.disableTexture2D();
+	    GlStateManager.disableCull();
+	    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+	    GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+        renderer.startDrawing(GL11.GL_LINE_LOOP);
         for (int i = 0; i < polygon.npoints; i++) {
-            renderer.addVertex(polygon.xpoints[i], polygon.ypoints[i], 0);
+            renderer.addVertex(g.getGuiLeft() + polygon.xpoints[i], g.getGuiTop() + polygon.ypoints[i], g.getZLevel());
         }
-        renderer.finishDrawing();
+	    tessellator.draw();
+	    GlStateManager.enableTexture2D();
+	    GlStateManager.enableCull();
+	    GlStateManager.disableBlend();
     }
 
-    protected static void drawThickLine(CircuitGUI g, int x, int y, int x2, int y2, Color color) {
+    protected static void drawThickLine(CircuitGUI.ClientCircuitGui g, int x, int y, int x2, int y2, Color color) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+	    GlStateManager.enableBlend();
+	    GlStateManager.disableTexture2D();
+	    GlStateManager.disableCull();
+	    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+	    GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+
         worldrenderer.startDrawingQuads();
-        worldrenderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-        worldrenderer.addVertex(x, y, 0);
-        worldrenderer.addVertex(x2, y2, 0);
-        worldrenderer.addVertex(x2 + 1, y2 + 1, 0);
-        worldrenderer.addVertex(x + 1, y + 1, 0);
-        worldrenderer.finishDrawing();
+        worldrenderer.addVertex(g.getGuiLeft() + x, g.getGuiTop() + y, g.getZLevel());
+        worldrenderer.addVertex(g.getGuiLeft() + x2, g.getGuiTop() + y2, g.getZLevel());
+        worldrenderer.addVertex(g.getGuiLeft() + x2 + 1, g.getGuiTop() + y2 + 1, g.getZLevel());
+        worldrenderer.addVertex(g.getGuiLeft() + x + 1, g.getGuiTop() + y + 1, g.getZLevel());
+        tessellator.draw();
+	    GlStateManager.enableTexture2D();
+	    GlStateManager.enableCull();
+	    GlStateManager.disableBlend();
     }
 
-    static void drawThickLine(CircuitGUI g, Point pa, Point pb, Color color) {
+    static void drawThickLine(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, Color color) {
         drawThickLine(g, pa.getX(), pa.getY(), pb.getX(), pb.getY(), color);
     }
 
-    static void drawThickPolygon(CircuitGUI g, int xs[], int ys[], int c, Color color) {
-        int i;
-        for (i = 0; i != c - 1; i++)
-            drawThickLine(g, xs[i], ys[i], xs[i + 1], ys[i + 1], color);
-        drawThickLine(g, xs[i], ys[i], xs[0], ys[0], color);
+    static void drawThickPolygon(CircuitGUI.ClientCircuitGui g, int xs[], int ys[], int c, Color color) {
+        drawPolygon(g, new Polygon(xs, ys, c), color);
     }
 
-    static void drawThickPolygon(CircuitGUI g, Polygon p, Color color) {
-        drawThickPolygon(g, p.xpoints, p.ypoints, p.npoints, color);
+    static void drawThickPolygon(CircuitGUI.ClientCircuitGui g, Polygon p, Color color) {
+	    drawPolygon(g, p, color);
     }
 
-    static void drawThickCircle(CircuitGUI g, int cx, int cy, int ri, Color color) {
+    static void drawThickCircle(CircuitGUI.ClientCircuitGui g, int cx, int cy, int ri, Color color) {
         int a;
         double m = pi / 180;
         double r = ri * .98;
@@ -254,7 +267,8 @@ public abstract class CircuitElm {
         curcount = 0;
     }
 
-    abstract void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks);
+	@SideOnly(Side.CLIENT)
+	public abstract void draw(CircuitGUI.ClientCircuitGui screen, int mouseX, int mouseY, float partialTicks);
 
     void setCurrent(int x, double c) {
         current = c;
@@ -349,7 +363,7 @@ public abstract class CircuitElm {
         d.setY((int) Math.floor(a.getY() * (1 - f) + b.getY() * f - g * gy + .48));
     }
 
-    void draw2Leads(CircuitGUI g, Color color) {
+    void draw2Leads(CircuitGUI.ClientCircuitGui g, Color color) {
         // draw first lead
         getVoltageColor(volts[0]);
         drawThickLine(g, point1, lead1, color);
@@ -366,19 +380,23 @@ public abstract class CircuitElm {
         return a;
     }
 
-    void drawDots(CircuitGUI g, Point pa, Point pb, double pos) {
-        drawDots(g, pa, pb, pos, (Color) Color.YELLOW);
+    void drawDots(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, double pos) {
+        drawDots(g, pa, pb, pos, Color.YELLOW);
     }
 
-    void drawDots(CircuitGUI g, Point pa, Point pb, double pos, Color color) {
+    void drawDots(CircuitGUI.ClientCircuitGui g, Point pa, Point pb, double pos, Color color) {
         if (sim.stopped || pos == 0 || !sim.dots)
             return;
 
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer renderer = tessellator.getWorldRenderer();
-        renderer.startDrawing(GL11.GL_POINTS);
-        renderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-
+	    GlStateManager.enableBlend();
+	    GlStateManager.disableTexture2D();
+	    GlStateManager.disableCull();
+	    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+	    GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	    GL11.glPointSize(3.0f);
+	    renderer.startDrawing(GL11.GL_POINTS);
         int dx = pb.getX() - pa.getX();
         int dy = pb.getY() - pa.getY();
         double dn = Math.sqrt(dx * dx + dy * dy);
@@ -386,13 +404,16 @@ public abstract class CircuitElm {
         pos %= ds;
         if (pos < 0)
             pos += ds;
-        double di = 0;
+        double di;
         for (di = pos; di < dn; di += ds) {
             int x0 = (int) (pa.getX() + di * dx / dn);
             int y0 = (int) (pa.getY() + di * dy / dn);
-            renderer.addVertex(x0, y0, 0);
+            renderer.addVertex(g.getGuiLeft() + x0, g.getGuiTop() + y0, g.getZLevel());
         }
-        renderer.finishDrawing();
+	    tessellator.draw();
+	    GlStateManager.enableTexture2D();
+	    GlStateManager.enableCull();
+	    GlStateManager.disableBlend();
     }
 
     Polygon calcArrow(Point a, Point b, double al, double aw) {
@@ -486,7 +507,7 @@ public abstract class CircuitElm {
         setPoints();
     }
 
-    void drawPosts(CircuitGUI g, Color color) {
+    void drawPosts(CircuitGUI.ClientCircuitGui g, Color color) {
         int i;
         for (i = 0; i != getPostCount(); i++) {
             Point p = getPost(i);
@@ -537,7 +558,7 @@ public abstract class CircuitElm {
         return (n == 0) ? point1 : (n == 1) ? point2 : null;
     }
 
-    void drawPost(CircuitGUI g, int x0, int y0, int n, Color color) {
+    void drawPost(CircuitGUI.ClientCircuitGui g, int x0, int y0, int n, Color color) {
         if (sim.dragElm == null && !needsHighlight() &&
                 sim.getCircuitNode(n).links.size() == 2)
             return;
@@ -547,11 +568,15 @@ public abstract class CircuitElm {
         drawPost(g, x0, y0, color);
     }
 
-    void drawPost(CircuitGUI g, int x0, int y0, Color color) {
+    void drawPost(CircuitGUI.ClientCircuitGui g, int x0, int y0, Color color) {
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer renderer = tessellator.getWorldRenderer();
+	    GlStateManager.enableBlend();
+	    GlStateManager.disableTexture2D();
+	    GlStateManager.disableCull();
+	    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+	    GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         renderer.startDrawing(GL11.GL_LINE_LOOP);
-        renderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
         int a;
         double m = pi / 180;
         double r = 2.94;
@@ -560,10 +585,13 @@ public abstract class CircuitElm {
             double ay = Math.sin(a * m) * r + y0;
             double bx = Math.cos((a + 20) * m) * r + x0;
             double by = Math.sin((a + 20) * m) * r + y0;
-            renderer.addVertex(ax, ay, 0);
-            renderer.addVertex(bx, by, 0);
+            renderer.addVertex(g.getGuiLeft() + ax, g.getGuiTop() + ay, g.getZLevel());
+            renderer.addVertex(g.getGuiLeft() + bx, g.getGuiTop() + by, g.getZLevel());
         }
-        renderer.finishDrawing();
+	    tessellator.draw();
+	    GlStateManager.enableTexture2D();
+	    GlStateManager.enableCull();
+	    GlStateManager.disableBlend();
     }
 
     void setBbox(int x1, int y1, int x2, int y2) {
@@ -615,17 +643,17 @@ public abstract class CircuitElm {
         return false;
     }
 
-    void drawCenteredText(CircuitGUI g, String s, int x, int y, boolean cx, Color color) {
+    void drawCenteredText(CircuitGUI.ClientCircuitGui g, String s, int x, int y, boolean cx, Color color) {
         FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
         int w = renderer.getStringWidth(s);
         if (cx)
             x -= w / 2;
         adjustBbox(x, y - renderer.FONT_HEIGHT / 2,
                 x + w, y + renderer.FONT_HEIGHT / 2);
-        g.drawString(renderer, s, x, y + renderer.FONT_HEIGHT / 2, color.hashCode());
+        g.drawString(renderer, s, g.getGuiLeft() + x, g.getGuiTop() + (y + renderer.FONT_HEIGHT / 2), color.getRGB());
     }
 
-    void drawValues(CircuitGUI g, String s, double hs, Color color) {
+    void drawValues(CircuitGUI.ClientCircuitGui g, String s, double hs, Color color) {
         if (s == null)
             return;
         FontRenderer renderer = Minecraft.getMinecraft().fontRendererObj;
@@ -651,7 +679,7 @@ public abstract class CircuitElm {
         }
     }
 
-    void drawCoil(CircuitGUI g, int hs, Point p1, Point p2,
+    void drawCoil(CircuitGUI.ClientCircuitGui g, int hs, Point p1, Point p2,
                   double v1, double v2, Color color) {
         double len = distance(p1, p2);
         int segments = 30; // 10*(int) (len/10);
@@ -690,7 +718,7 @@ public abstract class CircuitElm {
         return cc + cadd;
     }
 
-    void doDots(CircuitGUI g) {
+    void doDots(CircuitGUI.ClientCircuitGui g) {
         updateDotCount();
         if (sim.dragElm != this)
             drawDots(g, point1, point2, curcount);
@@ -711,7 +739,7 @@ public abstract class CircuitElm {
         return 3;
     }
 
-    ReadableColor getVoltageColor(double volts) {
+    Color getVoltageColor(double volts) {
         if (needsHighlight()) {
             return selectColor;
         }
@@ -737,7 +765,7 @@ public abstract class CircuitElm {
             return new Color(b, rg, b);
     }
 
-    Color setConductanceColor(CircuitGUI g, double w0) {
+    Color setConductanceColor(CircuitGUI.ClientCircuitGui g, double w0) {
         w0 *= powerMult;
         double w = (w0 < 0) ? -w0 : w0;
         if (w > 1)

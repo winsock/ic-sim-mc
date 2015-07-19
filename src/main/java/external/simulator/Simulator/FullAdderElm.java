@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class FullAdderElm extends ChipElm {
+public class FullAdderElm extends ChipElm {
     public FullAdderElm(int xx, int yy) {
         super(xx, yy);
     }

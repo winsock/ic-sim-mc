@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class CC2Elm extends ChipElm {
+public class CC2Elm extends ChipElm {
     private double gain;
 
     public CC2Elm(int xx, int yy) {

@@ -3,12 +3,11 @@ package external.simulator.Simulator;
 
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import org.lwjgl.util.Point;
-import org.lwjgl.util.Color;
 
-import java.awt.Polygon;
+import java.awt.*;
 import java.util.StringTokenizer;
 
-class JfetElm extends MosfetElm {
+public class JfetElm extends MosfetElm {
     Polygon gatePoly;
     Polygon arrowPoly;
     private Point gatePt;
@@ -24,18 +23,18 @@ class JfetElm extends MosfetElm {
         noDiagonal = true;
     }
 
-    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+    public void draw(CircuitGUI.ClientCircuitGui g, int mouseX, int mouseY, float partialTicks) {
         setBbox(point1, point2, hs);
-        Color colorV1 = (Color) getVoltageColor(volts[1]);
+        Color colorV1 = getVoltageColor(volts[1]);
         drawThickLine(g, src[0], src[1], colorV1);
         drawThickLine(g, src[1], src[2], colorV1);
-        Color colorV2 = (Color) getVoltageColor(volts[2]);
+        Color colorV2 = getVoltageColor(volts[2]);
         drawThickLine(g, drn[0], drn[1], colorV2);
         drawThickLine(g, drn[1], drn[2], colorV2);
-        Color color = (Color) getVoltageColor(volts[0]);
+        Color color = getVoltageColor(volts[0]);
         drawThickLine(g, point1, gatePt, color);
-        drawPolygon(arrowPoly, color);
-        drawPolygon(gatePoly, color);
+        drawPolygon(g, arrowPoly, color);
+        drawPolygon(g, gatePoly, color);
         curcount = updateDotCount(-ids, curcount);
         if (curcount != 0) {
             drawDots(g, src[0], src[1], curcount);
@@ -43,7 +42,7 @@ class JfetElm extends MosfetElm {
             drawDots(g, drn[0], drn[1], -curcount);
             drawDots(g, drn[1], drn[2], -(curcount + 8));
         }
-        drawPosts(g, (Color) lightGrayColor);
+        drawPosts(g, lightGrayColor);
     }
 
     void setPoints() {

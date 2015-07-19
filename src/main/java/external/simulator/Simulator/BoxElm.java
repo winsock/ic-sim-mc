@@ -2,12 +2,12 @@ package external.simulator.Simulator;
 
 import me.querol.andrew.ic.Gui.CircuitGUI;
 
+import java.awt.*;
 import java.util.StringTokenizer;
 
 import net.minecraft.client.gui.Gui;
-import org.lwjgl.util.Color;
 
-class BoxElm extends GraphicElm {
+public class BoxElm extends GraphicElm {
 
     public BoxElm(int xx, int yy) {
         super(xx, yy);
@@ -41,18 +41,18 @@ class BoxElm extends GraphicElm {
         y = yy;
     }
 
-    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+    public void draw(CircuitGUI.ClientCircuitGui g, int mouseX, int mouseY, float partialTicks) {
         //g.setColor(needsHighlight() ? selectColor : lightGrayColor);
-        Color color = (Color) (needsHighlight() ? selectColor : Color.GREY);
+        Color color = (needsHighlight() ? selectColor : Color.gray);
         setBbox(x, y, x2, y2);
         if (x < x2 && y < y2)
-            Gui.drawRect(x, y, x2 - x, y2 - y, color.hashCode());
+            Gui.drawRect(x, y, x2 - x, y2 - y, color.getRGB());
         else if (x > x2 && y < y2)
-            Gui.drawRect(x2, y, x - x2, y2 - y, color.hashCode());
+            Gui.drawRect(x2, y, x - x2, y2 - y, color.getRGB());
         else if (x < x2 && y > y2)
-            Gui.drawRect(x, y2, x2 - x, y - y2, color.hashCode());
+            Gui.drawRect(x, y2, x2 - x, y - y2, color.getRGB());
         else
-            Gui.drawRect(x2, y2, x - x2, y - y2, color.hashCode());
+            Gui.drawRect(x2, y2, x - x2, y - y2, color.getRGB());
     }
 
     public EditInfo getEditInfo(int n) {

@@ -4,7 +4,7 @@ import java.util.StringTokenizer;
 
 // contributed by Edward Calver
 
-class SRAMElm extends ChipElm {
+public class SRAMElm extends ChipElm {
     private short[] data = new short[256];//Fuck this lack of unsigned types. That's twice as much data as I'd need in C
 
     public SRAMElm(int xx, int yy) {

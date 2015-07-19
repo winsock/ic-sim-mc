@@ -4,15 +4,16 @@ package external.simulator.Simulator;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 
+import java.awt.*;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-class TextElm extends GraphicElm {
+public class TextElm extends GraphicElm {
     private final int FLAG_CENTER = 1;
     private final int FLAG_BAR = 2;
     private String text;
@@ -76,11 +77,11 @@ class TextElm extends GraphicElm {
         y2 = yy;
     }
 
-    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
+    public void draw(CircuitGUI.ClientCircuitGui g, int mouseX, int mouseY, float partialTicks) {
         //Graphics2D g2 = (Graphics2D)g;
         //g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
         //	RenderingHints.VALUE_ANTIALIAS_ON);
-        Color color = (Color) (needsHighlight() ? selectColor : lightGrayColor);
+        Color color = needsHighlight() ? selectColor : lightGrayColor;
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
         int i;
         int maxW = -1;
@@ -93,16 +94,20 @@ class TextElm extends GraphicElm {
         setBbox(x, y, x, y);
         for (i = 0; i != lines.size(); i++) {
             String s = lines.elementAt(i);
-            g.drawString(fontRenderer, s, x, curY, color.hashCode());
+            g.drawString(fontRenderer, s, x, curY, color.getRGB());
             if ((flags & FLAG_BAR) != 0) {
                 int by = curY - fontRenderer.FONT_HEIGHT;
                 Tessellator tessellator = Tessellator.getInstance();
                 WorldRenderer worldRenderer = tessellator.getWorldRenderer();
-                worldRenderer.startDrawing(GL11.GL_LINE);
-                worldRenderer.setColorRGBA(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-                worldRenderer.addVertex(x, by, 0);
-                worldRenderer.addVertex(x + fontRenderer.getStringWidth(s) - 1, by, 0);
-                worldRenderer.finishDrawing();
+	            GlStateManager.enableBlend();
+	            GlStateManager.disableTexture2D();
+	            GlStateManager.disableCull();
+	            GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
+	            GlStateManager.color(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+	            worldRenderer.startDrawing(GL11.GL_LINE);
+                worldRenderer.addVertex(g.getGuiLeft() + x, g.getGuiTop() + by, g.getZLevel());
+                worldRenderer.addVertex(g.getGuiLeft() + (x + fontRenderer.getStringWidth(s) - 1), g.getGuiTop() + by, g.getZLevel());
+	            tessellator.draw();
             }
             adjustBbox(x, curY - fontRenderer.FONT_HEIGHT / 2,
                     x + fontRenderer.getStringWidth(s), curY + fontRenderer.FONT_HEIGHT / 2);

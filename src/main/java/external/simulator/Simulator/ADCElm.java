@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class ADCElm extends ChipElm {
+public class ADCElm extends ChipElm {
     public ADCElm(int xx, int yy) {
         super(xx, yy);
     }

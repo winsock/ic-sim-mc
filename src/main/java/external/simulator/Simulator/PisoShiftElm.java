@@ -4,7 +4,7 @@ import java.util.StringTokenizer;
 
 // contributed by Edward Calver
 
-class PisoShiftElm extends ChipElm {
+public class PisoShiftElm extends ChipElm {
     private short data = 0;//Lack of unsigned types sucks
     private boolean clockstate = false;
     private boolean modestate = false;

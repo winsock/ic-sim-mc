@@ -4,7 +4,7 @@ import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
 
-class AndGateElm extends GateElm {
+public class AndGateElm extends GateElm {
     public AndGateElm(int xx, int yy) {
         super(xx, yy);
     }

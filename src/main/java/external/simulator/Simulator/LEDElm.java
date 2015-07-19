@@ -5,7 +5,7 @@ import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
 
-class LEDElm extends DiodeElm {
+public class LEDElm extends DiodeElm {
     private double colorR;
     private double colorG;
     private double colorB;

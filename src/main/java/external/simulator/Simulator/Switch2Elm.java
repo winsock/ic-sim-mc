@@ -5,7 +5,7 @@ import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
 
-class Switch2Elm extends SwitchElm {
+public class Switch2Elm extends SwitchElm {
     private static final int FLAG_CENTER_OFF = 1;
     private final int openhs = 16;
     private int link;

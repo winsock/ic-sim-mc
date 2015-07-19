@@ -2,48 +2,46 @@ package external.simulator.Simulator;// stub ThermistorElm based on SparkGapElm
 // FIXME need to uncomment ThermistorElm line from CirSim.java
 // FIXME need to add ThermistorElm.java to srclist
 
-
 import me.querol.andrew.ic.Gui.CircuitGUI;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
 
-class ThermistorElm extends CircuitElm {
-    private double minresistance;
-    private double maxresistance;
-    private double resistance;
-    /*    Scrollbar slider;
-        Label label;*/
-    private Point ps3;
-    private Point ps4;
+public class ThermistorElm extends CircuitElm {
+	private double minresistance;
+	private double maxresistance;
+	private double resistance;
+	/*    Scrollbar slider;
+		Label label;*/
+	private Point ps3;
+	private Point ps4;
 
-    public ThermistorElm(int xx, int yy) {
-        super(xx, yy);
-        maxresistance = 1e9;
-        minresistance = 1e3;
-        //createSlider();
-    }
+	public ThermistorElm(int xx, int yy) {
+		super(xx, yy);
+		maxresistance = 1e9;
+		minresistance = 1e3;
+		//createSlider();
+	}
 
-    public ThermistorElm(int xa, int ya, int xb, int yb, int f,
-                         StringTokenizer st) {
-        super(xa, ya, xb, yb, f);
-        minresistance = new Double(st.nextToken());
-        maxresistance = new Double(st.nextToken());
-        //createSlider();
-    }
+	public ThermistorElm(int xa, int ya, int xb, int yb, int f,
+	                     StringTokenizer st) {
+		super(xa, ya, xb, yb, f);
+		minresistance = new Double(st.nextToken());
+		maxresistance = new Double(st.nextToken());
+		//createSlider();
+	}
 
-    boolean nonLinear() {
-        return true;
-    }
+	boolean nonLinear() {
+		return true;
+	}
 
-    int getDumpType() {
-        return 192;
-    }
+	int getDumpType() {
+		return 192;
+	}
 
-    String dump() {
-        return super.dump() + " " + minresistance + " " + maxresistance;
-    }
+	String dump() {
+		return super.dump() + " " + minresistance + " " + maxresistance;
+	}
 
 /*    void createSlider() {
         sim.main.add(label = new Label("Temperature", Label.CENTER));
@@ -52,78 +50,78 @@ class ThermistorElm extends CircuitElm {
         sim.main.validate();
     }*/
 
-    void setPoints() {
-        super.setPoints();
-        calcLeads(32);
-        ps3 = new Point();
-        ps4 = new Point();
-    }
+	void setPoints() {
+		super.setPoints();
+		calcLeads(32);
+		ps3 = new Point();
+		ps4 = new Point();
+	}
 
 /*    void delete() {
         sim.main.remove(label);
         sim.main.remove(slider);
     }*/
 
-    void draw(CircuitGUI g, int mouseX, int mouseY, float partialTicks) {
-        int i;
-        double v1 = volts[0];
-        double v2 = volts[1];
-        setBbox(point1, point2, 6);
-        draw2Leads(g, (Color) lightGrayColor);
-        // FIXME need to draw properly, see ResistorElm.java
-        doDots(g);
-        drawPosts(g, (Color) lightGrayColor);
-    }
+	public void draw(CircuitGUI.ClientCircuitGui g, int mouseX, int mouseY, float partialTicks) {
+		int i;
+		double v1 = volts[0];
+		double v2 = volts[1];
+		setBbox(point1, point2, 6);
+		draw2Leads(g, lightGrayColor);
+		// FIXME need to draw properly, see ResistorElm.java
+		doDots(g);
+		drawPosts(g, lightGrayColor);
+	}
 
-    void calculateCurrent() {
-        double vd = volts[0] - volts[1];
-        current = vd / resistance;
-    }
+	void calculateCurrent() {
+		double vd = volts[0] - volts[1];
+		current = vd / resistance;
+	}
 
-    void startIteration() {
-        double vd = volts[0] - volts[1];
-        // FIXME set resistance as appropriate, using slider.getValue()
-        resistance = minresistance;
-        //System.out.print(this + " res current set to " + current + "\n");
-    }
+	void startIteration() {
+		double vd = volts[0] - volts[1];
+		// FIXME set resistance as appropriate, using slider.getValue()
+		resistance = minresistance;
+		//System.out.print(this + " res current set to " + current + "\n");
+	}
 
-    void doStep() {
-        sim.stampResistor(nodes[0], nodes[1], resistance);
-    }
+	void doStep() {
+		sim.stampResistor(nodes[0], nodes[1], resistance);
+	}
 
-    void stamp() {
-        sim.stampNonLinear(nodes[0]);
-        sim.stampNonLinear(nodes[1]);
-    }
+	void stamp() {
+		sim.stampNonLinear(nodes[0]);
+		sim.stampNonLinear(nodes[1]);
+	}
 
-    public void getInfo(String arr[]) {
-        // FIXME
-        arr[0] = "spark gap";
-        getBasicInfo(arr);
-        arr[3] = "R = " + getUnitText(resistance, CirSim.ohmString);
-        arr[4] = "Ron = " + getUnitText(minresistance, CirSim.ohmString);
-        arr[5] = "Roff = " + getUnitText(maxresistance, CirSim.ohmString);
-    }
+	public void getInfo(String arr[]) {
+		// FIXME
+		arr[0] = "spark gap";
+		getBasicInfo(arr);
+		arr[3] = "R = " + getUnitText(resistance, CirSim.ohmString);
+		arr[4] = "Ron = " + getUnitText(minresistance, CirSim.ohmString);
+		arr[5] = "Roff = " + getUnitText(maxresistance, CirSim.ohmString);
+	}
 
-    public EditInfo getEditInfo(int n) {
-        // ohmString doesn't work here on linux
-        if (n == 0)
-            return new EditInfo("Min resistance (ohms)", minresistance, 0, 0);
-        if (n == 1)
-            return new EditInfo("Max resistance (ohms)", maxresistance, 0, 0);
-        return null;
-    }
+	public EditInfo getEditInfo(int n) {
+		// ohmString doesn't work here on linux
+		if (n == 0)
+			return new EditInfo("Min resistance (ohms)", minresistance, 0, 0);
+		if (n == 1)
+			return new EditInfo("Max resistance (ohms)", maxresistance, 0, 0);
+		return null;
+	}
 
-    public void setEditValue(int n, EditInfo ei) {
-        if (ei.value > 0 && n == 0)
-            minresistance = ei.value;
-        if (ei.value > 0 && n == 1)
-            maxresistance = ei.value;
-    }
+	public void setEditValue(int n, EditInfo ei) {
+		if (ei.value > 0 && n == 0)
+			minresistance = ei.value;
+		if (ei.value > 0 && n == 1)
+			maxresistance = ei.value;
+	}
 
-    @Override
-    boolean isWire() {
-        return false;
-    }
+	@Override
+	boolean isWire() {
+		return false;
+	}
 }
 

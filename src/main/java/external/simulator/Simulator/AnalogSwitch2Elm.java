@@ -1,12 +1,11 @@
 package external.simulator.Simulator;
 
 import me.querol.andrew.ic.Gui.CircuitGUI;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
 
-class AnalogSwitch2Elm extends AnalogSwitchElm {
+public class AnalogSwitch2Elm extends AnalogSwitchElm {
     private final int openhs = 16;
     private Point[] swposts;
     private Point[] swpoles;
@@ -35,26 +34,26 @@ class AnalogSwitch2Elm extends AnalogSwitchElm {
         return 4;
     }
 
-    void draw(CircuitGUI g) {
+    void draw(CircuitGUI.ClientCircuitGui g) {
         setBbox(point1, point2, openhs);
 
         // draw first lead
-        drawThickLine(g, point1, lead1, (Color) getVoltageColor(volts[0]));
+        drawThickLine(g, point1, lead1, getVoltageColor(volts[0]));
 
         // draw second lead
-        drawThickLine(g, swpoles[0], swposts[0], (Color) getVoltageColor(volts[1]));
+        drawThickLine(g, swpoles[0], swposts[0], getVoltageColor(volts[1]));
 
         // draw third lead
-        drawThickLine(g, swpoles[1], swposts[1], (Color) getVoltageColor(volts[2]));
+        drawThickLine(g, swpoles[1], swposts[1], getVoltageColor(volts[2]));
 
         // draw switch
         int position = (open) ? 1 : 0;
-        drawThickLine(g, lead1, swpoles[position], (Color) lightGrayColor);
+        drawThickLine(g, lead1, swpoles[position], lightGrayColor);
 
         updateDotCount();
         drawDots(g, point1, lead1, curcount);
         drawDots(g, swpoles[position], swposts[position], curcount);
-        drawPosts(g, (Color) lightGrayColor);
+        drawPosts(g, lightGrayColor);
     }
 
     Point getPost(int n) {

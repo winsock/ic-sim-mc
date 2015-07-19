@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class NorGateElm extends OrGateElm {
+public class NorGateElm extends OrGateElm {
     public NorGateElm(int xx, int yy) {
         super(xx, yy);
     }

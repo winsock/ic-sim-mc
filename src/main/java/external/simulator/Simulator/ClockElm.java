@@ -1,6 +1,6 @@
 package external.simulator.Simulator;
 
-class ClockElm extends RailElm {
+public class ClockElm extends RailElm {
     public ClockElm(int xx, int yy) {
         super(xx, yy, WF_SQUARE);
         maxVoltage = 2.5;

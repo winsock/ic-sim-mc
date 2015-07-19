@@ -1,6 +1,6 @@
 package external.simulator.Simulator;
 
-class PushSwitchElm extends SwitchElm {
+public class PushSwitchElm extends SwitchElm {
     public PushSwitchElm(int xx, int yy) {
         super(xx, yy, true);
     }

@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class TFlipFlopElm extends ChipElm {
+public class TFlipFlopElm extends ChipElm {
     private final int FLAG_RESET = 2;
     private final int FLAG_SET = 4;
     private boolean last_val;

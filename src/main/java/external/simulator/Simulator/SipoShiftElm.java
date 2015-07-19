@@ -4,7 +4,7 @@ import java.util.StringTokenizer;
 
 // contributed by Edward Calver
 
-class SipoShiftElm extends ChipElm {
+public class SipoShiftElm extends ChipElm {
     private short data = 0;//This has to be a short because there's no unsigned byte and it's screwing with my code
     private boolean clockstate = false;
 

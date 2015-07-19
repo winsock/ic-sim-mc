@@ -4,12 +4,13 @@ package external.simulator.Simulator;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldRenderer;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.Rectangle;
 
+import java.awt.*;
 import java.nio.IntBuffer;
 import java.util.StringTokenizer;
 
@@ -218,7 +219,7 @@ class Scope {
         minMaxI *= x;
     }
 
-    public void drawScopeTexture(int x, int y, int x2, int y2, int[] pixels) {
+    public void drawScopeTexture(CircuitGUI.ClientCircuitGui g, int x, int y, int x2, int y2, int[] pixels) {
         if (GL11.glIsTexture(scopeTextureId)) {
             scopeTextureId = GL11.glGenTextures();
             GL11.glBindTexture(GL11.GL_TEXTURE_2D, scopeTextureId);
@@ -233,17 +234,24 @@ class Scope {
         }
         Tessellator tessellator = Tessellator.getInstance();
         WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+	    GlStateManager.enableBlend();
+	    GlStateManager.disableTexture2D();
+	    GlStateManager.disableCull();
+	    GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
         worldRenderer.startDrawingQuads();
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, scopeTextureId);
-        worldRenderer.addVertexWithUV(x, y, 0, 1, 0);
-        worldRenderer.addVertexWithUV(x, y2, 0, 0, 0);
-        worldRenderer.addVertexWithUV(x2, y2, 0, 0, 1);
-        worldRenderer.addVertexWithUV(x2, y, 0, 1, 1);
+        worldRenderer.addVertexWithUV(g.getGuiLeft() + x, g.getGuiTop() + y, g.getZLevel(), 1, 0);
+        worldRenderer.addVertexWithUV(g.getGuiLeft() + x, g.getGuiTop() + y2, g.getZLevel(), 0, 0);
+        worldRenderer.addVertexWithUV(g.getGuiLeft() + x2, g.getGuiTop() + y2, g.getZLevel(), 0, 1);
+        worldRenderer.addVertexWithUV(g.getGuiLeft() + x2, g.getGuiTop() + y, g.getZLevel(), 1, 1);
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
-        worldRenderer.finishDrawing();
+	    tessellator.draw();
+	    GlStateManager.enableTexture2D();
+	    GlStateManager.enableCull();
+	    GlStateManager.disableBlend();
     }
 
-    void draw2d(CircuitGUI g) {
+    void draw2d(CircuitGUI.ClientCircuitGui g) {
         int i;
         if (pixels == null || dpixels == null)
             return;
@@ -265,16 +273,16 @@ class Scope {
         int x = x2 - rect.getWidth();
         int y = y2 - rect.getHeight();
 
-        drawScopeTexture(x, y, x2, y2, pixels);
+        drawScopeTexture(g, x, y, x2, y2, pixels);
 
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
         int yt = rect.getY() + 10;
         if (text != null && rect.getY() + rect.getHeight() > yt + 5) {
-            g.drawString(fontRenderer, text, x, yt, Color.WHITE.hashCode());
+            g.drawString(fontRenderer, text, x, yt, Color.WHITE.getRGB());
         }
     }
 
-    void draw(CircuitGUI g) {
+    void draw(CircuitGUI.ClientCircuitGui g) {
         if (elm == null)
             return;
         if (plot2d) {
@@ -489,18 +497,18 @@ class Scope {
         int y2 = g.getGuiTop() + g.getYSize() - 20;
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
 
-        drawScopeTexture(x2 - rect.getWidth(), y2 - rect.getHeight(), x2, y2, pixels);
+        drawScopeTexture(g, x2 - rect.getWidth(), y2 - rect.getHeight(), x2, y2, pixels);
         int yt = rect.getY() + 10;
         x += rect.getX();
         if (showMax) {
             if (value != 0)
                 g.drawString(fontRenderer, CircuitElm.getUnitText(realMaxV,
                                 elm.getScopeUnits(value)),
-                        x, yt, Color.WHITE.hashCode());
+                        x, yt, Color.WHITE.getRGB());
             else if (showV)
-                g.drawString(fontRenderer, CircuitElm.getVoltageText(realMaxV), x, yt, Color.WHITE.hashCode());
+                g.drawString(fontRenderer, CircuitElm.getVoltageText(realMaxV), x, yt, Color.WHITE.getRGB());
             else if (showI)
-                g.drawString(fontRenderer, CircuitElm.getCurrentText(realMaxI), x, yt, Color.WHITE.hashCode());
+                g.drawString(fontRenderer, CircuitElm.getCurrentText(realMaxI), x, yt, Color.WHITE.getRGB());
             yt += 15;
         }
         if (showMin) {
@@ -508,18 +516,18 @@ class Scope {
             if (value != 0)
                 g.drawString(fontRenderer, CircuitElm.getUnitText(realMinV,
                                 elm.getScopeUnits(value)),
-                        x, ym, Color.WHITE.hashCode());
+                        x, ym, Color.WHITE.getRGB());
             else if (showV)
-                g.drawString(fontRenderer, CircuitElm.getVoltageText(realMinV), x, ym, Color.WHITE.hashCode());
+                g.drawString(fontRenderer, CircuitElm.getVoltageText(realMinV), x, ym, Color.WHITE.getRGB());
             else if (showI)
-                g.drawString(fontRenderer, CircuitElm.getCurrentText(realMinI), x, ym, Color.WHITE.hashCode());
+                g.drawString(fontRenderer, CircuitElm.getCurrentText(realMinI), x, ym, Color.WHITE.getRGB());
         }
         if (text != null && rect.getY() + rect.getHeight() > yt + 5) {
-            g.drawString(fontRenderer, text, x, yt, Color.WHITE.hashCode());
+            g.drawString(fontRenderer, text, x, yt, Color.WHITE.getRGB());
             yt += 15;
         }
         if (showFreq && freq != 0 && rect.getY() + rect.getHeight() > yt + 5)
-            g.drawString(fontRenderer, CircuitElm.getUnitText(freq, "Hz"), x, yt, Color.WHITE.hashCode());
+            g.drawString(fontRenderer, CircuitElm.getUnitText(freq, "Hz"), x, yt, Color.WHITE.getRGB());
         if (ptr > 5 && !lockScale) {
             if (!gotI && minMaxI > 1e-4)
                 minMaxI /= 2;

@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class MonostableElm extends ChipElm {
+public class MonostableElm extends ChipElm {
 
     //Used to detect rising edge
     private boolean prevInputValue = false;

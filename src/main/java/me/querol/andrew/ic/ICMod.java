@@ -1,40 +1,41 @@
 package me.querol.andrew.ic;
 
-import external.simulator.Simulator.CirSim;
-import net.minecraftforge.fml.common.FMLCommonHandler;
+import me.querol.andrew.ic.Gui.GUIHandler;
+import me.querol.andrew.ic.block.ICBlock;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.Mod.Instance;
+import net.minecraftforge.fml.common.Mod.InstanceFactory;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 @Mod(modid = ICMod.MODID, version = ICMod.VERSION)
 public class ICMod {
     public static final String MODID = "ic";
     public static final String VERSION = "DEV";
-    private CirSim simulator;
+	@Instance
+	public static ICMod INSTANCE = null;
 
+	private ICMod() {
+
+	}
+
+	@InstanceFactory
+	public static ICMod getICModInstance() {
+		if (ICMod.INSTANCE == null) {
+			ICMod.INSTANCE = new ICMod();
+		}
+		return ICMod.INSTANCE;
+	}
+
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent event) {
+		ICBlock.registerBlock();
+	}
     @EventHandler
     public void init(FMLInitializationEvent event) {
-        simulator = new CirSim();
-        simulator.init();
-
-        try {
-            simulator.importCircuit(new String(Files.readAllBytes(Paths.get("555int.txt")), StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        FMLCommonHandler.instance().bus().register(this);
-    }
-
-    @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent serverTickEvent) {
-        System.out.println(simulator.elmList.get(32).toString());
-        simulator.updateCircuit();
+	    NetworkRegistry.INSTANCE.registerGuiHandler(this, GUIHandler.getInstance());
     }
 }

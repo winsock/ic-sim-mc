@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class VarRailElm extends RailElm {
+public class VarRailElm extends RailElm {
     //    Scrollbar slider;
 //    Label label;
     private String sliderText;

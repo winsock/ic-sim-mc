@@ -1,6 +1,6 @@
 package external.simulator.Simulator;
 
-class ACRailElm extends RailElm {
+public class ACRailElm extends RailElm {
     public ACRailElm(int xx, int yy) {
         super(xx, yy, WF_AC);
     }

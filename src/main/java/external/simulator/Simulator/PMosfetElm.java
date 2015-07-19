@@ -1,6 +1,6 @@
 package external.simulator.Simulator;
 
-class PMosfetElm extends MosfetElm {
+public class PMosfetElm extends MosfetElm {
     public PMosfetElm(int xx, int yy) {
         super(xx, yy, true);
     }

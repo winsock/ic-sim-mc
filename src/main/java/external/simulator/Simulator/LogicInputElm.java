@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class LogicInputElm extends SwitchElm {
+public class LogicInputElm extends SwitchElm {
     private final int FLAG_TERNARY = 1;
     private final int FLAG_NUMERIC = 2;
     private double hiV;

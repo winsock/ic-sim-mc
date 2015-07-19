@@ -5,7 +5,7 @@ import org.lwjgl.util.Point;
 
 import java.util.StringTokenizer;
 
-class OrGateElm extends GateElm {
+public class OrGateElm extends GateElm {
     public OrGateElm(int xx, int yy) {
         super(xx, yy);
     }
@@ -50,7 +50,7 @@ class OrGateElm extends GateElm {
             pcircle = interpPoint(point1, point2, .5 + (ww + 4) / dn);
             lead2 = interpPoint(point1, point2, .5 + (ww + 8) / dn);
         }
-        //gatePoly = createPolygon(triPoints);
+        gatePoly = createPolygon(triPoints);
     }
 
     boolean calcFunction() {

@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class VCOElm extends ChipElm {
+public class VCOElm extends ChipElm {
     private final double cResistance = 1e6;
     double cCurrent;
     private int cDir;

@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class CounterElm extends ChipElm {
+public class CounterElm extends ChipElm {
     private final int FLAG_ENABLE = 2;
     private boolean invertreset = false;
 

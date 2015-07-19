@@ -7,11 +7,10 @@ import me.querol.andrew.ic.Gui.CircuitGUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.Tessellator;
-import org.lwjgl.util.Color;
 import org.lwjgl.util.Point;
 import org.lwjgl.util.Rectangle;
 
+import java.awt.*;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FilterInputStream;
@@ -121,8 +120,11 @@ public class CirSim {
     private Rectangle circuitArea, selectedArea;
     public boolean euroResistors = false;
 
-    public CirSim() {
-
+    public CirSim(String circuitText, int width, int height) {
+		init();
+	    handleResize(width, height);
+	    importCircuit(circuitText);
+	    updateCircuit();
     }
 
     private static void register(Class<? extends CircuitElm> elmClass) {
@@ -148,10 +150,8 @@ public class CirSim {
         if (element.needsShortcut()) {
             if (s == 0) {
                 System.err.println("no shortcut " + elmClass + " for " + elmClass);
-                return;
             } else if (s <= ' ' || s >= 127) {
                 System.err.println("invalid shortcut " + elmClass + " for " + elmClass);
-                return;
             } else if (shortcuts[s] != null &&
                     shortcuts[s] != element.getClass()) {
                 System.err.println("shortcut conflict: " + element.getClass() +
@@ -881,7 +881,7 @@ public class CirSim {
     }
 
 
-    public void draw(CircuitGUI screen, int mouseX, int mouseY, float partialTicks) {
+    public void draw(CircuitGUI.ClientCircuitGui screen, int mouseX, int mouseY, float partialTicks) {
 
         setupScopes();
         FontRenderer fontRenderer = Minecraft.getMinecraft().fontRendererObj;
@@ -892,9 +892,9 @@ public class CirSim {
             g.setColor(Color.WHITE);
         } else {*/
         CircuitElm.whiteColor = Color.WHITE;
-        CircuitElm.lightGrayColor = Color.LTGREY;
+        CircuitElm.lightGrayColor = Color.LIGHT_GRAY;
         screen.drawDefaultBackground();
-        CircuitGUI.drawRect(screen.getGuiLeft() + 20, screen.getGuiTop() + 20, screen.getGuiLeft() + screen.getXSize() - 20, screen.getGuiTop() + screen.getYSize() - 20, Color.BLACK.hashCode());
+	    CircuitGUI.ClientCircuitGui.drawRect(screen.getGuiLeft() + 20, screen.getGuiTop() + 20, screen.getGuiLeft() + screen.getXSize() - 20, screen.getGuiTop() + screen.getYSize() - 20, Color.black.getRGB());
         //}
         //g.fillRect(0, 0, winSize.width, winSize.height);
         for (int i = 0; i != elmList.size(); i++) {
@@ -904,35 +904,17 @@ public class CirSim {
                 tempMouseMode == MODE_DRAG_POST || tempMouseMode == MODE_DRAG_SELECTED)
             for (int i = 0; i != elmList.size(); i++) {
                 CircuitElm ce = getElm(i);
-                ce.drawPost(screen, ce.x, ce.y, (Color) CircuitElm.whiteColor);
-                ce.drawPost(screen, ce.x2, ce.y2, (Color) CircuitElm.whiteColor);
+                ce.drawPost(screen, ce.x, ce.y, CircuitElm.whiteColor);
+                ce.drawPost(screen, ce.x2, ce.y2, CircuitElm.whiteColor);
             }
-        int badnodes = 0;
+/*        int badnodes = 0;
         // find bad connections, nodes not connected to other elements which
         // intersect other elements' bounding boxes
         // debugged by hausen: nullPointerException
         if (nodeList != null) {
-            for (int i = 0; i != nodeList.size(); i++) {
-                CircuitNode cn = getCircuitNode(i);
-                if (!cn.internal && cn.links.size() == 1) {
-                    int bb = 0, j;
-                    CircuitNodeLink cnl = cn.links.elementAt(0);
-                    for (j = 0; j != elmList.size(); j++) { // TODO: (hausen) see if this change does not break stuff
-                        CircuitElm ce = getElm(j);
-                        if (ce instanceof GraphicElm)
-                            continue;
-                        if (cnl.elm != ce &&
-                                getElm(j).boundingBox.contains(cn.x, cn.y))
-                            bb++;
-                    }
-                    if (bb > 0) {/*
-                        g.setColor(Color.RED);
-                        g.fillOval(cn.x - 3, cn.y - 3, 7, 7);*/
-                        badnodes++;
-                    }
-                }
+            for (int n = 0; n != nodeList.size(); n++) {
                 if (mouseElm != null) {
-                    screen.drawString(fontRenderer, "+", mouseElm.x + 10, mouseElm.y, Color.RED.hashCode());
+                    screen.drawString(fontRenderer, "+", mouseElm.x + 10, mouseElm.y, Color.RED.getRGB());
                 }
                 if (dragElm != null &&
                         (dragElm.x != dragElm.x2 || dragElm.y != dragElm.y2))
@@ -940,10 +922,10 @@ public class CirSim {
                 int ct = scopeCount;
                 if (stopMessage != null)
                     ct = 0;
-                for (i = 0; i != ct; i++)
+                for (int i = 0; i != ct; i++)
                     scopes[i].draw(screen);
                 if (stopMessage != null) {
-                    screen.drawString(fontRenderer, stopMessage, 10, circuitArea.getHeight(), CircuitElm.whiteColor.hashCode());
+                    screen.drawString(fontRenderer, stopMessage, 10, circuitArea.getHeight(), CircuitElm.whiteColor.getRGB());
                 } else {
                     if (circuitBottom == 0)
                         calcCircuitBottom();
@@ -955,7 +937,7 @@ public class CirSim {
                             info[0] = "V = " +
                                     CircuitElm.getUnitText(mouseElm.getPostVoltage(mousePost), "V");
                         //shownodes
-                        for (i = 0; i != mouseElm.getPostCount(); i++)
+                        for (int i = 0; i != mouseElm.getPostCount(); i++)
                             info[0] += " " + mouseElm.nodes[i];
                         if (mouseElm.getVoltageSourceCount() > 0)
                             info[0] += ";" + (mouseElm.getVoltageSource() + nodeList.size());
@@ -967,41 +949,31 @@ public class CirSim {
                         CircuitElm.showFormat.setMinimumFractionDigits(0);
                     }
                     if (hintType != -1) {
-                        for (i = 0; info[i] != null; i++)
-                            ;
                         String s = getHint();
                         if (s == null)
                             hintType = -1;
                         else
-                            info[i] = s;
+                            info[n] = s;
                     }
                     int x = 0;
                     if (ct != 0)
                         x = scopes[ct - 1].rightEdge() + 20;
                     x = max(x, Minecraft.getMinecraft().displayWidth * 2 / 3);
 
-                    // count lines of data
-                    for (i = 0; info[i] != null; i++)
-                        ;
-                    if (badnodes > 0)
-                        info[i++] = badnodes + ((badnodes == 1) ?
-                                " bad connection" : " bad connections");
-
-                    // find where to show data; below circuit, not too high unless we need it
-                    int ybase = Minecraft.getMinecraft().displayHeight - 15 * i - 5;
+	                // find where to show data; below circuit, not too high unless we need it
+                    int ybase = Minecraft.getMinecraft().displayHeight - 15 * n - 5;
                     ybase = min(ybase, circuitArea.getHeight());
                     ybase = max(ybase, circuitBottom);
-                    for (i = 0; info[i] != null; i++)
+                    for (int i = 0; info[i] != null; i++)
                         screen.drawString(fontRenderer, info[i], x,
-                                ybase + 15 * (i + 1), CircuitElm.whiteColor.hashCode());
+                                ybase + 15 * (i + 1), CircuitElm.whiteColor.getRGB());
                 }
                 if (selectedArea != null) {
-                    Gui.drawRect(selectedArea.getX(), selectedArea.getY(), selectedArea.getWidth(), selectedArea.getHeight(), CircuitElm.selectColor.hashCode());
+                    Gui.drawRect(selectedArea.getX(), selectedArea.getY(), selectedArea.getWidth(), selectedArea.getHeight(), CircuitElm.selectColor.getRGB());
                 }
             }
         }
-
-/*        g.setColor(Color.WHITE);
+        g.setColor(Color.WHITE);
         g.drawString("Framerate: " + framerate, 10, 10);
         g.drawString("Steprate: " + steprate, 10, 30);
         g.drawString("Steprate/iter: " + (steprate / getIterCount()), 10, 50);

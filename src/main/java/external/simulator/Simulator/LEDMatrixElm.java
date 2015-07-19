@@ -3,7 +3,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class LEDMatrixElm extends ChipElm {
+public class LEDMatrixElm extends ChipElm {
 
     private static final int size = 8;
     private static final double resistance = 100;

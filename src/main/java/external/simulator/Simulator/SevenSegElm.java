@@ -5,7 +5,7 @@ import org.lwjgl.util.Color;
 
 import java.util.StringTokenizer;
 
-class SevenSegElm extends ChipElm {
+public class SevenSegElm extends ChipElm {
     private Color darkred;
 
     public SevenSegElm(int xx, int yy) {

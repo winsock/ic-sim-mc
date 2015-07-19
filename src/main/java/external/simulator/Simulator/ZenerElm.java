@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 // Zener code contributed by J. Mike Rollins
 // http://www.camotruck.net/rollins/simulator.html
-class ZenerElm extends DiodeElm {
+public class ZenerElm extends DiodeElm {
     private final int hs = 8;
     private final double default_zvoltage = 5.6;
     //Polygon poly;

@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 
 // contributed by Edward Calver
 
-class SeqGenElm extends ChipElm {
+public class SeqGenElm extends ChipElm {
     private short data = 0;
     private byte position = 0;
     private boolean oneshot = false;

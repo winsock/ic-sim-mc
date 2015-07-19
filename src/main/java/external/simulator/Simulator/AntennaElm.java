@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class AntennaElm extends RailElm {
+public class AntennaElm extends RailElm {
     private double fmphase;
 
     public AntennaElm(int xx, int yy) {

@@ -4,7 +4,7 @@ import java.util.StringTokenizer;
 
 // contributed by Edward Calver
 
-class MultiplexerElm extends ChipElm {
+public class MultiplexerElm extends ChipElm {
     public MultiplexerElm(int xx, int yy) {
         super(xx, yy);
     }

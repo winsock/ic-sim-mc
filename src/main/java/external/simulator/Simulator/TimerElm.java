@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class TimerElm extends ChipElm {
+public class TimerElm extends ChipElm {
     private final int FLAG_RESET = 2;
     private final int N_DIS = 0;
     private final int N_TRIG = 1;

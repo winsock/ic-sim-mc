@@ -2,7 +2,7 @@ package external.simulator.Simulator;
 
 import java.util.StringTokenizer;
 
-class LatchElm extends ChipElm {
+public class LatchElm extends ChipElm {
     private int loadPin;
     private boolean lastLoad = false;
 

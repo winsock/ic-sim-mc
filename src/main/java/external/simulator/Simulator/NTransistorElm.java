@@ -1,6 +1,6 @@
 package external.simulator.Simulator;
 
-class NTransistorElm extends TransistorElm {
+public class NTransistorElm extends TransistorElm {
     public NTransistorElm(int xx, int yy) {
         super(xx, yy, false);
     }
