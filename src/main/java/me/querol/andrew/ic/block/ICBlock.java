@@ -1,6 +1,6 @@
 package me.querol.andrew.ic.block;
 
-import external.simulator.Simulator.CircuitElm;
+import external.simulator.CircuitElm;
 import me.querol.andrew.ic.Gui.CircuitGUI;
 import me.querol.andrew.ic.ICMod;
 import net.minecraft.block.Block;

@@ -1,6 +1,6 @@
 package me.querol.andrew.ic.Gui;
 
-import external.simulator.Simulator.CirSim;
+import external.simulator.CirSim;
 import me.querol.andrew.ic.block.ICBlock;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
